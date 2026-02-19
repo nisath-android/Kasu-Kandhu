@@ -1,230 +1,94 @@
-<!DOCTYPE html>
-<html lang="ta">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kasu-Kandhu v4.1 | Multi-Screen Pro</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        .no-select { user-select: none; }
-        .screen { display: none; animation: fadeIn 0.3s ease-in-out; }
-        .active-screen { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        /* Active Nav Styling */
-        .active-nav { color: #4f46e5; border-top: 2px solid #4f46e5; }
-    </style>
-</head>
-<body class="bg-slate-50 no-select font-sans pb-20">
+/**
+ * Project: Kasu-Kandhu Serverless
+ * Version: 4.1.1 (Full Feature Backend)
+ */
 
-    <div id="sideNav" class="fixed inset-y-0 left-0 w-64 bg-white shadow-2xl transform -translate-x-full transition-transform duration-300 z-[10000]">
-        <div class="p-6">
-            <h1 class="text-2xl font-black text-indigo-700 italic mb-8">மெனு</h1>
-            <nav class="space-y-4">
-                <button onclick="changeScreen('home')" class="w-full text-left p-3 hover:bg-slate-100 rounded-xl font-bold flex items-center gap-3">🏠 முகப்பு</button>
-                <button onclick="changeScreen('history')" class="w-full text-left p-3 hover:bg-slate-100 rounded-xl font-bold flex items-center gap-3">📜 வரலாறு</button>
-                <button onclick="changeScreen('settings')" class="w-full text-left p-3 hover:bg-slate-100 rounded-xl font-bold flex items-center gap-3">⚙️ அமைப்புகள்</button>
-                <hr>
-                <button onclick="location.reload()" class="w-full text-left p-3 text-red-500 font-bold flex items-center gap-3">🚪 வெளியேறு</button>
-            </nav>
-        </div>
-    </div>
-    <div id="navOverlay" onclick="toggleSideNav()" class="fixed inset-0 bg-black/50 hidden z-[9999]"></div>
+var ss = SpreadsheetApp.getActiveSpreadsheet();
+var props = PropertiesService.getScriptProperties();
 
-    <header class="bg-white p-4 shadow-sm border-b flex justify-between items-center sticky top-0 z-[50]">
-        <button onclick="toggleSideNav()" class="p-2 text-xl">☰</button>
-        <h1 id="topBarTitle" class="font-black text-slate-800 italic uppercase">முகப்பு</h1>
-        <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold">N</div>
-    </header>
+function createResponse(content, callback) {
+  var jsonString = JSON.stringify(content);
+  if (callback) {
+    return ContentService.createTextOutput(callback + "(" + jsonString + ")")
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+  return ContentService.createTextOutput(jsonString).setMimeType(ContentService.MimeType.JSON);
+}
 
-    <div id="loginPage" class="fixed inset-0 bg-slate-900 flex items-center justify-center p-4 z-[99999]">
-        <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl w-full max-w-sm text-center">
-            <h1 class="text-3xl font-black text-indigo-700 italic mb-10 uppercase">காசு-கந்து</h1>
-            <div id="emailStep">
-                <input type="email" id="userEmail" placeholder="மின்னஞ்சல்" class="w-full p-4 bg-slate-50 border rounded-2xl mb-4 text-center">
-                <button onclick="sendOTP()" id="otpBtn" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-lg">OTP அனுப்பு</button>
-            </div>
-            <div id="otpStep" class="hidden">
-                <input type="number" id="otpInput" placeholder="000000" class="w-full p-4 border rounded-2xl mb-4 text-center text-2xl font-black tracking-[10px]">
-                <button onclick="verifyOTP()" id="verifyBtn" class="w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold">உள்நுழை</button>
-            </div>
-        </div>
-    </div>
+function doGet(e) {
+  if (!e || !e.parameter) return ContentService.createTextOutput("API Active");
+  var action = e.parameter.action;
+  var callback = e.parameter.callback;
 
-    <main class="container mx-auto p-4 max-w-md">
-        
-        <div id="homeScreen" class="screen active-screen space-y-6">
-            <div class="bg-indigo-600 p-8 rounded-[2.5rem] text-white shadow-xl">
-                <p class="text-indigo-100 text-sm">இந்த மாத செலவு</p>
-                <h2 id="totalExpenseDisplay" class="text-4xl font-black mt-1 tracking-tighter">₹ 0</h2>
-                <div class="mt-4 flex gap-4 text-[10px] font-bold uppercase">
-                    <span id="emiStats" class="bg-white/20 px-3 py-1 rounded-full">EMI: ₹0</span>
-                    <span id="savingsStats" class="bg-white/20 px-3 py-1 rounded-full">சேமிப்பு: ₹0</span>
-                </div>
-            </div>
-            <div class="bg-white p-6 rounded-[2.5rem] shadow-lg border border-slate-100">
-                <canvas id="expenseChart" class="max-h-[250px]"></canvas>
-            </div>
-            <div class="bg-white p-6 rounded-[2.5rem] shadow-lg border border-slate-100">
-                <h3 class="text-xs font-bold text-slate-400 mb-4 uppercase">புதிய பதிவு</h3>
-                <form id="transactionForm" class="space-y-4">
-                    <input type="number" id="amount" placeholder="தொகை ₹" class="w-full p-4 bg-slate-50 rounded-2xl text-xl font-bold outline-none border">
-                    <select id="category" class="w-full p-4 bg-slate-50 rounded-2xl font-bold border">
-                        <option value="EMI">EMI</option>
-                        <option value="Expense">செலவு</option>
-                        <option value="Savings">சேமிப்பு</option>
-                    </select>
-                    <button type="submit" id="submitBtn" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-lg">Sheets-ல் சேமி</button>
-                </form>
-            </div>
-        </div>
+  try {
+    if (action == "sendOTP") {
+      var email = e.parameter.email;
+      var configSheet = ss.getSheetByName("Config");
+      var data = configSheet.getDataRange().getValues();
+      var allowedEmail = "";
+      data.forEach(function(row) { if(row[0] == "ALLOWED_EMAIL") allowedEmail = row[1]; });
 
-        <div id="historyScreen" class="screen space-y-4 text-center p-10">
-            <img src="https://cdn-icons-png.flaticon.com/512/2644/2644831.png" class="w-20 mx-auto opacity-20">
-            <h2 class="text-xl font-bold text-slate-400">வரலாறு பக்கம் தயார் நிலையில் உள்ளது...</h2>
-            <p class="text-xs text-slate-300">இங்கே உங்கள் முந்தைய செலவுகள் பட்டியலிடப்படும்.</p>
-        </div>
+      if (email.toLowerCase().trim() === allowedEmail.toString().toLowerCase().trim()) {
+        var otp = Math.floor(100000 + Math.random() * 900000).toString();
+        props.setProperty('CURRENT_OTP', otp);
+        props.setProperty('OTP_EXPIRY', new Date().getTime() + 300000);
+        MailApp.sendEmail(email, "Kasu-Kandhu Login OTP", "உங்கள் லாகின் குறியீடு: " + otp);
+        return createResponse({status: "Sent"}, callback);
+      }
+      return createResponse({status: "Unauthorized"}, callback);
+    }
 
-        <div id="settingsScreen" class="screen space-y-6">
-            <div class="bg-white p-6 rounded-3xl shadow-md border border-slate-100">
-                <h3 class="font-bold mb-4">API Configuration</h3>
-                <input type="text" id="apiUrlInitial" placeholder="Apps Script URL" class="w-full p-3 bg-slate-50 border rounded-xl text-xs outline-none mb-3">
-                <input type="password" id="apiKeyInitial" placeholder="Secret Key" class="w-full p-3 bg-slate-50 border rounded-xl text-xs outline-none mb-4">
-                <button onclick="saveInitialConfig()" class="w-full bg-slate-800 text-white py-3 rounded-xl font-bold text-xs uppercase tracking-widest">Update Settings</button>
-            </div>
-        </div>
+    if (action == "verifyOTP") {
+      var userOtp = e.parameter.otp;
+      if (new Date().getTime() < props.getProperty('OTP_EXPIRY') && userOtp === props.getProperty('CURRENT_OTP')) {
+        var token = Utilities.getUuid();
+        props.setProperty('SESSION_' + token, 'active');
+        return createResponse({status: "Success", token: token}, callback);
+      }
+      return createResponse({status: "Failed"}, callback);
+    }
 
-    </main>
-
-    <nav class="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 flex justify-around p-3 z-50">
-        <button onclick="changeScreen('home')" id="nav-home" class="flex flex-col items-center gap-1 active-nav flex-1">
-            <span class="text-xl">🏠</span>
-            <span class="text-[10px] font-bold">Home</span>
-        </button>
-        <button onclick="changeScreen('history')" id="nav-history" class="flex flex-col items-center gap-1 flex-1">
-            <span class="text-xl">📜</span>
-            <span class="text-[10px] font-bold">History</span>
-        </button>
-        <button onclick="changeScreen('settings')" id="nav-settings" class="flex flex-col items-center gap-1 flex-1">
-            <span class="text-xl">⚙️</span>
-            <span class="text-[10px] font-bold">Settings</span>
-        </button>
-    </nav>
-
-    <script>
-        let WEB_APP_URL = localStorage.getItem('k_url') || "";
-        let SESSION_TOKEN = "";
-        let myChart = null;
-
-        // --- NAVIGATION LOGIC ---
-        function changeScreen(screenId) {
-            // Hide all screens
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
-            // Remove active nav styling
-            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-nav'));
-            
-            // Show target screen
-            document.getElementById(screenId + 'Screen').classList.add('active-screen');
-            document.getElementById('nav-' + screenId).classList.add('active-nav');
-            
-            // Update Top Bar Title
-            const titles = { 'home': 'முகப்பு', 'history': 'வரலாறு', 'settings': 'அமைப்புகள்' };
-            document.getElementById('topBarTitle').innerText = titles[screenId];
-            
-            if(screenId === 'home') loadDashboard();
-            if(window.sideNavOpen) toggleSideNav();
+    if (action == "getDashboardData") {
+      var sheet = ss.getSheetByName("Transactions");
+      var summary = { EMI: 0, Expense: 0, Savings: 0, Total: 0 };
+      if (sheet) {
+        var rows = sheet.getDataRange().getValues();
+        for (var i = 1; i < rows.length; i++) {
+          var cat = rows[i][1];
+          var amt = parseFloat(rows[i][2]) || 0;
+          if (summary.hasOwnProperty(cat)) { summary[cat] += amt; summary.Total += amt; }
         }
+      }
+      return createResponse(summary, callback);
+    }
 
-        function toggleSideNav() {
-            const nav = document.getElementById('sideNav');
-            const overlay = document.getElementById('navOverlay');
-            if(window.sideNavOpen) {
-                nav.style.transform = 'translateX(-100%)';
-                overlay.classList.add('hidden');
-            } else {
-                nav.style.transform = 'translateX(0)';
-                overlay.classList.remove('hidden');
-            }
-            window.sideNavOpen = !window.sideNavOpen;
+    if (action == "getHistory") {
+      var sheet = ss.getSheetByName("Transactions");
+      var history = [];
+      if (sheet) {
+        var rows = sheet.getDataRange().getValues();
+        for (var i = rows.length - 1; i >= Math.max(1, rows.length - 20); i--) {
+          history.push({
+            date: Utilities.formatDate(new Date(rows[i][0]), "GMT+5:30", "dd MMM"),
+            category: rows[i][1],
+            amount: rows[i][2],
+            desc: rows[i][3]
+          });
         }
+      }
+      return createResponse(history, callback);
+    }
+  } catch (err) { return createResponse({status: "Error", message: err.toString()}, callback); }
+}
 
-        // API & Auth Logic (As per v4.0.0)
-        async function jsonpFetch(params) {
-            return new Promise(resolve => {
-                const cb = 'cb_' + Math.round(100000 * Math.random());
-                window[cb] = (d) => { resolve(d); delete window[cb]; document.body.removeChild(s); };
-                const s = document.createElement('script');
-                s.src = `${WEB_APP_URL}?callback=${cb}&${new URLSearchParams(params).toString()}`;
-                document.body.appendChild(s);
-            });
-        }
-
-        async function sendOTP() {
-            const res = await jsonpFetch({ action: "sendOTP", email: document.getElementById('userEmail').value });
-            if(res.status === "Sent") {
-                document.getElementById('emailStep').classList.add('hidden');
-                document.getElementById('otpStep').classList.remove('hidden');
-            } else { alert("அனுமதி மறுக்கப்பட்டது!"); }
-        }
-
-        async function verifyOTP() {
-            const res = await jsonpFetch({ action: "verifyOTP", otp: document.getElementById('otpInput').value });
-            if(res.status === "Success") {
-                SESSION_TOKEN = res.token;
-                document.getElementById('loginPage').classList.add('hidden');
-                loadDashboard();
-            } else { alert("தவறான OTP!"); }
-        }
-
-        async function loadDashboard() {
-            const data = await jsonpFetch({ action: "getDashboardData" });
-            document.getElementById('totalExpenseDisplay').innerText = `₹ ${data.Total.toLocaleString('en-IN')}`;
-            document.getElementById('emiStats').innerText = `EMI: ₹${data.EMI}`;
-            document.getElementById('savingsStats').innerText = `சேமிப்பு: ₹${data.Savings}`;
-
-            const ctx = document.getElementById('expenseChart').getContext('2d');
-            if(myChart) myChart.destroy();
-            myChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['EMI', 'Expense', 'Savings'],
-                    datasets: [{
-                        data: [data.EMI, data.Expense, data.Savings],
-                        backgroundColor: ['#4f46e5', '#fbbf24', '#10b981'],
-                        borderWidth: 8,
-                        borderColor: '#ffffff'
-                    }]
-                },
-                options: { plugins: { legend: { position: 'bottom' } }, cutout: '75%' }
-            });
-        }
-
-        document.getElementById('transactionForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('submitBtn'); btn.disabled = true;
-            const q = new URLSearchParams({
-                amount: document.getElementById('amount').value,
-                category: document.getElementById('category').value,
-                token: SESSION_TOKEN,
-                key: localStorage.getItem('k_key')
-            }).toString();
-
-            await fetch(`${WEB_APP_URL}?${q}`, { method: 'POST', mode: 'no-cors' });
-            alert("✅ சேமிக்கப்பட்டது!");
-            document.getElementById('transactionForm').reset();
-            btn.disabled = false;
-            loadDashboard();
-        });
-
-        function saveInitialConfig() {
-            localStorage.setItem('k_url', document.getElementById('apiUrlInitial').value.trim());
-            localStorage.setItem('k_key', document.getElementById('apiKeyInitial').value.trim());
-            alert("Settings Updated!");
-            location.reload();
-        }
-
-        document.getElementById('apiUrlInitial').value = WEB_APP_URL;
-        document.getElementById('apiKeyInitial').value = localStorage.getItem('k_key');
-    </script>
-</body>
-</html>
+function doPost(e) {
+  var data = e.parameter;
+  var configData = ss.getSheetByName("Config").getDataRange().getValues();
+  var settings = {}; configData.forEach(r => settings[r[0]] = r[1]);
+  if (props.getProperty('SESSION_' + data.token) !== 'active' || data.key !== settings["SECRET_KEY"]) {
+    return ContentService.createTextOutput("Forbidden").setMimeType(ContentService.MimeType.TEXT);
+  }
+  var sheet = ss.getSheetByName("Transactions") || ss.insertSheet("Transactions");
+  sheet.appendRow([new Date(), data.category, data.amount, data.description || "", "Expense"]);
+  return ContentService.createTextOutput("Success");
+}
