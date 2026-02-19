@@ -3,50 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kasu-Kandhu v3.4 | Ultra Secure</title>
+    <title>Kasu-Kandhu v3.5 | Secure Serverless</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .no-select { user-select: none; -webkit-user-select: none; }
-        #loginPage { z-index: 9999; backdrop-filter: blur(12px); }
-        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-    </style>
 </head>
-<body class="bg-slate-900 no-select">
+<body class="bg-slate-900 font-sans">
 
-    <div class="fixed bottom-2 right-2 text-[10px] text-slate-600 z-[1000] font-mono">Build 3.4.0-STABLE</div>
+    <div class="fixed bottom-2 right-2 text-[10px] text-slate-600 z-[1000] font-mono tracking-tighter">Build 3.5.0-STABLE_FIX</div>
 
-    <div id="loginPage" class="fixed inset-0 bg-slate-900 flex items-center justify-center p-4">
+    <div id="loginPage" class="fixed inset-0 bg-slate-900 flex items-center justify-center p-4 z-[9999]">
         <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl w-full max-w-sm border border-slate-200 text-center">
             <h1 class="text-4xl font-black text-indigo-700 mb-2 italic tracking-tighter uppercase">காசு-கந்து</h1>
-            <p class="text-[10px] text-slate-400 mb-10 tracking-[0.2em] uppercase font-bold">Secure Personal Ledger</p>
+            <p class="text-[10px] text-slate-400 mb-10 tracking-[0.2em] uppercase font-bold">Safe Ledger System</p>
             
             <div id="emailStep">
-                <input type="email" id="userEmail" placeholder="Email Address" 
-                    class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl mb-4 outline-none focus:ring-2 focus:ring-indigo-500 text-center font-medium">
-                <button onclick="sendOTP()" id="otpBtn" 
-                    class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-indigo-200 active:scale-95 transition-all">OTP அனுப்பு</button>
+                <input type="email" id="userEmail" placeholder="மின்னஞ்சல் முகவரி" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl mb-4 outline-none text-center">
+                <button onclick="sendOTP()" id="otpBtn" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold active:scale-95 transition-all">OTP அனுப்பு</button>
             </div>
 
             <div id="otpStep" class="hidden">
-                <p class="text-xs text-slate-500 mb-4 font-bold">மின்னஞ்சலில் வந்த குறியீட்டை உள்ளிடவும்</p>
-                <input type="number" id="otpInput" placeholder="000000" 
-                    class="w-full p-4 border border-slate-200 rounded-2xl mb-4 outline-none text-center text-3xl font-black tracking-[10px]">
-                <button onclick="verifyOTP()" id="verifyBtn" 
-                    class="w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold shadow-lg active:scale-95 transition-all">Verify & Login</button>
+                <p class="text-xs text-slate-500 mb-4 font-bold italic text-indigo-600">மின்னஞ்சலில் வந்த 6 இலக்க எண்ணை உள்ளிடவும்</p>
+                <input type="number" id="otpInput" placeholder="000000" class="w-full p-4 border border-slate-200 rounded-2xl mb-4 outline-none text-center text-3xl font-black tracking-[10px]">
+                <button onclick="verifyOTP()" id="verifyBtn" class="w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold">உள்நுழை (Verify)</button>
             </div>
 
             <hr class="my-8 border-slate-100">
 
             <div class="bg-indigo-50 p-4 rounded-2xl border border-indigo-100">
-                <button onclick="showConfig()" class="w-full bg-white text-indigo-600 py-2 rounded-xl text-xs font-bold border border-indigo-200 shadow-sm hover:bg-indigo-600 hover:text-white transition-all">
-                    ⚙️ Configure API Settings
+                <button onclick="showConfig()" class="w-full bg-white text-indigo-600 py-2 rounded-xl text-xs font-bold border border-indigo-200 shadow-sm transition-all uppercase">
+                    ⚙️ API Configuration
                 </button>
                 <div id="urlSetup" class="hidden mt-4 text-left">
-                    <label class="text-[9px] font-bold text-slate-500 mb-1 block uppercase">Apps Script URL</label>
-                    <input type="text" id="apiUrlInitial" placeholder="https://script.google.com/..." class="w-full p-3 text-xs mb-3 rounded-xl border border-indigo-100 bg-white outline-none">
+                    <label class="text-[9px] font-bold text-slate-500 mb-1 block uppercase">Web App URL</label>
+                    <input type="text" id="apiUrlInitial" placeholder="https://script.google.com/..." class="w-full p-3 text-xs mb-3 rounded-xl border border-indigo-100 outline-none">
                     <label class="text-[9px] font-bold text-slate-500 mb-1 block uppercase">Secret Key</label>
-                    <input type="password" id="apiKeyInitial" placeholder="YourSecretKey" class="w-full p-3 text-xs rounded-xl border border-indigo-100 bg-white outline-none">
-                    <button onclick="saveInitialConfig()" class="w-full mt-4 bg-indigo-700 text-white text-[10px] py-3 rounded-xl font-bold uppercase tracking-widest">Update & Save</button>
+                    <input type="password" id="apiKeyInitial" placeholder="YourKey" class="w-full p-3 text-xs rounded-xl border border-indigo-100 outline-none">
+                    <button onclick="saveInitialConfig()" class="w-full mt-4 bg-indigo-700 text-white text-[10px] py-3 rounded-xl font-bold uppercase tracking-widest">Update Security Settings</button>
                 </div>
             </div>
         </div>
@@ -54,40 +45,22 @@
 
     <div id="dashboard" class="hidden min-h-screen bg-slate-50">
         <header class="bg-white border-b border-slate-200 p-5 flex justify-between items-center sticky top-0 z-50">
-            <h1 class="text-xl font-black text-slate-800 italic tracking-tighter uppercase">Kasu-Kandhu <span class="text-indigo-600">Pro</span></h1>
+            <h1 class="text-xl font-black text-slate-800 italic tracking-tighter uppercase">KASU-KANDHU <span class="text-indigo-600">PRO</span></h1>
             <button onclick="location.reload()" class="text-[10px] font-black text-red-500 bg-red-50 px-4 py-2 rounded-full border border-red-100 uppercase">Logout</button>
         </header>
 
         <main class="container mx-auto p-6 max-w-md pb-24">
-            <div class="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100">
-                <div class="flex items-center gap-3 mb-8">
-                    <div class="p-3 bg-indigo-50 rounded-2xl text-xl">✍️</div>
-                    <h2 class="text-xl font-black text-slate-800 tracking-tight">புதிய செலவு பதிவு</h2>
-                </div>
-
+            <div class="bg-white p-8 rounded-[2.5rem] shadow-xl border border-slate-100">
+                <h2 class="text-xl font-black text-slate-800 mb-8 flex items-center gap-3">✍️ புதிய செலவு பதிவு</h2>
                 <form id="transactionForm" class="space-y-6">
-                    <div>
-                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block font-bold">Amount (₹)</label>
-                        <input type="number" id="amount" placeholder="0.00" 
-                            class="w-full p-5 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 text-2xl font-bold text-slate-800" required>
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block font-bold">Category</label>
-                        <select id="category" class="w-full p-5 bg-slate-50 border-none rounded-2xl outline-none font-bold text-slate-600 appearance-none">
-                            <option value="EMI">EMI (சிவப்பு)</option>
-                            <option value="Expense">செலவு (நீலம்)</option>
-                            <option value="Savings">சேமிப்பு (பச்சை)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block font-bold">Description</label>
-                        <input type="text" id="description" placeholder="Description" 
-                            class="w-full p-5 bg-slate-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 font-medium">
-                    </div>
-                    <button type="submit" id="submitBtn" 
-                        class="w-full bg-indigo-600 text-white font-black py-6 rounded-3xl shadow-2xl shadow-indigo-200 hover:bg-indigo-700 transition-all active:scale-95 text-lg uppercase tracking-tighter">
-                        SHEETS-ல் சேமி
-                    </button>
+                    <input type="number" id="amount" placeholder="தொகை (0.00)" class="w-full p-5 bg-slate-50 border-none rounded-2xl outline-none text-2xl font-bold" required>
+                    <select id="category" class="w-full p-5 bg-slate-50 border-none rounded-2xl outline-none font-bold text-slate-600">
+                        <option value="EMI">EMI</option>
+                        <option value="Expense">செலவு</option>
+                        <option value="Savings">சேமிப்பு</option>
+                    </select>
+                    <input type="text" id="description" placeholder="விளக்கம்" class="w-full p-5 bg-slate-50 border-none rounded-2xl outline-none font-medium">
+                    <button type="submit" id="submitBtn" class="w-full bg-indigo-600 text-white font-black py-6 rounded-3xl shadow-2xl hover:bg-indigo-700 transition-all text-lg">SHEETS-ல் சேமி</button>
                 </form>
             </div>
         </main>
@@ -104,14 +77,11 @@
         };
 
         function showConfig() { document.getElementById('urlSetup').classList.toggle('hidden'); }
-        
         function saveInitialConfig() {
-            const url = document.getElementById('apiUrlInitial').value.trim();
-            const key = document.getElementById('apiKeyInitial').value.trim();
-            if(!url || !key) return alert("விவரங்களை முழுமையாக உள்ளிடவும்!");
-            localStorage.setItem('k_url', url);
-            localStorage.setItem('k_key', key);
-            WEB_APP_URL = url; SECRET_KEY = key;
+            localStorage.setItem('k_url', document.getElementById('apiUrlInitial').value.trim());
+            localStorage.setItem('k_key', document.getElementById('apiKeyInitial').value.trim());
+            WEB_APP_URL = localStorage.getItem('k_url');
+            SECRET_KEY = localStorage.getItem('k_key');
             alert("Settings Saved!");
             document.getElementById('urlSetup').classList.add('hidden');
         }
@@ -119,26 +89,26 @@
         async function sendOTP() {
             if(!WEB_APP_URL) return alert("API URL Missing!");
             const email = document.getElementById('userEmail').value;
-            if(!email) return alert("Email missing!");
             const btn = document.getElementById('otpBtn');
             btn.disabled = true; btn.innerText = "Connecting...";
 
             try {
-                // Redirect சிக்கலைத் தவிர்க்க GET முறையில் அழைக்கிறோம்
-                const res = await fetch(`${WEB_APP_URL}?action=sendOTP&email=${encodeURIComponent(email)}`);
+                const res = await fetch(`${WEB_APP_URL}?action=sendOTP&email=${encodeURIComponent(email)}`, {
+                    redirect: 'follow' // மிக முக்கியமானது: Redirect-ஐப் பின்தொடரச் சொல்கிறோம்
+                });
                 const text = await res.text();
-                
                 if(text.includes("Sent")) {
                     document.getElementById('emailStep').classList.add('hidden');
                     document.getElementById('otpStep').classList.remove('hidden');
-                    alert("OTP மின்னஞ்சலுக்கு அனுப்பப்பட்டது!");
+                    alert("OTP Sent!");
                 } else {
-                    alert("அனுமதி மறுக்கப்பட்டது! (Check Config Sheet)");
+                    alert("Unauthorized Email.");
                     btn.disabled = false; btn.innerText = "OTP அனுப்பு";
                 }
             } catch(e) {
-                alert("API Error! உங்கள் Apps Script Deployment-ஐச் சரிபார்க்கவும்.");
-                btn.disabled = false; btn.innerText = "OTP அனுப்பு";
+                console.error(e);
+                alert("API Error! 'Who has access' should be 'Anyone'.");
+                btn.disabled = false;
             }
         }
 
@@ -148,48 +118,39 @@
             btn.disabled = true; btn.innerText = "Verifying...";
 
             try {
-                // OTP சரிபார்ப்பையும் GET முறையில் செய்கிறோம் (CORS Bypass)
-                const res = await fetch(`${WEB_APP_URL}?action=verifyOTP&otp=${otp}`);
+                const res = await fetch(`${WEB_APP_URL}?action=verifyOTP&otp=${otp}`, {
+                    redirect: 'follow'
+                });
                 const json = await res.json();
-                
                 if(json.status === "Success") {
                     SESSION_TOKEN = json.token;
                     document.getElementById('loginPage').classList.add('hidden');
                     document.getElementById('dashboard').classList.remove('hidden');
                 } else {
-                    alert("தவறான OTP!");
-                    btn.disabled = false; btn.innerText = "உள்நுழை (Verify)";
+                    alert("Wrong OTP!");
+                    btn.disabled = false;
                 }
-            } catch(e) {
-                alert("Verification Failed.");
-                btn.disabled = false; btn.innerText = "உள்நுழை (Verify)";
-            }
+            } catch(e) { alert("Error!"); btn.disabled = false; }
         }
 
         document.getElementById('transactionForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
-            btn.disabled = true; btn.innerText = "Saving Data...";
-
-            const payload = {
+            btn.disabled = true; btn.innerText = "Saving...";
+            const q = new URLSearchParams({
                 amount: document.getElementById('amount').value,
                 category: document.getElementById('category').value,
                 description: document.getElementById('description').value,
                 token: SESSION_TOKEN,
                 key: SECRET_KEY
-            };
+            }).toString();
 
             try {
-                const q = new URLSearchParams(payload).toString();
-                // 'no-cors' மூலம் டேட்டாவை சேமித்தல் (Response தேவையில்லை என்பதால் இது பாதுகாப்பானது)
                 await fetch(`${WEB_APP_URL}?${q}`, { method: 'POST', mode: 'no-cors' });
-                alert("✅ தரவு வெற்றிகரமாகச் சேமிக்கப்பட்டது!");
+                alert("✅ Saved Successfully!");
                 document.getElementById('transactionForm').reset();
-            } catch(e) {
-                alert("❌ பிழை!");
-            } finally {
-                btn.disabled = false; btn.innerText = "SHEETS-ல் சேமி";
-            }
+            } catch(e) { alert("Error!"); }
+            finally { btn.disabled = false; btn.innerText = "SHEETS-ல் சேமி"; }
         });
     </script>
 </body>
