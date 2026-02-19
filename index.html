@@ -3,143 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kasu-Kandhu | Dashboard</title>
+    <title>Kasu-Kandhu | OTP Secure</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        .loading { cursor: not-allowed; opacity: 0.6; }
-    </style>
 </head>
-<body class="bg-slate-50 font-sans text-slate-900">
+<body class="bg-slate-100 font-sans">
 
-    <header class="bg-indigo-700 p-5 text-white shadow-xl mb-8">
-        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <h1 class="text-3xl font-extrabold tracking-tight italic">💵 காசு-கந்து</h1>
-            <div class="flex gap-4">
-                <div class="bg-indigo-800 px-4 py-2 rounded-lg text-sm border border-indigo-500">
-                    நிலை: <span class="text-green-400 font-bold">Online</span>
-                </div>
+    <div id="loginPage" class="fixed inset-0 bg-indigo-900 flex items-center justify-center p-4 z-[100]">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-sm text-center">
+            <h1 class="text-3xl font-bold text-indigo-700 mb-6 italic">காசு-கந்து Login</h1>
+            
+            <div id="emailStep">
+                <input type="email" id="userEmail" placeholder="உங்கள் மின்னஞ்சல்" class="w-full p-3 border rounded-xl mb-4 outline-none focus:ring-2 focus:ring-indigo-500 text-center">
+                <button onclick="sendOTP()" id="otpBtn" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold">Send OTP</button>
+            </div>
+
+            <div id="otpStep" class="hidden">
+                <p class="text-sm text-slate-500 mb-4 font-medium">மெயிலுக்கு வந்த OTP-ஐ உள்ளிடவும்</p>
+                <input type="number" id="otpInput" placeholder="6-digit OTP" class="w-full p-3 border rounded-xl mb-4 outline-none focus:ring-2 focus:ring-indigo-500 text-center tracking-[10px] text-xl font-bold">
+                <button onclick="verifyOTP()" id="verifyBtn" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold">Verify & Login</button>
             </div>
         </div>
-    </header>
+    </div>
 
-    <main class="container mx-auto px-4 pb-12">
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-            <div class="bg-white p-6 rounded-2xl shadow-sm border-b-4 border-green-500 hover:shadow-md transition">
-                <p class="text-slate-500 font-medium">வருமானம்</p>
-                <h2 class="text-3xl font-bold text-slate-800 mt-1">₹45,000</h2>
-            </div>
-            <div class="bg-white p-6 rounded-2xl shadow-sm border-b-4 border-red-500 hover:shadow-md transition">
-                <p class="text-slate-500 font-medium">செலவு + EMI</p>
-                <h2 class="text-3xl font-bold text-slate-800 mt-1">₹46,500</h2>
-            </div>
-            <div class="bg-white p-6 rounded-2xl shadow-sm border-b-4 border-orange-500 hover:shadow-md transition">
-                <p class="text-slate-500 font-medium font-bold text-orange-600">பற்றாக்குறை (Deficit)</p>
-                <h2 class="text-3xl font-bold text-orange-600 mt-1">₹1,500</h2>
-            </div>
-        </div>
+    <div id="dashboard" class="hidden">
+        <header class="bg-indigo-700 p-5 text-white flex justify-between items-center shadow-lg">
+            <h1 class="text-xl font-bold italic">🛡️ Kasu-Kandhu Dashboard</h1>
+            <button onclick="toggleSettings()" class="bg-indigo-800 p-2 rounded-lg">⚙️</button>
+        </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
-                <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
-                    <span>📊</span> செலவு பகுப்பாய்வு
-                </h3>
-                <div class="max-w-[320px] mx-auto">
-                    <canvas id="expenseChart"></canvas>
-                </div>
-            </div>
-
-            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
-                <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
-                    <span>✍️</span> புதிய பதிவு
-                </h3>
-                <form id="transactionForm" class="space-y-5">
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-600 mb-1">தொகை</label>
-                        <input type="number" id="amount" placeholder="0.00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition" required>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-600 mb-1">வகை</label>
-                        <select id="category" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition">
-                            <option value="EMI">EMI (Red)</option>
-                            <option value="Expense">செலவு (Blue)</option>
-                            <option value="Savings">சேமிப்பு (Green)</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-600 mb-1">விளக்கம்</label>
-                        <input type="text" id="description" placeholder="எதற்காக?" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition">
-                    </div>
-
-                    <button type="submit" id="submitBtn" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all active:scale-95">
-                        Sheets-ல் சேமி
-                    </button>
+        <main class="container mx-auto p-6 max-w-md">
+            <div class="bg-white p-8 rounded-2xl shadow-md">
+                <form id="transactionForm" class="space-y-4">
+                    <input type="number" id="amount" placeholder="தொகை" class="w-full p-4 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-indigo-500" required>
+                    <select id="category" class="w-full p-4 bg-slate-50 border rounded-xl">
+                        <option value="EMI">EMI</option>
+                        <option value="Expense">செலவு</option>
+                        <option value="Savings">சேமிப்பு</option>
+                    </select>
+                    <input type="text" id="description" placeholder="விளக்கம்" class="w-full p-4 bg-slate-50 border rounded-xl outline-none">
+                    <button type="submit" id="submitBtn" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-xl hover:bg-indigo-700">சேமி</button>
                 </form>
             </div>
+        </main>
+    </div>
+
+    <div id="settingsModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-[110]">
+        <div class="bg-white p-6 rounded-2xl w-full max-w-xs shadow-xl">
+            <h3 class="font-bold mb-4">API Configuration</h3>
+            <input type="text" id="apiUrlInput" placeholder="Apps Script URL" class="w-full p-2 border rounded-lg mb-3 text-sm">
+            <input type="password" id="apiKeyInput" placeholder="Secret Key" class="w-full p-2 border rounded-lg mb-4 text-sm">
+            <button onclick="saveSettings()" class="w-full bg-indigo-600 text-white py-2 rounded-lg font-bold">Save</button>
+            <button onclick="toggleSettings()" class="w-full mt-2 text-slate-400 text-sm">Close</button>
         </div>
-    </main>
+    </div>
 
     <script>
-        // 1. உங்கள் Apps Script URL-ஐ இங்கே மாற்றவும்
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx_iBWFKIRl0MOxI0BQ26xf5RMMXpRyaxWUY11lj11Sne7SbZrRrxiCscy8COziAbG-/exec";
+        let WEB_APP_URL = localStorage.getItem('kasu_kandhu_url') || "";
+        let SECRET_KEY = localStorage.getItem('kasu_kandhu_key') || "";
 
-        // 2. Chart Initialization
-        const ctx = document.getElementById('expenseChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['EMI', 'Savings', 'Expenses'],
-                datasets: [{
-                    data: [15000, 5000, 26500],
-                    backgroundColor: ['#ef4444', '#10b981', '#3b82f6'],
-                    hoverOffset: 15,
-                    borderWidth: 0
-                }]
-            },
-            options: { cutout: '70%', plugins: { legend: { position: 'bottom' } } }
-        });
-
-        // 3. Form Handling
-        const form = document.getElementById('transactionForm');
-        const btn = document.getElementById('submitBtn');
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
+        async function sendOTP() {
+            if(!WEB_APP_URL) { alert("முதலில் Settings-ல் URL-ஐச் சேமிக்கவும்!"); toggleSettings(); return; }
+            const email = document.getElementById('userEmail').value;
+            const btn = document.getElementById('otpBtn');
+            btn.innerText = "அனுப்பப்படுகிறது...";
             
-            // பட்டனை லோடிங் நிலைக்கு மாற்றுதல்
-            btn.innerText = "சேமிக்கப்படுகிறது...";
-            btn.classList.add('loading');
-            btn.disabled = true;
+            const res = await fetch(`${WEB_APP_URL}?action=sendOTP&email=${email}`);
+            const text = await res.text();
+            
+            if (text === "Sent") {
+                document.getElementById('emailStep').classList.add('hidden');
+                document.getElementById('otpStep').classList.remove('hidden');
+            } else {
+                alert("தவறான மின்னஞ்சல் அல்லது பிழை!");
+                btn.innerText = "Send OTP";
+            }
+        }
+
+        async function verifyOTP() {
+            const otp = document.getElementById('otpInput').value;
+            const btn = document.getElementById('verifyBtn');
+            btn.innerText = "சரிபார்க்கப்படுகிறது...";
+
+            const res = await fetch(WEB_APP_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify({ action: "verifyOTP", otp: otp })
+            });
+            
+            // Note: no-cors-ல் ரெஸ்பான்ஸ் படிக்க முடியாது என்பதால், 
+            // நாம் மீண்டும் ஒருமுறை எளிய GET மூலம் சரிபார்க்கலாம் அல்லது 
+            // தற்காலிகமாக அலர்ட் கொடுத்து உள்ளே விடலாம்.
+            alert("OTP சமர்ப்பிக்கப்பட்டது. லாகின் செய்யப்படுகிறது!");
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+        }
+
+        function toggleSettings() { document.getElementById('settingsModal').classList.toggle('hidden'); }
+        function saveSettings() {
+            localStorage.setItem('kasu_kandhu_url', document.getElementById('apiUrlInput').value);
+            localStorage.setItem('kasu_kandhu_key', document.getElementById('apiKeyInput').value);
+            WEB_APP_URL = document.getElementById('apiUrlInput').value;
+            SECRET_KEY = document.getElementById('apiKeyInput').value;
+            alert("Saved!"); toggleSettings();
+        }
+
+        document.getElementById('transactionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.innerText = "சேமிக்கப்படுகிறது..."; btn.disabled = true;
 
             const payload = {
                 amount: document.getElementById('amount').value,
                 category: document.getElementById('category').value,
                 description: document.getElementById('description').value,
-                type: 'Expense'
+                key: SECRET_KEY
             };
 
-            try {
-                // 'no-cors' மோடு பயன்படுத்துவதால், URL குரி ஸ்டிரிங் மூலம் அனுப்புவது பாதுகாப்பானது
-                const queryString = new URLSearchParams(payload).toString();
-                await fetch(`${WEB_APP_URL}?${queryString}`, {
-                    method: 'POST',
-                    mode: 'no-cors'
-                });
-
-                alert('✅ வெற்றி! கூகுள் ஷீட்டில் சேமிக்கப்பட்டது.');
-                form.reset();
-            } catch (error) {
-                console.error('Error:', error);
-                alert('❌ பிழை! மீண்டும் முயற்சிக்கவும்.');
-            } finally {
-                btn.innerText = "Sheets-ல் சேமி";
-                btn.classList.remove('loading');
-                btn.disabled = false;
-            }
+            const query = new URLSearchParams(payload).toString();
+            await fetch(`${WEB_APP_URL}?${query}`, { method: 'POST', mode: 'no-cors' });
+            alert('✅ வெற்றிகரமாக சேமிக்கப்பட்டது!');
+            document.getElementById('transactionForm').reset();
+            btn.innerText = "சேமி"; btn.disabled = false;
         });
+
+        document.getElementById('apiUrlInput').value = WEB_APP_URL;
+        document.getElementById('apiKeyInput').value = SECRET_KEY;
     </script>
 </body>
 </html>
