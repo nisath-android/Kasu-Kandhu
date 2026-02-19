@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kasu-Kandhu | நி நிதி மேலாண்மை</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <nav class="bg-blue-600 p-4 text-white shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold italic">காசு-கந்து (Kasu-Kandhu)</h1>
+            <span class="text-sm bg-blue-800 px-3 py-1 rounded-full">Serverless Version</span>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-4 md:p-8">
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-green-500">
+                <p class="text-gray-500">மொத்த வருமானம்</p>
+                <h2 class="text-2xl font-bold text-green-600">₹45,000</h2>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-red-500">
+                <p class="text-gray-500">மொத்த செலவு + EMI</p>
+                <h2 class="text-2xl font-bold text-red-600">₹46,500</h2>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-orange-500">
+                <p class="text-gray-500">பற்றாக்குறை (Deficit)</p>
+                <h2 class="text-2xl font-bold text-orange-600">₹1,500</h2>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-lg font-semibold mb-4 text-gray-700">செலவு பகுப்பாய்வு (Analysis)</h3>
+                <canvas id="expenseChart" width="400" height="200"></canvas>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-lg font-semibold mb-4 text-gray-700">புதிய செலவைச் சேர்க்க</h3>
+                <form id="transactionForm" class="space-y-4">
+                    <input type="number" id="amount" placeholder="தொகை (Amount)" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400 outline-none" required>
+                    <select id="category" class="w-full p-2 border rounded-md">
+                        <option value="EMI">EMI (Red)</option>
+                        <option value="Expense">செலவு (Blue)</option>
+                        <option value="Savings">சேமிப்பு (Green)</option>
+                    </select>
+                    <input type="text" id="description" placeholder="விளக்கம் (Reason)" class="w-full p-2 border rounded-md">
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">சேமி (Save to Sheets)</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Apps Script URL (இங்கே உங்கள் URL-ஐ இடவும்)
+        const WEB_APP_URL = "YOUR_APPS_SCRIPT_URL_HERE";
+
+        // Chart.js Setup
+        const ctx = document.getElementById('expenseChart').getContext('2d');
+        const expenseChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['EMI (Red)', 'Savings (Green)', 'Expenses (Blue)'],
+                datasets: [{
+                    data: [15000, 5000, 26500], // மாதிரி தரவுகள்
+                    backgroundColor: ['#ef4444', '#22c55e', '#3b82f6'],
+                    borderWidth: 1
+                }]
+            },
+            options: { responsive: true }
+        });
+
+        // Form Submission to Apps Script
+        document.getElementById('transactionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const data = {
+                amount: document.getElementById('amount').value,
+                category: document.getElementById('category').value,
+                description: document.getElementById('description').value,
+                type: 'Expense'
+            };
+
+            // GAS API-க்கு தரவை அனுப்புதல்
+            fetch(WEB_APP_URL, {
+                method: 'POST',
+                mode: 'no-cors', // Apps Script-க்கு இது அவசியம்
+                cache: 'no-cache',
+                body: JSON.stringify(data)
+            }).then(() => {
+                alert('தரவு வெற்றிகரமாக சேமிக்கப்பட்டது!');
+                document.getElementById('transactionForm').reset();
+            }).catch(err => console.error(err));
+        });
+    </script>
+</body>
+</html>
