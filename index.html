@@ -3,100 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kasu-Kandhu | நி நிதி மேலாண்மை</title>
+    <title>Kasu-Kandhu | Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .loading { cursor: not-allowed; opacity: 0.6; }
+    </style>
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="bg-slate-50 font-sans text-slate-900">
 
-    <nav class="bg-blue-600 p-4 text-white shadow-lg">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold italic">காசு-கந்து (Kasu-Kandhu)</h1>
-            <span class="text-sm bg-blue-800 px-3 py-1 rounded-full">Serverless Version</span>
+    <header class="bg-indigo-700 p-5 text-white shadow-xl mb-8">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <h1 class="text-3xl font-extrabold tracking-tight italic">💵 காசு-கந்து</h1>
+            <div class="flex gap-4">
+                <div class="bg-indigo-800 px-4 py-2 rounded-lg text-sm border border-indigo-500">
+                    நிலை: <span class="text-green-400 font-bold">Online</span>
+                </div>
+            </div>
         </div>
-    </nav>
+    </header>
 
-    <div class="container mx-auto p-4 md:p-8">
+    <main class="container mx-auto px-4 pb-12">
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-green-500">
-                <p class="text-gray-500">மொத்த வருமானம்</p>
-                <h2 class="text-2xl font-bold text-green-600">₹45,000</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border-b-4 border-green-500 hover:shadow-md transition">
+                <p class="text-slate-500 font-medium">வருமானம்</p>
+                <h2 class="text-3xl font-bold text-slate-800 mt-1">₹45,000</h2>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-red-500">
-                <p class="text-gray-500">மொத்த செலவு + EMI</p>
-                <h2 class="text-2xl font-bold text-red-600">₹46,500</h2>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border-b-4 border-red-500 hover:shadow-md transition">
+                <p class="text-slate-500 font-medium">செலவு + EMI</p>
+                <h2 class="text-3xl font-bold text-slate-800 mt-1">₹46,500</h2>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-md border-l-4 border-orange-500">
-                <p class="text-gray-500">பற்றாக்குறை (Deficit)</p>
-                <h2 class="text-2xl font-bold text-orange-600">₹1,500</h2>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border-b-4 border-orange-500 hover:shadow-md transition">
+                <p class="text-slate-500 font-medium font-bold text-orange-600">பற்றாக்குறை (Deficit)</p>
+                <h2 class="text-3xl font-bold text-orange-600 mt-1">₹1,500</h2>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <h3 class="text-lg font-semibold mb-4 text-gray-700">செலவு பகுப்பாய்வு (Analysis)</h3>
-                <canvas id="expenseChart" width="400" height="200"></canvas>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
+                    <span>📊</span> செலவு பகுப்பாய்வு
+                </h3>
+                <div class="max-w-[320px] mx-auto">
+                    <canvas id="expenseChart"></canvas>
+                </div>
             </div>
 
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <h3 class="text-lg font-semibold mb-4 text-gray-700">புதிய செலவைச் சேர்க்க</h3>
-                <form id="transactionForm" class="space-y-4">
-                    <input type="number" id="amount" placeholder="தொகை (Amount)" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-400 outline-none" required>
-                    <select id="category" class="w-full p-2 border rounded-md">
-                        <option value="EMI">EMI (Red)</option>
-                        <option value="Expense">செலவு (Blue)</option>
-                        <option value="Savings">சேமிப்பு (Green)</option>
-                    </select>
-                    <input type="text" id="description" placeholder="விளக்கம் (Reason)" class="w-full p-2 border rounded-md">
-                    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition">சேமி (Save to Sheets)</button>
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
+                    <span>✍️</span> புதிய பதிவு
+                </h3>
+                <form id="transactionForm" class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-600 mb-1">தொகை</label>
+                        <input type="number" id="amount" placeholder="0.00" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-600 mb-1">வகை</label>
+                        <select id="category" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                            <option value="EMI">EMI (Red)</option>
+                            <option value="Expense">செலவு (Blue)</option>
+                            <option value="Savings">சேமிப்பு (Green)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-600 mb-1">விளக்கம்</label>
+                        <input type="text" id="description" placeholder="எதற்காக?" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none transition">
+                    </div>
+
+                    <button type="submit" id="submitBtn" class="w-full bg-indigo-600 text-white font-bold py-4 rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all active:scale-95">
+                        Sheets-ல் சேமி
+                    </button>
                 </form>
             </div>
         </div>
-    </div>
+    </main>
 
     <script>
-        // Apps Script URL (இங்கே உங்கள் URL-ஐ இடவும்)
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwZqslqIou1SU8Evw-0DrXqMaCwQaPeIqYifMrLYa3jfo2PWcspanJg0DvoK0SEjWGx/exec";
+        // 1. உங்கள் Apps Script URL-ஐ இங்கே மாற்றவும்
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx_iBWFKIRl0MOxI0BQ26xf5RMMXpRyaxWUY11lj11Sne7SbZrRrxiCscy8COziAbG-/exec";
 
-        // Chart.js Setup
+        // 2. Chart Initialization
         const ctx = document.getElementById('expenseChart').getContext('2d');
-        const expenseChart = new Chart(ctx, {
+        new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: ['EMI (Red)', 'Savings (Green)', 'Expenses (Blue)'],
+                labels: ['EMI', 'Savings', 'Expenses'],
                 datasets: [{
-                    data: [15000, 5000, 26500], // மாதிரி தரவுகள்
-                    backgroundColor: ['#ef4444', '#22c55e', '#3b82f6'],
-                    borderWidth: 1
+                    data: [15000, 5000, 26500],
+                    backgroundColor: ['#ef4444', '#10b981', '#3b82f6'],
+                    hoverOffset: 15,
+                    borderWidth: 0
                 }]
             },
-            options: { responsive: true }
+            options: { cutout: '70%', plugins: { legend: { position: 'bottom' } } }
         });
 
-        // Form Submission to Apps Script
-        document.getElementById('transactionForm').addEventListener('submit', function(e) {
+        // 3. Form Handling
+        const form = document.getElementById('transactionForm');
+        const btn = document.getElementById('submitBtn');
+
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            const data = {
+            // பட்டனை லோடிங் நிலைக்கு மாற்றுதல்
+            btn.innerText = "சேமிக்கப்படுகிறது...";
+            btn.classList.add('loading');
+            btn.disabled = true;
+
+            const payload = {
                 amount: document.getElementById('amount').value,
                 category: document.getElementById('category').value,
                 description: document.getElementById('description').value,
                 type: 'Expense'
             };
 
-            // GAS API-க்கு தரவை அனுப்புதல்
-            fetch(WEB_APP_URL, {
-                method: 'POST',
-                mode: 'no-cors', // Apps Script-க்கு இது அவசியம்
-                cache: 'no-cache',
-                body: JSON.stringify(data)
-            }).then(() => {
-                alert('தரவு வெற்றிகரமாக சேமிக்கப்பட்டது!');
-                document.getElementById('transactionForm').reset();
-            }).catch(err => console.error(err));
+            try {
+                // 'no-cors' மோடு பயன்படுத்துவதால், URL குரி ஸ்டிரிங் மூலம் அனுப்புவது பாதுகாப்பானது
+                const queryString = new URLSearchParams(payload).toString();
+                await fetch(`${WEB_APP_URL}?${queryString}`, {
+                    method: 'POST',
+                    mode: 'no-cors'
+                });
+
+                alert('✅ வெற்றி! கூகுள் ஷீட்டில் சேமிக்கப்பட்டது.');
+                form.reset();
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ பிழை! மீண்டும் முயற்சிக்கவும்.');
+            } finally {
+                btn.innerText = "Sheets-ல் சேமி";
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
         });
     </script>
 </body>
-
 </html>
