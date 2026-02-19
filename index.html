@@ -90,20 +90,31 @@
         }
 
         async function sendOTP() {
-            if(!WEB_APP_URL) return alert("API URL Missing!");
-            const email = document.getElementById('userEmail').value;
-            const btn = document.getElementById('otpBtn');
-            btn.disabled = true; btn.innerText = "Processing...";
+    if(!WEB_APP_URL) return alert("API URL Missing!");
+    const email = document.getElementById('userEmail').value;
+    const btn = document.getElementById('otpBtn');
+    btn.disabled = true; btn.innerText = "Processing...";
 
-            try {
-                const res = await fetch(`${WEB_APP_URL}?action=sendOTP&email=${email}`);
-                const text = await res.text();
-                if(text === "Sent") {
-                    document.getElementById('emailStep').classList.add('hidden');
-                    document.getElementById('otpStep').classList.remove('hidden');
-                } else { alert("Access Denied."); btn.disabled = false; btn.innerText = "OTP அனுப்பு"; }
-            } catch(e) { alert("Server Error."); btn.disabled = false; }
+    try {
+        // GET-க்கு பதில் URL parameters வழியாக அனுப்புதல்
+        const res = await fetch(`${WEB_APP_URL}?action=sendOTP&email=${email}`, {
+            method: 'GET'
+        });
+        const text = await res.text();
+        if(text.trim() === "Sent") {
+            document.getElementById('emailStep').classList.add('hidden');
+            document.getElementById('otpStep').classList.remove('hidden');
+            alert("OTP அனுப்பப்பட்டது!");
+        } else { 
+            alert("அனுமதி மறுக்கப்பட்டது! (ஷீட்டில் மெயில் ஐடியைச் சரிபார்க்கவும்)"); 
+            btn.disabled = false; btn.innerText = "OTP அனுப்பு"; 
         }
+    } catch(e) { 
+        console.error(e);
+        alert("API Error! உங்கள் Apps Script Deployment-ல் 'Who has access' என்பதை 'Anyone' என மாற்றினீர்களா எனச் சரிபார்க்கவும்."); 
+        btn.disabled = false; 
+    }
+}
 
         async function verifyOTP() {
             const otp = document.getElementById('otpInput').value;
@@ -150,3 +161,4 @@
     </script>
 </body>
 </html>
+
