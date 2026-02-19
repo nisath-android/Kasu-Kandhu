@@ -130,31 +130,34 @@
             document.getElementById('urlSetup').classList.add('hidden');
         }
 
-        async function sendOTP() {
-            if(!WEB_APP_URL) return alert("API URL இல்லை! தயவுசெய்து கீழே உள்ள 'Configure API Settings' பட்டனை அழுத்தி URL-ஐ உள்ளிடவும்.");
-            const email = document.getElementById('userEmail').value;
-            if(!email) return alert("மின்னஞ்சலை உள்ளிடவும்!");
+       async function sendOTP() {
+    if(!WEB_APP_URL) return alert("API URL Missing!");
+    const email = document.getElementById('userEmail').value;
+    if(!email) return alert("Email missing!");
 
-            const btn = document.getElementById('otpBtn');
-            btn.disabled = true; btn.innerText = "Processing...";
+    const btn = document.getElementById('otpBtn');
+    btn.disabled = true; btn.innerText = "Connecting...";
 
-            try {
-                const res = await fetch(`${WEB_APP_URL}?action=sendOTP&email=${email}`);
-                const text = await res.text();
-                
-                if(text.includes("Sent")) {
-                    document.getElementById('emailStep').classList.add('hidden');
-                    document.getElementById('otpStep').classList.remove('hidden');
-                    alert("OTP மின்னஞ்சலுக்கு அனுப்பப்பட்டது!");
-                } else {
-                    alert("அனுமதி மறுக்கப்பட்டது! (ஷீட்டில் உங்கள் மெயில் உள்ளதா?)");
-                    btn.disabled = false; btn.innerText = "OTP அனுப்பு";
-                }
-            } catch(e) {
-                alert("API Error! உங்கள் Apps Script URL சரியாக உள்ளதா எனப் பார்க்கவும்.");
-                btn.disabled = false; btn.innerText = "OTP அனுப்பு";
-            }
+    try {
+        // CORS பிரச்சினையைத் தவிர்க்க 'GET' முறையில் மிகத் தெளிவாக அனுப்புகிறோம்
+        const url = `${WEB_APP_URL}?action=sendOTP&email=${encodeURIComponent(email)}`;
+        const res = await fetch(url, { method: 'GET' });
+        const text = await res.text();
+        
+        if(text.trim() === "Sent") {
+            document.getElementById('emailStep').classList.add('hidden');
+            document.getElementById('otpStep').classList.remove('hidden');
+            alert("OTP Sent to Email!");
+        } else {
+            alert("Permission Denied: " + text);
+            btn.disabled = false; btn.innerText = "OTP அனுப்பு";
         }
+    } catch(e) {
+        console.error("Fetch Error:", e);
+        alert("Network Error: Apps Script-ல் 'Who has access: Anyone' என்று செட் செய்துள்ளீர்களா எனச் சரிபார்க்கவும்.");
+        btn.disabled = false;
+    }
+}
 
         async function verifyOTP() {
             const otp = document.getElementById('otpInput').value;
@@ -209,3 +212,4 @@
     </script>
 </body>
 </html>
+
