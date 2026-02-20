@@ -2,64 +2,50 @@
 <html lang="ta">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>காசு-கந்து PRO v6.5.2</title>
+    <title>காசு-கந்து PRO v6.5.2 Master</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .screen { display: none; }
-        .active { display: flex; animation: fadeIn 0.4s ease; }
+        .active { display: flex; animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .holiday { background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; }
-        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
+        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans selection:bg-indigo-500 selection:text-white">
+<body class="bg-slate-950 text-slate-100 font-sans">
 
     <div id="setup" class="screen fixed inset-0 flex items-center justify-center p-6 z-[300] bg-slate-950">
         <div class="bg-white text-slate-900 p-8 rounded-[2.5rem] w-full max-w-sm shadow-2xl">
             <h2 class="text-xl font-black mb-2 italic text-indigo-600">Gateway செட்டிங்ஸ்</h2>
-            <p class="text-[10px] font-bold text-slate-400 uppercase mb-6">உங்கள் Gateway Web URL-ஐ இங்கே வழங்கவும்</p>
-            <input type="text" id="gUrlInput" placeholder="https://script.google.com/..." class="w-full p-4 bg-slate-50 border rounded-2xl mb-4 text-xs outline-none focus:ring-2 ring-indigo-500">
-            <button onclick="saveGateway()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-lg hover:bg-indigo-700 transition-all">கட்டமைப்பைச் சேமிக்கவும்</button>
+            <p class="text-[10px] font-bold text-slate-400 uppercase mb-6 tracking-widest">URL-ஐ இங்கே வழங்கவும்</p>
+            <input type="text" id="gUrlInput" placeholder="https://script.google.com/..." class="w-full p-4 bg-slate-50 border rounded-2xl mb-4 text-xs outline-none">
+            <button onclick="saveGateway()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-lg">சேமிக்க</button>
         </div>
     </div>
 
     <div id="auth" class="screen fixed inset-0 flex items-center justify-center p-6 z-[200] bg-slate-950">
         <div class="bg-white text-slate-900 p-10 rounded-[3rem] w-full max-w-sm text-center shadow-2xl">
-            <h1 class="text-3xl font-black text-indigo-600 mb-2 italic tracking-tighter">காசு-கந்து <span class="text-xs text-slate-400 font-bold uppercase">PRO</span></h1>
-            <p class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-10 border-b pb-4">Secure Financial Architecture</p>
-            
-            <div class="space-y-3">
-                <button onclick="showScreen('loginPass')" class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 flex items-center gap-4 hover:border-indigo-500 transition-all">
-                    <span class="text-xl">🔑</span> <div class="text-left"><p class="font-bold text-xs uppercase">Password Login</p></div>
-                </button>
-                <button onclick="showScreen('loginOtp')" class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-slate-100 flex items-center gap-4 hover:border-indigo-500 transition-all">
-                    <span class="text-xl">📧</span> <div class="text-left"><p class="font-bold text-xs uppercase">OTP Login</p></div>
-                </button>
-                <button onclick="showScreen('register')" class="w-full mt-4 py-3 text-[10px] font-black text-indigo-600 uppercase underline decoration-2 underline-offset-4">புதிய கணக்கு உருவாக்க</button>
+            <h1 class="text-3xl font-black text-indigo-600 mb-8 italic">காசு-கந்து PRO</h1>
+            <div class="space-y-4">
+                <input type="email" id="loginEmail" placeholder="Email" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none">
+                <button onclick="requestOTP()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-md">OTP மூலம் நுழைக</button>
+                <div class="py-2 text-[10px] text-slate-300 font-bold">அல்லது</div>
+                <button onclick="showScreen('register')" class="w-full text-xs font-black text-indigo-600 uppercase underline">புதிய கணக்கு உருவாக்க</button>
             </div>
-            <button onclick="clearConfig()" class="mt-8 text-[8px] font-bold text-slate-300 uppercase tracking-widest">Reset Configuration</button>
+            <button onclick="localStorage.clear(); location.reload();" class="mt-12 text-[8px] font-bold text-slate-300 uppercase tracking-widest">Reset Configuration</button>
         </div>
     </div>
 
-    <div id="loginPass" class="screen fixed inset-0 flex items-center justify-center p-6 z-[210] bg-white text-slate-900">
-        <div class="w-full max-w-sm">
-            <h2 class="text-2xl font-black mb-8 italic">கடவுச்சொல் லாகின்</h2>
-            <input type="email" id="pEmail" placeholder="மின்னஞ்சல்" class="w-full p-5 bg-slate-50 rounded-3xl mb-3 outline-none focus:ring-2 ring-indigo-500">
-            <input type="password" id="pPass" placeholder="கடவுச்சொல்" class="w-full p-5 bg-slate-50 rounded-3xl mb-6 outline-none focus:ring-2 ring-indigo-500">
-            <button onclick="handlePassLogin()" class="w-full bg-indigo-600 text-white py-5 rounded-3xl font-bold shadow-xl">நுழைக</button>
-            <button onclick="showScreen('auth')" class="w-full mt-6 text-xs font-bold text-slate-400 uppercase">Back</button>
-        </div>
-    </div>
-
-    <div id="register" class="screen fixed inset-0 flex items-center justify-center p-6 z-[210] bg-slate-950 text-slate-900">
-        <div class="bg-white p-10 rounded-[3rem] w-full max-w-sm">
+    <div id="register" class="screen fixed inset-0 flex items-center justify-center p-6 z-[210] bg-slate-950">
+        <div class="bg-white text-slate-900 p-10 rounded-[3rem] w-full max-w-sm shadow-2xl">
             <h2 class="text-2xl font-black mb-6 italic text-indigo-600">பதிவு செய்க</h2>
-            <input type="text" id="rName" placeholder="பெயர்" class="w-full p-4 bg-slate-50 rounded-2xl mb-3 outline-none">
-            <input type="email" id="rEmail" placeholder="மின்னஞ்சல்" class="w-full p-4 bg-slate-50 rounded-2xl mb-3 outline-none">
-            <input type="password" id="rPass" placeholder="கடவுச்சொல்" class="w-full p-4 bg-slate-50 rounded-2xl mb-6 outline-none">
-            <button onclick="handleRegister()" class="w-full bg-green-600 text-white py-4 rounded-2xl font-bold">Register Now</button>
-            <button onclick="showScreen('auth')" class="w-full mt-4 text-xs font-bold text-slate-400 uppercase">Back</button>
+            <div class="space-y-4">
+                <input type="text" id="regName" placeholder="பெயர்" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none">
+                <input type="email" id="regEmail" placeholder="மின்னஞ்சல்" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none">
+                <input type="password" id="regPass" placeholder="கடவுச்சொல்" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none">
+                <button onclick="handleRegister()" class="w-full bg-green-600 text-white py-4 rounded-2xl font-bold shadow-lg">Register Now</button>
+                <button onclick="showScreen('auth')" class="w-full text-xs font-bold text-slate-400 uppercase text-center">Back</button>
+            </div>
         </div>
     </div>
 
@@ -67,126 +53,97 @@
         <div class="bg-indigo-600 text-white text-[9px] font-black text-center py-1.5 uppercase tracking-widest">
             Session Security Active • <span id="timer">15:00</span>
         </div>
-        
         <header class="p-6 bg-white border-b flex justify-between items-center sticky top-0 z-50 glass">
-            <div><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">நிதி நிலை</p><h1 id="userName" class="text-xl font-black italic text-indigo-600">User</h1></div>
+            <div><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Hi,</p><h1 id="userName" class="text-xl font-black italic text-indigo-600">User</h1></div>
             <button onclick="location.reload()" class="w-10 h-10 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center font-bold">✕</button>
         </header>
 
         <main class="p-6 max-w-md mx-auto space-y-6">
             <div class="bg-indigo-600 p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden">
-                <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/10 rounded-full blur-2xl"></div>
-                <p class="text-[9px] font-bold opacity-70 uppercase tracking-widest mb-4">Gemini AI Analysis</p>
-                <p id="aiAdvice" class="text-sm font-medium leading-relaxed italic">கணக்கீடுகள் செய்யப்படுகின்றன...</p>
-                <div class="mt-6 flex items-center gap-2">
-                    <span id="deficitTag" class="px-3 py-1 bg-white/20 text-[9px] font-black rounded-full border border-white/30 uppercase tracking-tighter">ஆய்வில் உள்ளது</span>
-                </div>
+                <p class="text-[9px] font-bold opacity-70 uppercase tracking-widest mb-4">Gemini AI Advisor</p>
+                <p id="aiAdvice" class="text-sm font-medium leading-relaxed italic">ஆய்வு செய்யப்படுகிறது...</p>
+                <div class="mt-4"><span id="deficitTag" class="px-3 py-1 bg-white/20 text-[9px] font-black rounded-full border border-white/30 uppercase tracking-tighter">Budgeting...</span></div>
             </div>
 
             <div class="bg-white p-6 rounded-[2.5rem] shadow-xl border border-slate-100">
-                <h3 class="text-center text-[9px] font-black text-slate-400 uppercase mb-5 tracking-[0.2em]">விடுமுறை (2,4,5 Sat & Sun)</h3>
+                <h3 class="text-center text-[9px] font-black text-slate-400 uppercase mb-4 tracking-[0.2em]">விடுமுறை (2,4,5 Sat & Sun)</h3>
                 <div id="calGrid" class="grid grid-cols-7 gap-2 text-center text-[10px] font-bold"></div>
-            </div>
-
-            <div class="p-4 bg-slate-100 rounded-3xl border border-dashed border-slate-300 flex items-center justify-between">
-                <div class="flex items-center gap-2"><span class="w-2 h-2 bg-green-500 rounded-full animate-ping"></span><p class="text-[9px] font-bold text-slate-400 uppercase">Cloud Linked</p></div>
-                <button onclick="alert('Biometric Verified')" class="text-[9px] font-black text-indigo-600 uppercase">🔒 Biometric Active</button>
             </div>
         </main>
     </div>
 
     <script>
-        let G_URL = localStorage.getItem('kk_gateway');
-        let sessionTimer = 15 * 60;
+        let G_URL = localStorage.getItem('kk_g');
+        let sessionTime = 15 * 60;
 
-        window.onload = () => {
-            if (!G_URL) showScreen('setup');
-            else showScreen('auth');
-        };
+        window.onload = () => { if (!G_URL) showScreen('setup'); else showScreen('auth'); };
 
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => { s.classList.remove('active'); s.style.display = 'none'; });
             const target = document.getElementById(id);
             target.classList.add('active');
-            target.style.display = (id === 'dashboard') ? 'flex' : 'flex';
+            target.style.display = (id === 'dashboard') ? 'block' : 'flex';
             if(id === 'dashboard') target.style.flexDirection = 'column';
         }
 
         function saveGateway() {
             const url = document.getElementById('gUrlInput').value.trim();
             if (url.includes('https://script.google.com/')) {
-                localStorage.setItem('kk_gateway', url);
-                G_URL = url;
-                alert("Gateway செட்டப் செய்யப்பட்டது!");
-                showScreen('auth');
-            } else { alert("சரியான URL-ஐ உள்ளிடவும்!"); }
+                localStorage.setItem('kk_g', url); G_URL = url;
+                alert("வெற்றி! Gateway சேமிக்கப்பட்டது."); showScreen('auth');
+            } else alert("சரியான URL-ஐ உள்ளிடவும்!");
         }
 
-        function clearConfig() { localStorage.removeItem('kk_gateway'); location.reload(); }
-
-        // Core Communication Function (JSONP)
-        function call(params, callback) {
-            const cbName = 'cb' + Date.now();
-            window[cbName] = (res) => { callback(res); delete window[cbName]; const s = document.getElementById(cbName); if(s) s.remove(); };
-            const scriptTag = document.createElement('script');
-            scriptTag.id = cbName;
-            scriptTag.src = `${G_URL}?callback=${cbName}&${new URLSearchParams(params).toString()}`;
-            document.body.appendChild(scriptTag);
+        function call(params, cb) {
+            const n = 'cb' + Date.now();
+            window[n] = (res) => { cb(res); delete window[n]; const s = document.getElementById(n); if(s) s.remove(); };
+            const s = document.createElement('script'); s.id = n;
+            s.src = `${G_URL}?callback=${n}&${new URLSearchParams(params).toString()}`;
+            document.body.appendChild(s);
         }
 
-        // Registration Logic
         function handleRegister() {
-            const name = document.getElementById('rName').value;
-            const email = document.getElementById('rEmail').value;
-            const pass = document.getElementById('rPass').value;
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const pass = document.getElementById('regPass').value;
             if(!name || !email || !pass) return alert("விவரங்களை நிரப்புக!");
-            
             call({ action: 'register', name, email, pass }, (res) => {
-                if(res.status === "Success") {
-                    alert("கணக்கு உருவாக்கப்பட்டது! இப்போது லாகின் செய்யவும்.");
-                    showScreen('auth');
-                }
+                if(res.status === "Success") { alert("பதிவு செய்யப்பட்டது!"); showScreen('auth'); }
             });
         }
 
-        // Login Logic (Password)
-        function handlePassLogin() {
-            const email = document.getElementById('pEmail').value;
-            const pass = document.getElementById('pPass').value;
-            // எளிய சரிபார்ப்பு (நிச்சயமான செக்யூரிட்டி சர்வர் பக்கத்தில் நடக்கும்)
-            if(email && pass) { login(email.split('@')[0]); }
-        }
-
-        function login(name) {
-            showScreen('dashboard');
-            document.getElementById('userName').innerText = name;
-            startTimer();
-            loadAppData();
+        function requestOTP() {
+            const email = document.getElementById('loginEmail').value;
+            if(!email) return alert("Email தேவை!");
+            call({ action: 'sendOTP', email }, (res) => {
+                if(res.status === "Sent") {
+                    const otp = prompt("மின்னஞ்சலுக்கு வந்த OTP-ஐ உள்ளிடவும்:");
+                    if(otp) { showScreen('dashboard'); document.getElementById('userName').innerText = email.split('@')[0]; startTimer(); loadData(); }
+                } else alert("மின்னஞ்சல் அனுமதிக்கப்படவில்லை!");
+            });
         }
 
         function startTimer() {
             setInterval(() => {
-                if(sessionTimer <= 0) location.reload();
-                sessionTimer--;
-                let m = Math.floor(sessionTimer / 60), s = sessionTimer % 60;
+                if(sessionTime <= 0) location.reload();
+                sessionTime--;
+                let m = Math.floor(sessionTime / 60), s = sessionTime % 60;
                 document.getElementById('timer').innerText = `${m}:${s < 10 ? '0'+s : s}`;
             }, 1000);
         }
 
-        function loadAppData() {
+        function loadData() {
             call({ action: 'getAppData' }, (data) => {
-                // AI Advice & Deficit Analysis
                 document.getElementById('aiAdvice').innerText = data.advice;
-                const deficitTag = document.getElementById('deficitTag');
-                deficitTag.innerText = `நிலுவை: ₹${data.deficit}`;
-                deficitTag.classList.add(data.deficit < 0 ? 'bg-red-500' : 'bg-green-500');
-
-                // Holiday Calendar Rendering
+                const dTag = document.getElementById('deficitTag');
+                dTag.innerText = `நிலுவை: ₹${data.deficit}`;
+                dTag.className = `px-3 py-1 text-[9px] font-black rounded-full border border-white/30 uppercase ${data.deficit < 0 ? 'bg-red-500' : 'bg-green-500'}`;
+                
                 const grid = document.getElementById('calGrid');
                 grid.innerHTML = "";
                 for(let i=1; i<=31; i++) {
-                    const isHoli = data.holidays.includes(i);
-                    grid.innerHTML += `<div class="p-3 rounded-xl ${isHoli ? 'holiday' : 'bg-slate-50 border border-slate-100'}">${i}</div>`;
+                    const isH = data.holidays.includes(i);
+                    grid.innerHTML += `<div class="p-3 rounded-xl ${isH ? 'holiday' : 'bg-slate-50 border border-slate-100'}">${i}</div>`;
                 }
             });
         }
