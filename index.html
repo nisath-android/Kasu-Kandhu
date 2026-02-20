@@ -85,23 +85,35 @@
             }
         };
 
-        function showScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
+       function showScreen(id) {
+    // அனைத்து ஸ்கிரீன்களையும் முழுமையாக மறைக்கவும்
+    document.querySelectorAll('.screen').forEach(s => {
+        s.classList.remove('active');
+        s.style.display = 'none'; 
+    });
+    
+    // குறிப்பிட்ட ஸ்கிரீனை மட்டும் காட்டவும்
+    const target = document.getElementById(id);
+    if (target) {
+        target.classList.add('active');
+        target.style.display = 'flex'; // அல்லது 'block'
+    }
+}
 
-        function saveGatewayURL() {
-            const urlInput = document.getElementById('gatewayInput');
-            const url = urlInput.value.trim();
-            if (url.includes('https://script.google.com/macros/s/')) {
-                localStorage.setItem('kk_gateway_url', url);
-                GATEWAY_URL = url;
-                alert("வெற்றி! Gateway URL சேமிக்கப்பட்டது.");
-                showScreen('authScreen'); // சேமித்தவுடன் தானாகவே லாகின் பக்கம் செல்லும்
-            } else {
-                alert("பிழை: சரியான Google Script URL-ஐ உள்ளிடவும்!");
-            }
-        }
+function saveGatewayURL() {
+    const urlInput = document.getElementById('gatewayInput');
+    const url = urlInput.value.trim();
+    if (url.includes('https://script.google.com/macros/s/')) {
+        localStorage.setItem('kk_gateway_url', url);
+        GATEWAY_URL = url;
+        alert("வெற்றி! Gateway URL சேமிக்கப்பட்டது.");
+        
+        // முக்கியமான மாற்றம்: இப்போது இது லாகின் திரைக்கு அழைத்துச் செல்லும்
+        showScreen('authScreen'); 
+    } else {
+        alert("பிழை: சரியான Google Script URL-ஐ உள்ளிடவும்!");
+    }
+}
 
         function clearConfig() {
             localStorage.removeItem('kk_gateway_url');
@@ -164,3 +176,4 @@
     </script>
 </body>
 </html>
+
