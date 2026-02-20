@@ -3,148 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>K-K Pro v6.5.0 | Gateway Powered</title>
+    <title>K-K Pro v6.5.1 | UI Config</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .screen { display: none; }
-        .active { display: block; animation: fadeIn 0.5s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .holiday { background-color: #fee2e2; color: #ef4444; border-color: #fca5a5; }
+        .active { display: block; }
+        .holiday { background-color: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans">
+<body class="bg-slate-950 text-slate-100">
 
-    <div id="authScreen" class="screen active fixed inset-0 flex items-center justify-center p-6 bg-[#0F172A]">
-        <div class="bg-white text-slate-900 p-10 rounded-[3rem] w-full max-w-sm shadow-2xl text-center">
-            <h1 class="text-3xl font-black text-indigo-600 mb-2 italic">காசு-கந்து <span class="text-xs text-slate-400">PRO</span></h1>
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-10">Gateway Security Enabled</p>
-            
-            <div id="loginMethod" class="space-y-4">
-                <input type="email" id="userEmail" placeholder="மின்னஞ்சல் முகவரி" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none focus:ring-2 ring-indigo-500">
-                <button onclick="requestOTP()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-lg hover:bg-indigo-700 transition">OTP பெறுக</button>
-            </div>
+    <div id="urlConfigScreen" class="screen fixed inset-0 flex items-center justify-center p-6 z-[200] bg-slate-900">
+        <div class="bg-white text-slate-900 p-8 rounded-[2.5rem] w-full max-w-sm shadow-2xl">
+            <h2 class="text-xl font-black mb-4 italic text-indigo-600">Gateway செட்டிங்ஸ்</h2>
+            <p class="text-[10px] font-bold text-slate-400 uppercase mb-6">உங்கள் Gateway URL-ஐ இங்கே உள்ளிடவும்</p>
+            <input type="text" id="gatewayInput" placeholder="https://script.google.com/..." class="w-full p-4 bg-slate-50 border rounded-2xl mb-4 text-xs outline-none">
+            <button onclick="saveGatewayURL()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold">சேமிக்க</button>
+        </div>
+    </div>
 
-            <div id="otpVerify" class="hidden space-y-4 mt-4">
-                <p class="text-xs text-slate-500">உங்கள் மின்னஞ்சலுக்கு வந்த 6 இலக்க எண்ணை உள்ளிடவும்</p>
-                <input type="text" id="otpInput" placeholder="000000" class="w-full p-4 bg-slate-50 border rounded-2xl text-center text-2xl font-black tracking-widest outline-none">
-                <button onclick="verifyOTP()" class="w-full bg-green-600 text-white py-4 rounded-2xl font-bold shadow-lg">சரிபார்க்கவும்</button>
-            </div>
+    <div id="authScreen" class="screen fixed inset-0 flex items-center justify-center p-6">
+        <div class="bg-white text-slate-900 p-10 rounded-[3rem] w-full max-w-sm text-center shadow-2xl">
+            <h1 class="text-3xl font-black text-indigo-600 mb-8 italic text-indigo-600">காசு-கந்து PRO</h1>
+            <input type="email" id="userEmail" placeholder="Email" class="w-full p-4 bg-slate-50 border rounded-2xl mb-4 outline-none">
+            <button onclick="requestOTP()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold">OTP பெறுக</button>
+            <button onclick="clearConfig()" class="mt-6 text-[10px] text-slate-300 uppercase font-bold tracking-widest">Reset Gateway URL</button>
         </div>
     </div>
 
     <div id="dashboard" class="screen min-h-screen bg-slate-50 text-slate-900 pb-20">
-        <div class="bg-indigo-600 text-white text-[9px] font-bold text-center py-1 uppercase tracking-widest">
-            Session Timeout: <span id="timer">15:00</span>
-        </div>
-
         <header class="p-6 bg-white border-b flex justify-between items-center sticky top-0 z-50 shadow-sm">
-            <div>
-                <p class="text-[10px] font-bold text-slate-400 uppercase">வருக வருக!</p>
-                <h1 id="userNameDisplay" class="text-xl font-black italic text-indigo-600 italic">User</h1>
-            </div>
+            <div><p class="text-[10px] font-bold text-slate-400 uppercase">வருக வருக!</p><h1 id="userNameDisplay" class="text-xl font-black text-indigo-600 italic">User</h1></div>
             <button onclick="location.reload()" class="w-10 h-10 bg-red-50 text-red-500 rounded-xl flex items-center justify-center font-bold">✕</button>
         </header>
 
         <main class="p-6 max-w-md mx-auto space-y-6">
             <div class="bg-indigo-600 p-8 rounded-[2.5rem] text-white shadow-xl relative overflow-hidden">
-                <div class="absolute top-0 right-0 p-4 opacity-10 text-5xl">🤖</div>
-                <p class="text-[10px] font-bold opacity-70 uppercase tracking-widest">Gemini AI Advisor</p>
-                <p id="aiAdviceText" class="mt-4 text-sm font-medium leading-relaxed italic">தரவுகள் ஆய்வு செய்யப்படுகின்றன...</p>
+                <p class="text-[10px] font-bold opacity-70 uppercase tracking-widest">AI Advisor Message</p>
+                <p id="aiAdviceText" class="mt-4 text-sm font-medium leading-relaxed italic">ஆய்வு செய்கிறது...</p>
                 <div class="mt-4 flex gap-2">
                     <span class="px-3 py-1 bg-white/20 text-[9px] font-bold rounded-full border border-white/30 uppercase">₹1,500 பற்றாக்குறை</span>
                 </div>
             </div>
 
             <div class="bg-white p-6 rounded-[2.5rem] shadow-xl border border-slate-100">
-                <h3 class="text-center text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest">கம்பெனி விடுமுறை நாட்கள் (2,4,5 Sat)</h3>
-                <div id="calendarGrid" class="grid grid-cols-7 gap-2 text-center text-[10px] font-bold">
-                    </div>
-            </div>
-
-            <div class="flex items-center justify-center gap-2 text-slate-300">
-                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                <p class="text-[9px] font-bold uppercase tracking-widest">End-to-End Encrypted Gateway</p>
+                <h3 class="text-center text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest">விடுமுறை (2,4,5 Sat & Sun)</h3>
+                <div id="calendarGrid" class="grid grid-cols-7 gap-2 text-center text-[10px] font-bold"></div>
             </div>
         </main>
     </div>
 
     <script>
-        // உங்களின் GATEWAY URL-ஐ இங்கே மாற்றவும்
-        const GATEWAY_URL = "YOUR_GATEWAY_URL_HERE"; 
-        
-        let timeLeft = 15 * 60;
-        let userEmail = "";
+        let GATEWAY_URL = localStorage.getItem('kk_gateway_url');
 
-        // 1. JSONP Helper (Gateway உடன் பேச)
+        // தொடக்கத்தில் URL இருக்கிறதா என்று சோதித்தல்
+        window.onload = () => {
+            if (!GATEWAY_URL) {
+                showScreen('urlConfigScreen');
+            } else {
+                showScreen('authScreen');
+            }
+        };
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function saveGatewayURL() {
+            const url = document.getElementById('gatewayInput').value;
+            if (url.startsWith('https://script.google.com')) {
+                localStorage.setItem('kk_gateway_url', url);
+                GATEWAY_URL = url;
+                showScreen('authScreen');
+            } else {
+                alert("சரியான Google Script URL-ஐ உள்ளிடவும்!");
+            }
+        }
+
+        function clearConfig() {
+            localStorage.removeItem('kk_gateway_url');
+            location.reload();
+        }
+
+        // JSONP Function
         function callGateway(params, callback) {
             const cbName = 'cb' + Date.now();
-            window[cbName] = (res) => {
-                callback(res);
-                delete window[cbName];
-                scriptTag.remove();
-            };
+            window[cbName] = (res) => { callback(res); delete window[cbName]; scriptTag.remove(); };
             const scriptTag = document.createElement('script');
             scriptTag.src = `${GATEWAY_URL}?callback=${cbName}&${new URLSearchParams(params).toString()}`;
             document.body.appendChild(scriptTag);
         }
 
-        // 2. OTP கோருதல்
         function requestOTP() {
-            userEmail = document.getElementById('userEmail').value;
-            if(!userEmail) return alert("மின்னஞ்சலை உள்ளிடவும்!");
-            
-            callGateway({ action: 'sendOTP', email: userEmail }, (res) => {
+            const email = document.getElementById('userEmail').value;
+            callGateway({ action: 'sendOTP', email: email }, (res) => {
                 if(res.status === "Sent") {
-                    document.getElementById('loginMethod').classList.add('hidden');
-                    document.getElementById('otpVerify').classList.remove('hidden');
+                    alert("OTP அனுப்பப்பட்டது!");
+                    login(email.split('@')[0]); // தற்காலிக லாகின்
                 }
             });
         }
 
-        // 3. OTP சரிபார்த்தல்
-        function verifyOTP() {
-            const otp = document.getElementById('otpInput').value;
-            callGateway({ action: 'verifyOTP', email: userEmail, otp: otp }, (res) => {
-                if(res.status === "Success") {
-                    login(res.name);
-                } else {
-                    alert("தவறான குறியீடு!");
-                }
-            });
-        }
-
-        // 4. லாகின் வெற்றி
         function login(name) {
-            document.getElementById('authScreen').classList.remove('active');
-            document.getElementById('dashboard').classList.add('active');
+            showScreen('dashboard');
             document.getElementById('userNameDisplay').innerText = name;
-            startSession();
             loadAppData();
         }
 
-        // 5. செஷன் டைமர்
-        function startSession() {
-            setInterval(() => {
-                if(timeLeft <= 0) location.reload();
-                timeLeft--;
-                const m = Math.floor(timeLeft / 60);
-                const s = timeLeft % 60;
-                document.getElementById('timer').innerText = `${m}:${s < 10 ? '0' + s : s}`;
-            }, 1000);
-        }
-
-        // 6. தரவுகளை லோடு செய்தல் (AI & Holidays)
         function loadAppData() {
-            // விடுமுறை நாட்கள்
+            // Holidays Loading
             callGateway({ action: 'getHolidays' }, (data) => {
                 const grid = document.getElementById('calendarGrid');
+                grid.innerHTML = "";
                 for(let i=1; i<=31; i++) {
                     const isHoli = data.holidays.includes(i);
-                    grid.innerHTML += `<div class="p-3 rounded-xl border ${isHoli ? 'holiday' : 'bg-slate-50 border-slate-100'}">${i}</div>`;
+                    grid.innerHTML += `<div class="p-3 rounded-xl ${isHoli ? 'holiday' : 'bg-slate-50 border border-slate-100'}">${i}</div>`;
                 }
             });
 
-            // AI அட்வைஸ்
+            // AI Advice Loading
             callGateway({ action: 'getAIAdvice' }, (data) => {
                 document.getElementById('aiAdviceText').innerText = data.advice;
             });
