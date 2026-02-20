@@ -71,15 +71,31 @@
         }
 
         function saveGatewayURL() {
-            const url = document.getElementById('gatewayInput').value;
-            if (url.startsWith('https://script.google.com')) {
-                localStorage.setItem('kk_gateway_url', url);
-                GATEWAY_URL = url;
-                showScreen('authScreen');
-            } else {
-                alert("சரியான Google Script URL-ஐ உள்ளிடவும்!");
-            }
+    const urlInput = document.getElementById('gatewayInput');
+    const url = urlInput.value.trim();
+
+    console.log("முயற்சிக்கும் URL:", url); // பிரவுசர் கன்சோலில் பார்க்க
+
+    if (url.includes('https://script.google.com/macros/s/')) {
+        try {
+            localStorage.setItem('kk_gateway_url', url);
+            GATEWAY_URL = url;
+            
+            // காட்சி மாற்றத்தை உறுதி செய்ய
+            alert("வெற்றி! Gateway URL சேமிக்கப்பட்டது.");
+            
+            // உடனடியாக அடுத்த திரைக்கு மாறுதல்
+            document.getElementById('urlConfigScreen').classList.remove('active');
+            document.getElementById('authScreen').classList.add('active');
+            
+            console.log("சேமிக்கப்பட்ட URL:", localStorage.getItem('kk_gateway_url'));
+        } catch (e) {
+            alert("LocalStorage சேமிப்பதில் பிழை: " + e.message);
         }
+    } else {
+        alert("பிழை: சரியான Google Script URL-ஐ உள்ளிடவும்!");
+    }
+}
 
         function clearConfig() {
             localStorage.removeItem('kk_gateway_url');
@@ -130,3 +146,4 @@
     </script>
 </body>
 </html>
+
