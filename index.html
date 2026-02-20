@@ -3,23 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>காசு-கந்து PRO v6.6.0</title>
+    <title>காசு-கந்து PRO v6.7.0 | Ultimate Hybrid</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         .screen { display: none; }
-        .active { display: flex; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .active { display: flex; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Sidebar Styles */
+        /* Sidebar & Navigation */
         #sidebar { transition: transform 0.3s ease-in-out; transform: translateX(-100%); }
         #sidebar.open { transform: translateX(0); }
-        .overlay { display: none; background: rgba(0,0,0,0.5); }
+        .overlay { display: none; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); }
         .overlay.open { display: block; }
 
-        /* General Styles */
-        .holiday { background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; }
+        /* Button Effects */
         .btn-press:active { transform: scale(0.95); transition: 0.1s; }
+        .spinner { border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top: 2px solid #fff; width: 18px; height: 18px; animation: spin 0.8s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Holiday & Calendar */
+        .holiday { background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans">
@@ -27,37 +32,65 @@
     <div id="setup" class="screen fixed inset-0 flex items-center justify-center p-6 bg-slate-950 z-[500]">
         <div class="bg-white text-slate-900 p-8 rounded-[2.5rem] w-full max-w-sm shadow-2xl">
             <h2 class="text-xl font-black mb-4 text-indigo-600 italic">Gateway செட்டிங்ஸ்</h2>
-            <input type="text" id="gUrlInput" placeholder="Gateway URL இங்கே போடவும்" class="w-full p-4 border-2 border-slate-100 rounded-2xl mb-4 outline-none">
-            <button onclick="saveGateway()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold btn-press">சேமிக்க</button>
+            <input type="text" id="gUrlInput" placeholder="Gateway URL இங்கே போடவும்" class="w-full p-4 border-2 border-slate-100 rounded-2xl mb-4 outline-none focus:border-indigo-500">
+            <button id="btn-setup" onclick="saveGateway()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold btn-press flex items-center justify-center gap-2">
+                <span>சேமிக்க</span>
+            </button>
         </div>
     </div>
 
     <div id="auth" class="screen fixed inset-0 flex items-center justify-center p-6 z-[400] bg-slate-950">
         <div class="bg-white p-10 rounded-[3.5rem] w-full max-w-sm text-center shadow-2xl">
-            <h1 class="text-4xl font-black text-indigo-600 mb-8 italic">காசு-கந்து</h1>
-            <input type="email" id="loginEmail" placeholder="மின்னஞ்சல்" class="w-full p-4 border-2 border-slate-100 rounded-2xl mb-4 outline-none">
-            <button onclick="requestOTP()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold btn-press">OTP பெறுக</button>
-            <button onclick="showScreen('register')" class="mt-6 text-xs font-bold text-indigo-600 uppercase underline">புதிய கணக்கு</button>
+            <h1 class="text-3xl font-black text-indigo-600 mb-8 italic">காசு-கந்து PRO</h1>
+            <input type="email" id="loginEmail" placeholder="மின்னஞ்சல்" class="w-full p-4 border-2 border-slate-100 rounded-2xl mb-4 outline-none focus:border-indigo-500">
+            <button id="btn-auth" onclick="requestOTP()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold btn-press flex items-center justify-center gap-2">
+                <span>OTP பெறுக</span>
+            </button>
+            <button onclick="showScreen('register')" class="mt-6 text-xs font-bold text-indigo-600 uppercase underline">புதிய கணக்கு உருவாக்க</button>
+            <button onclick="localStorage.clear(); location.reload();" class="mt-10 py-2 px-4 bg-slate-100 text-slate-400 rounded-full text-[8px] font-bold uppercase tracking-widest">Reset App</button>
+        </div>
+    </div>
+
+    <div id="otpScreen" class="screen fixed inset-0 flex items-center justify-center p-6 z-[450] bg-white text-slate-900">
+        <div class="w-full max-w-sm text-center">
+            <h2 class="text-2xl font-black mb-2 text-indigo-600">சரிபார்ப்பு</h2>
+            <p class="text-[10px] text-slate-400 mb-8 uppercase font-bold tracking-widest">Enter 6-digit code</p>
+            
+            <div class="flex justify-between gap-2 mb-8" id="otpInputs">
+                <input type="number" onpaste="handlePaste(event)" onkeyup="moveNext(this, 0)" class="otp-box w-12 h-14 text-center text-xl font-bold border-2 border-slate-100 rounded-xl focus:border-indigo-500 outline-none transition-all">
+                <input type="number" onkeyup="moveNext(this, 1)" class="otp-box w-12 h-14 text-center text-xl font-bold border-2 border-slate-100 rounded-xl focus:border-indigo-500 outline-none transition-all">
+                <input type="number" onkeyup="moveNext(this, 2)" class="otp-box w-12 h-14 text-center text-xl font-bold border-2 border-slate-100 rounded-xl focus:border-indigo-500 outline-none transition-all">
+                <input type="number" onkeyup="moveNext(this, 3)" class="otp-box w-12 h-14 text-center text-xl font-bold border-2 border-slate-100 rounded-xl focus:border-indigo-500 outline-none transition-all">
+                <input type="number" onkeyup="moveNext(this, 4)" class="otp-box w-12 h-14 text-center text-xl font-bold border-2 border-slate-100 rounded-xl focus:border-indigo-500 outline-none transition-all">
+                <input type="number" onkeyup="moveNext(this, 5)" class="otp-box w-12 h-14 text-center text-xl font-bold border-2 border-slate-100 rounded-xl focus:border-indigo-500 outline-none transition-all">
+            </div>
+
+            <button id="btn-verify" onclick="verifyAndLogin()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold mb-6 btn-press flex items-center justify-center gap-2">
+                <span>உறுதி செய்க</span>
+            </button>
+
+            <div class="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                மறுபடியும் அனுப்ப: <span id="timer" class="text-indigo-600">00:60</span>
+                <button id="resendBtn" onclick="requestOTP()" class="hidden text-indigo-600 underline ml-2">Resend</button>
+            </div>
         </div>
     </div>
 
     <div id="dashboard" class="screen flex-col min-h-screen pb-24">
-        
         <div id="overlay" class="overlay fixed inset-0 z-[100]" onclick="toggleSidebar()"></div>
-
+        
         <div id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-white z-[110] shadow-2xl p-6 flex flex-col">
             <div class="mb-10">
-                <h2 class="text-2xl font-black text-indigo-600 italic">K-K Menu</h2>
-                <p id="menuUserEmail" class="text-[10px] font-bold text-slate-400 truncate"></p>
+                <h2 class="text-2xl font-black text-indigo-600 italic">K-K Pro</h2>
+                <p id="menuEmail" class="text-[10px] font-bold text-slate-400 truncate"></p>
             </div>
             <nav class="space-y-4 flex-grow text-sm font-bold uppercase tracking-widest">
-                <a href="#" class="flex items-center gap-4 p-3 hover:bg-slate-50 rounded-xl"><i class="fa-solid fa-user-gear"></i> Profile</a>
-                <a href="#" class="flex items-center gap-4 p-3 hover:bg-slate-50 rounded-xl"><i class="fa-solid fa-chart-line"></i> Analytics</a>
-                <a href="#" class="flex items-center gap-4 p-3 hover:bg-slate-50 rounded-xl"><i class="fa-solid fa-shield-halved"></i> Security</a>
-                <button onclick="localStorage.clear(); location.reload();" class="flex items-center gap-4 p-3 text-red-500 hover:bg-red-50 w-full rounded-xl"><i class="fa-solid fa-rotate"></i> Reset App</button>
+                <div class="flex items-center gap-4 p-3 hover:bg-slate-50 rounded-xl text-indigo-600"><i class="fa-solid fa-house"></i> Home</div>
+                <div class="flex items-center gap-4 p-3 hover:bg-slate-50 rounded-xl text-slate-400"><i class="fa-solid fa-chart-pie"></i> Statistics</div>
+                <div class="flex items-center gap-4 p-3 hover:bg-slate-50 rounded-xl text-slate-400"><i class="fa-solid fa-gear"></i> Settings</div>
             </nav>
-            <button onclick="location.reload()" class="mt-auto bg-red-600 text-white py-4 rounded-2xl font-bold btn-press flex items-center justify-center gap-3">
-                <i class="fa-solid fa-power-off"></i> Logout
+            <button onclick="location.reload()" class="bg-red-50 text-red-600 py-4 rounded-2xl font-bold btn-press flex items-center justify-center gap-3">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
             </button>
         </div>
 
@@ -66,74 +99,81 @@
                 <i class="fa-solid fa-bars-staggered text-xl"></i>
             </button>
             <h1 class="text-xl font-black italic text-indigo-600">காசு-கந்து</h1>
-            <div class="w-10 h-10 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600 font-bold">
-                <i class="fa-solid fa-user text-sm"></i>
-            </div>
+            <div class="w-10 h-10 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600"><i class="fa-solid fa-user"></i></div>
         </header>
 
         <main class="p-6 space-y-6 max-w-md mx-auto">
             <div class="bg-indigo-600 p-8 rounded-[2.5rem] text-white shadow-xl relative overflow-hidden">
-                <div class="flex items-center gap-2 mb-4 opacity-70">
-                    <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
-                    <p class="text-[9px] font-bold uppercase tracking-widest">AI Advisor</p>
-                </div>
-                <p id="aiAdvice" class="text-sm font-medium italic">தரவுகள் ஆய்வு செய்யப்படுகின்றன...</p>
-                <div id="deficitTag" class="mt-6 inline-block px-4 py-1.5 bg-white/20 text-[10px] font-black rounded-full border border-white/30 uppercase">Budgeting...</div>
+                <p id="aiAdvice" class="text-sm font-medium italic leading-relaxed">தரவுகள் ஆய்வு செய்யப்படுகின்றன...</p>
+                <div id="deficitTag" class="mt-6 inline-block px-4 py-1.5 bg-white/20 text-[10px] font-black rounded-full border border-white/30 uppercase tracking-widest">Budgeting...</div>
             </div>
 
-            <div class="bg-white p-6 rounded-[3rem] shadow-sm border border-slate-100">
-                <h3 class="text-center text-[10px] font-black text-slate-400 uppercase mb-5 tracking-[0.2em]">Holidays (2,4,5 Sat & Sun)</h3>
+            <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100">
+                <h3 class="text-center text-[10px] font-black text-slate-400 uppercase mb-5 tracking-[0.2em]">விடுமுறை (2,4,5 Sat & Sun)</h3>
                 <div id="calGrid" class="grid grid-cols-7 gap-3 text-center text-[10px] font-bold"></div>
             </div>
         </main>
 
-        <button class="fixed bottom-28 right-6 w-16 h-16 bg-indigo-600 text-white rounded-full shadow-2xl flex items-center justify-center text-2xl btn-press z-40 border-4 border-white">
+        <button id="btn-add" class="fixed bottom-28 right-6 w-16 h-16 bg-indigo-600 text-white rounded-full shadow-2xl flex items-center justify-center text-2xl btn-press z-40 border-4 border-white">
             <i class="fa-solid fa-plus"></i>
         </button>
 
-        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-6 py-4 flex justify-between items-center z-50 rounded-t-[2.5rem] shadow-[0_-10px_25px_rgba(0,0,0,0.05)]">
-            <button class="flex flex-col items-center gap-1 text-indigo-600">
-                <i class="fa-solid fa-house text-lg"></i>
-                <span class="text-[9px] font-bold uppercase">Home</span>
-            </button>
-            <button class="flex flex-col items-center gap-1 text-slate-400">
-                <i class="fa-solid fa-list-ul text-lg"></i>
-                <span class="text-[9px] font-bold uppercase">List</span>
-            </button>
-            <div class="w-10"></div> <button class="flex flex-col items-center gap-1 text-slate-400">
-                <i class="fa-solid fa-chart-pie text-lg"></i>
-                <span class="text-[9px] font-bold uppercase">Report</span>
-            </button>
-            <button class="flex flex-col items-center gap-1 text-slate-400">
-                <i class="fa-solid fa-gear text-lg"></i>
-                <span class="text-[9px] font-bold uppercase">Settings</span>
-            </button>
+        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-8 py-5 flex justify-between items-center z-50 rounded-t-[2.5rem] shadow-lg">
+            <i class="fa-solid fa-house text-indigo-600 text-xl"></i>
+            <i class="fa-solid fa-list-ul text-slate-300 text-xl"></i>
+            <div class="w-10"></div>
+            <i class="fa-solid fa-chart-simple text-slate-300 text-xl"></i>
+            <i class="fa-solid fa-user-gear text-slate-300 text-xl"></i>
         </nav>
     </div>
 
     <script>
         let G_URL = localStorage.getItem('kk_g');
+        let countdown;
 
         window.onload = () => { if (!G_URL) showScreen('setup'); else showScreen('auth'); };
 
         function toggleSidebar() {
-            const sb = document.getElementById('sidebar');
-            const ol = document.getElementById('overlay');
-            sb.classList.toggle('open');
-            ol.classList.toggle('open');
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('open');
         }
 
         function showScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => { s.classList.remove('active'); s.style.display = 'none'; });
-            const target = document.getElementById(id);
-            target.classList.add('active');
-            target.style.display = (id === 'dashboard') ? 'flex' : 'flex';
-            if(id === 'dashboard') target.style.flexDirection = 'column';
+            document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+            document.getElementById(id).style.display = (id === 'dashboard' ? 'block' : 'flex');
+            if(id === 'dashboard') document.getElementById(id).style.flexDirection = 'column';
+        }
+
+        function toggleLoading(btnId, isLoading) {
+            const btn = document.getElementById(btnId);
+            const span = btn.querySelector('span') || btn;
+            if (isLoading) {
+                btn.disabled = true;
+                btn.dataset.txt = span.innerText;
+                span.innerHTML = '<div class="spinner mx-auto"></div>';
+            } else {
+                btn.disabled = false;
+                span.innerText = btn.dataset.txt;
+            }
         }
 
         function saveGateway() {
             const u = document.getElementById('gUrlInput').value.trim();
             if (u.includes('https://')) { localStorage.setItem('kk_g', u); G_URL = u; showScreen('auth'); }
+        }
+
+        function handlePaste(e) {
+            e.preventDefault();
+            const data = e.clipboardData.getData('text').slice(0, 6);
+            if (!/^\d+$/.test(data)) return;
+            const inputs = document.querySelectorAll('.otp-box');
+            data.split('').forEach((char, i) => { if (inputs[i]) inputs[i].value = char; });
+            inputs[Math.min(data.length, 5)].focus();
+        }
+
+        function moveNext(el, idx) {
+            if (el.value.length === 1 && idx < 5) document.querySelectorAll('.otp-box')[idx + 1].focus();
+            if (el.value.length === 0 && idx > 0) document.querySelectorAll('.otp-box')[idx - 1].focus();
         }
 
         function call(params, cb) {
@@ -147,18 +187,39 @@
         function requestOTP() {
             const email = document.getElementById('loginEmail').value;
             if(!email) return alert("Email தேவை!");
+            toggleLoading('btn-auth', true);
             call({ action: 'sendOTP', email }, (res) => {
-                if(res.status === "Sent") { 
-                    alert("OTP அனுப்பப்பட்டது!"); 
-                    // லாகின் வெற்றி பெற்றதாகக் கருதி
-                    document.getElementById('menuUserEmail').innerText = email;
-                    showScreen('dashboard'); 
-                    loadAppData(); 
-                }
+                toggleLoading('btn-auth', false);
+                if(res.status === "Sent") { showScreen('otpScreen'); startTimer(); }
             });
         }
 
-        function loadAppData() {
+        function startTimer() {
+            let time = 60;
+            document.getElementById('resendBtn').classList.add('hidden');
+            clearInterval(countdown);
+            countdown = setInterval(() => {
+                time--;
+                document.getElementById('timer').innerText = `00:${time < 10 ? '0'+time : time}`;
+                if(time <= 0) {
+                    clearInterval(countdown);
+                    document.getElementById('timer').innerText = "";
+                    document.getElementById('resendBtn').classList.remove('hidden');
+                }
+            }, 1000);
+        }
+
+        function verifyAndLogin() {
+            toggleLoading('btn-verify', true);
+            setTimeout(() => {
+                toggleLoading('btn-verify', false);
+                document.getElementById('menuEmail').innerText = document.getElementById('loginEmail').value;
+                showScreen('dashboard');
+                loadData();
+            }, 1000);
+        }
+
+        function loadData() {
             call({ action: 'getAppData' }, (data) => {
                 document.getElementById('aiAdvice').innerText = data.advice;
                 const dTag = document.getElementById('deficitTag');
@@ -168,7 +229,7 @@
                 const grid = document.getElementById('calGrid'); grid.innerHTML = "";
                 for(let i=1; i<=31; i++) {
                     const isH = data.holidays.includes(i);
-                    grid.innerHTML += `<div class="p-3 rounded-2xl transition-all ${isH ? 'holiday shadow-sm' : 'bg-slate-50 border border-slate-100 hover:bg-slate-100'}">${i}</div>`;
+                    grid.innerHTML += `<div class="p-3 rounded-2xl ${isH ? 'holiday shadow-sm' : 'bg-slate-50 border border-slate-100'}">${i}</div>`;
                 }
             });
         }
