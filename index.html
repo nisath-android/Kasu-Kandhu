@@ -3,74 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>K-K Pro v6.5.1 | Secure UI</title>
+    <title>K-K Pro v6.5.1 Final</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .screen { display: none; }
-        .active { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .holiday { background-color: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans">
 
-    <div id="urlConfigScreen" class="screen fixed inset-0 flex items-center justify-center p-6 z-[200] bg-slate-900">
-        <div class="bg-white text-slate-900 p-8 rounded-[2.5rem] w-full max-w-sm shadow-2xl">
-            <h2 class="text-xl font-black mb-4 italic text-indigo-600">Gateway செட்டிங்ஸ்</h2>
-            <p class="text-[10px] font-bold text-slate-400 uppercase mb-6">உங்கள் Gateway URL-ஐ இங்கே உள்ளிடவும்</p>
-            <input type="text" id="gatewayInput" placeholder="https://script.google.com/..." class="w-full p-4 bg-slate-50 border rounded-2xl mb-4 text-xs outline-none">
+    <div id="urlConfigScreen" class="screen fixed inset-0 flex items-center justify-center p-6 bg-slate-900 z-[300]">
+        <div class="bg-white text-slate-900 p-8 rounded-[2.5rem] w-full max-w-sm">
+            <h2 class="text-xl font-black mb-4 text-indigo-600 italic">Gateway செட்டிங்ஸ்</h2>
+            <input type="text" id="gatewayInput" placeholder="Gateway URL-ஐ இங்கே பேஸ்ட் செய்யவும்" class="w-full p-4 bg-slate-50 border rounded-2xl mb-4 text-xs outline-none">
             <button onclick="saveGatewayURL()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold">சேமிக்க</button>
         </div>
     </div>
 
-    <div id="authScreen" class="screen fixed inset-0 flex items-center justify-center p-6">
-        <div class="bg-white text-slate-900 p-10 rounded-[3rem] w-full max-w-sm text-center shadow-2xl">
-            <h1 class="text-3xl font-black text-indigo-600 mb-2 italic">காசு-கந்து PRO</h1>
-            <p class="text-[10px] font-bold text-slate-400 uppercase mb-8">Secure Access</p>
-            
-            <div id="loginForm" class="space-y-4">
-                <input type="email" id="userEmail" placeholder="Email" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none">
-                <button onclick="requestOTP()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold">OTP பெறுக</button>
-                <div class="flex items-center gap-2 my-4 opacity-20"><hr class="flex-grow"><span>OR</span><hr class="flex-grow"></div>
-                <button onclick="showScreen('registerScreen')" class="text-xs font-bold text-indigo-600 uppercase">புதிய கணக்கு உருவாக்க</button>
-            </div>
-
-            <button onclick="clearConfig()" class="mt-10 text-[9px] text-slate-300 uppercase font-bold tracking-widest">Reset Gateway URL</button>
+    <div id="authScreen" class="screen fixed inset-0 flex items-center justify-center p-6 bg-slate-950 z-[200]">
+        <div class="bg-white text-slate-900 p-10 rounded-[3rem] w-full max-w-sm text-center">
+            <h1 class="text-3xl font-black text-indigo-600 mb-8 italic">காசு-கந்து PRO</h1>
+            <input type="email" id="userEmail" placeholder="Email" class="w-full p-4 bg-slate-50 border rounded-2xl mb-4 outline-none">
+            <button onclick="requestOTP()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold">OTP பெறுக</button>
+            <button onclick="showScreen('registerScreen')" class="mt-6 block w-full text-xs font-bold text-indigo-600 uppercase">Register New Account</button>
+            <button onclick="clearConfig()" class="mt-10 text-[9px] text-slate-300 uppercase">Reset URL</button>
         </div>
     </div>
 
-    <div id="registerScreen" class="screen fixed inset-0 flex items-center justify-center p-6 bg-slate-900">
-        <div class="bg-white text-slate-900 p-10 rounded-[3rem] w-full max-w-sm shadow-2xl">
-            <h2 class="text-2xl font-black mb-6 italic text-indigo-600 text-center">பதிவு செய்க</h2>
+    <div id="registerScreen" class="screen fixed inset-0 flex items-center justify-center p-6 bg-slate-900 z-[250]">
+        <div class="bg-white text-slate-900 p-10 rounded-[3rem] w-full max-w-sm">
+            <h2 class="text-2xl font-black mb-6 text-indigo-600 text-center italic">பதிவு செய்க</h2>
             <div class="space-y-4">
                 <input type="text" id="regName" placeholder="பெயர்" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none">
                 <input type="email" id="regEmail" placeholder="மின்னஞ்சல்" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none">
                 <input type="password" id="regPass" placeholder="கடவுச்சொல்" class="w-full p-4 bg-slate-50 border rounded-2xl outline-none">
-                <button onclick="handleRegister()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold">பதிவு செய்க</button>
-                <button onclick="showScreen('authScreen')" class="w-full text-xs font-bold text-slate-400 uppercase">திரும்பிச் செல்ல</button>
+                <button onclick="handleRegister()" class="w-full bg-green-600 text-white py-4 rounded-2xl font-bold">Register Now</button>
+                <button onclick="showScreen('authScreen')" class="w-full text-xs text-slate-400 font-bold uppercase">Back</button>
             </div>
         </div>
     </div>
 
     <div id="dashboard" class="screen min-h-screen bg-slate-50 text-slate-900 pb-20">
-        <header class="p-6 bg-white border-b flex justify-between items-center sticky top-0 z-50 shadow-sm">
-            <div><p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none">வருக வருக!</p><h1 id="userNameDisplay" class="text-xl font-black text-indigo-600 italic">User</h1></div>
-            <button onclick="location.reload()" class="w-10 h-10 bg-red-50 text-red-500 rounded-xl flex items-center justify-center font-bold">✕</button>
+        <header class="p-6 bg-white border-b flex justify-between items-center sticky top-0 shadow-sm">
+            <div><p class="text-[10px] font-bold text-slate-400 uppercase">வருக வருக!</p><h1 id="userNameDisplay" class="text-xl font-black text-indigo-600 italic">User</h1></div>
+            <button onclick="location.reload()" class="w-10 h-10 bg-red-50 text-red-500 rounded-xl font-bold">✕</button>
         </header>
-
         <main class="p-6 max-w-md mx-auto space-y-6">
-            <div class="bg-indigo-600 p-8 rounded-[2.5rem] text-white shadow-xl relative overflow-hidden">
-                <p class="text-[10px] font-bold opacity-70 uppercase tracking-widest leading-none">AI Advisor Message</p>
-                <p id="aiAdviceText" class="mt-4 text-sm font-medium leading-relaxed italic">ஆய்வு செய்கிறது...</p>
-                <div class="mt-4 flex gap-2">
-                    <span class="px-3 py-1 bg-white/20 text-[9px] font-bold rounded-full border border-white/30 uppercase">₹1,500 பற்றாக்குறை</span>
-                </div>
-            </div>
-
-            <div class="bg-white p-6 rounded-[2.5rem] shadow-xl border border-slate-100">
-                <h3 class="text-center text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest">விடுமுறை (2, 4, 5 Sat & Sun)</h3>
-                <div id="calendarGrid" class="grid grid-cols-7 gap-2 text-center text-[10px] font-bold"></div>
-            </div>
+            <div class="bg-indigo-600 p-8 rounded-[2.5rem] text-white shadow-xl italic" id="aiAdviceText">ஆய்வு செய்கிறது...</div>
+            <div class="bg-white p-6 rounded-[2.5rem] shadow-xl border"><div id="calendarGrid" class="grid grid-cols-7 gap-2 text-[10px] font-bold"></div></div>
         </main>
     </div>
 
@@ -78,97 +58,71 @@
         let GATEWAY_URL = localStorage.getItem('kk_gateway_url');
 
         window.onload = () => {
-            if (!GATEWAY_URL) {
-                showScreen('urlConfigScreen');
-            } else {
-                showScreen('authScreen');
-            }
+            if (!GATEWAY_URL) showScreen('urlConfigScreen');
+            else showScreen('authScreen');
         };
 
-       function showScreen(id) {
-    // அனைத்து ஸ்கிரீன்களையும் முழுமையாக மறைக்கவும்
-    document.querySelectorAll('.screen').forEach(s => {
-        s.classList.remove('active');
-        s.style.display = 'none'; 
-    });
-    
-    // குறிப்பிட்ட ஸ்கிரீனை மட்டும் காட்டவும்
-    const target = document.getElementById(id);
-    if (target) {
-        target.classList.add('active');
-        target.style.display = 'flex'; // அல்லது 'block'
-    }
-}
-
-function saveGatewayURL() {
-    const urlInput = document.getElementById('gatewayInput');
-    const url = urlInput.value.trim();
-    if (url.includes('https://script.google.com/macros/s/')) {
-        localStorage.setItem('kk_gateway_url', url);
-        GATEWAY_URL = url;
-        alert("வெற்றி! Gateway URL சேமிக்கப்பட்டது.");
-        
-        // முக்கியமான மாற்றம்: இப்போது இது லாகின் திரைக்கு அழைத்துச் செல்லும்
-        showScreen('authScreen'); 
-    } else {
-        alert("பிழை: சரியான Google Script URL-ஐ உள்ளிடவும்!");
-    }
-}
-
-        function clearConfig() {
-            localStorage.removeItem('kk_gateway_url');
-            location.reload();
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+            document.getElementById(id).style.display = 'flex';
+            if(id === 'dashboard') document.getElementById(id).style.display = 'block';
         }
+
+        function saveGatewayURL() {
+            const url = document.getElementById('gatewayInput').value.trim();
+            if (url.includes('https://script.google.com/')) {
+                localStorage.setItem('kk_gateway_url', url);
+                GATEWAY_URL = url;
+                alert("URL சேமிக்கப்பட்டது!");
+                showScreen('authScreen');
+            } else { alert("சரியான URL-ஐ உள்ளிடவும்!"); }
+        }
+
+        function clearConfig() { localStorage.removeItem('kk_gateway_url'); location.reload(); }
 
         function callGateway(params, callback) {
             const cbName = 'cb' + Date.now();
-            window[cbName] = (res) => { callback(res); delete window[cbName]; const s = document.getElementById(cbName); if(s) s.remove(); };
+            window[cbName] = (res) => { callback(res); delete window[cbName]; };
             const scriptTag = document.createElement('script');
-            scriptTag.id = cbName;
             scriptTag.src = `${GATEWAY_URL}?callback=${cbName}&${new URLSearchParams(params).toString()}`;
             document.body.appendChild(scriptTag);
-        }
-
-        function requestOTP() {
-            const email = document.getElementById('userEmail').value;
-            if(!email) return alert("Email உள்ளிடவும்!");
-            callGateway({ action: 'sendOTP', email: email }, (res) => {
-                if(res.status === "Sent") {
-                    alert("OTP அனுப்பப்பட்டது!");
-                    const userOTP = prompt("OTP-ஐ இங்கே உள்ளிடவும்:");
-                    if(userOTP) login(email.split('@')[0]);
-                }
-            });
         }
 
         function handleRegister() {
             const name = document.getElementById('regName').value;
             const email = document.getElementById('regEmail').value;
             const pass = document.getElementById('regPass').value;
+            if(!name || !email || !pass) return alert("விவரங்களை நிரப்புக!");
             
-            // v6.5.1 Registration logic
-            alert("பதிவு செய்யப்பட்டது! இப்போது லாகின் செய்யவும்.");
-            showScreen('authScreen');
+            callGateway({ action: 'register', name, email, pass }, (res) => {
+                if(res.status === "Success") {
+                    alert("பதிவு செய்யப்பட்டது! லாகின் செய்யவும்.");
+                    showScreen('authScreen');
+                }
+            });
         }
 
-        function login(name) {
-            showScreen('dashboard');
-            document.getElementById('userNameDisplay').innerText = name;
-            loadAppData();
+        function requestOTP() {
+            const email = document.getElementById('userEmail').value;
+            callGateway({ action: 'sendOTP', email }, (res) => {
+                if(res.status === "Sent") {
+                    const otp = prompt("OTP-ஐ உள்ளிடவும்:");
+                    if(otp) login(email.split('@')[0]);
+                }
+            });
         }
+
+        function login(name) { showScreen('dashboard'); document.getElementById('userNameDisplay').innerText = name; loadAppData(); }
 
         function loadAppData() {
-            // Holidays Loading (2, 4, 5 Saturday)
             callGateway({ action: 'getHolidays' }, (data) => {
                 const grid = document.getElementById('calendarGrid');
                 grid.innerHTML = "";
                 for(let i=1; i<=31; i++) {
-                    const isHoli = data.holidays.includes(i);
-                    grid.innerHTML += `<div class="p-3 rounded-xl ${isHoli ? 'holiday' : 'bg-slate-50 border border-slate-100'}">${i}</div>`;
+                    const isH = data.holidays.includes(i);
+                    grid.innerHTML += `<div class="p-3 rounded-xl ${isH ? 'holiday' : 'bg-slate-50 border'}">${i}</div>`;
                 }
             });
-
-            // AI Advice
             callGateway({ action: 'getAIAdvice' }, (data) => {
                 document.getElementById('aiAdviceText').innerText = data.advice;
             });
@@ -176,4 +130,3 @@ function saveGatewayURL() {
     </script>
 </body>
 </html>
-
