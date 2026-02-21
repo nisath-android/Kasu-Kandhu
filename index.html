@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>காசு-கந்து PRO v7.2.9 | Final Verified</title>
+    <title>காசு-கந்து PRO v7.4.0 | Advanced Features</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -36,14 +36,22 @@
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
         
         .otp-box::-webkit-inner-spin-button, .otp-box::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+        /* Toggle Switch Styles */
+        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 20px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #4f46e5; }
+        input:checked + .slider:before { transform: translateX(20px); }
     </style>
 </head>
 <body>
 
-    <!-- 1. Gateway & Auth Split View -->
+    <!-- 1. ஆரம்ப காட்சி (Gateway & Auth) -->
     <div id="init-view" class="split-view">
         
-        <!-- Left Panel: Gateway Setup -->
+        <!-- இடது பக்கம்: Gateway Setup -->
         <div class="gateway-panel">
             <div class="w-full max-w-sm bg-white/5 p-8 rounded-[2.5rem] border border-white/10 backdrop-blur-md text-center shadow-2xl">
                 <i class="fa-solid fa-link text-5xl text-indigo-400 mb-6"></i>
@@ -53,42 +61,46 @@
                 <input type="text" id="gUrlInput" placeholder="https://script.google.com/.../exec" class="w-full p-4 bg-white/10 border-2 border-white/20 rounded-2xl mb-6 outline-none focus:border-indigo-400 text-xs text-white placeholder-white/30 transition-all">
                 
                 <button id="btn-setup" onclick="saveGateway()" class="w-full bg-indigo-500 text-white py-4 rounded-2xl font-extrabold btn-press shadow-xl shadow-indigo-900/40 uppercase">இணைக்கவும்</button>
-                <p id="gw-status" class="mt-4 text-[9px] text-emerald-400 font-bold uppercase hidden"><i class="fa-solid fa-circle-check"></i> Gateway Connected</p>
+                
+                <p id="gw-status" class="mt-4 text-[10px] text-rose-500 font-black uppercase flex items-center justify-center gap-2">
+                    <span id="gw-status-icon" class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+                    <span id="gw-status-text">Disconnected</span>
+                </p>
             </div>
         </div>
 
-        <!-- Right Panel: Authentication -->
+        <!-- வலது பக்கம்: Authentication -->
         <div id="auth-panel" class="auth-panel auth-disabled">
             <div id="auth-overlay" class="auth-overlay">கேட்வே (Gateway) <br> முதலில் இணைக்கப்பட வேண்டும்</div>
             
             <!-- Login Screen -->
             <div id="auth-login" class="screen active text-center">
                 <h1 class="text-4xl font-black text-indigo-600 mb-2 italic tracking-tighter">காசு-கந்து</h1>
-                <p class="text-[10px] font-bold text-slate-400 uppercase mb-10 tracking-[0.2em]">Login to your account</p>
+                <p class="text-[10px] font-bold text-slate-400 uppercase mb-10 tracking-[0.2em]">கணக்கில் உள்நுழைக</p>
                 
                 <div class="space-y-4">
                     <input type="email" id="loginEmail" placeholder="மின்னஞ்சல் முகவரி" class="w-full p-4 bg-slate-100 border-2 border-transparent rounded-2xl outline-none focus:border-indigo-500 transition-all">
                     <input type="password" id="loginPass" placeholder="கடவுச்சொல்" class="w-full p-4 bg-slate-100 border-2 border-transparent rounded-2xl outline-none focus:border-indigo-500 transition-all">
-                    <button id="btn-login" onclick="loginUser()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-extrabold btn-press shadow-lg shadow-indigo-100 mt-4">Login</button>
+                    <button id="btn-login" onclick="loginUser()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-extrabold btn-press shadow-lg shadow-indigo-100 mt-4">உள்நுழைக</button>
                     
                     <div class="flex items-center gap-3 py-2">
                         <hr class="flex-grow border-slate-200"><span class="text-[10px] font-bold text-slate-300 uppercase">அல்லது</span><hr class="flex-grow border-slate-200">
                     </div>
                     
-                    <button id="btn-otp-req" onclick="requestOTP()" class="w-full border-2 border-indigo-100 text-indigo-600 py-4 rounded-2xl font-bold btn-press">OTP மூலம் லாகின்</button>
+                    <button id="btn-otp-req" onclick="requestOTP()" class="w-full border-2 border-indigo-100 text-indigo-600 py-4 rounded-2xl font-bold btn-press">OTP லாகின்</button>
                 </div>
                 <button onclick="toggleAuth('register')" class="mt-8 text-xs font-bold text-indigo-600 uppercase underline">புதிய கணக்கு உருவாக்க</button>
             </div>
 
             <!-- Register Screen -->
             <div id="auth-register" class="screen text-center">
-                <h2 class="text-3xl font-black text-indigo-600 mb-8 italic">Register</h2>
+                <h2 class="text-3xl font-black text-indigo-600 mb-8 italic">பதிவு செய்க</h2>
                 <div class="space-y-4">
                     <input type="text" id="regName" placeholder="பெயர்" class="w-full p-4 bg-slate-100 border-2 border-transparent rounded-2xl outline-none focus:border-indigo-500">
                     <input type="email" id="regEmail" placeholder="மின்னஞ்சல்" class="w-full p-4 bg-slate-100 border-2 border-transparent rounded-2xl outline-none focus:border-indigo-500">
                     <input type="password" id="regPass" placeholder="கடவுச்சொல்" class="w-full p-4 bg-slate-100 border-2 border-transparent rounded-2xl outline-none focus:border-indigo-500">
                     <button id="btn-reg" onclick="registerAccount()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-extrabold btn-press shadow-lg shadow-indigo-100 mt-2">பதிவு செய்க</button>
-                    <button onclick="toggleAuth('login')" class="w-full text-slate-400 font-extrabold text-xs uppercase mt-6 tracking-widest">Login பக்கத்திற்குச் செல்ல</button>
+                    <button onclick="toggleAuth('login')" class="w-full text-slate-400 font-extrabold text-xs uppercase mt-6 tracking-widest">லாகின் பக்கத்திற்குச் செல்ல</button>
                 </div>
             </div>
 
@@ -96,26 +108,58 @@
             <div id="auth-otp" class="screen text-center">
                 <i class="fa-solid fa-shield-halved text-5xl text-indigo-600 mb-6"></i>
                 <h2 class="text-2xl font-black text-slate-900 mb-2 italic">OTP சரிபார்ப்பு</h2>
-                <p class="text-xs text-slate-400 mb-10 px-4">மின்னஞ்சலில் உள்ள 6 இலக்கக் குறியீட்டை உள்ளிடவும்</p>
+                <p class="text-xs text-slate-400 mb-4 px-4">மின்னஞ்சலில் உள்ள 6 இலக்க எண்ணை உள்ளிடவும்</p>
+                
+                <!-- OTP டைமர் -->
+                <p id="otpTimerDisplay" class="text-rose-500 text-xs font-bold mb-6 italic">OTP காலாவதியாக இன்னும் 60 வினாடிகள்</p>
+                
                 <div class="flex justify-between gap-2 mb-10 px-4">
-                    <input type="number" onkeyup="moveNext(this, 0, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-100 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 otp-box">
+                    <input type="number" onpaste="handleOtpPaste(event)" onkeyup="moveNext(this, 0, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-100 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 otp-box">
                     <input type="number" onkeyup="moveNext(this, 1, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-100 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 otp-box">
                     <input type="number" onkeyup="moveNext(this, 2, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-100 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 otp-box">
                     <input type="number" onkeyup="moveNext(this, 3, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-100 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 otp-box">
                     <input type="number" onkeyup="moveNext(this, 4, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-100 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 otp-box">
                     <input type="number" onkeyup="moveNext(this, 5, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-100 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 otp-box">
                 </div>
-                <button id="btn-verify" onclick="verifyOTP()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-extrabold btn-press shadow-lg shadow-indigo-100">உறுதி செய்க</button>
-                <button onclick="toggleAuth('login')" class="mt-8 text-slate-400 text-xs font-bold uppercase underline">ரத்து செய்</button>
+                <button id="btn-verify" onclick="verifyOTP()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-extrabold btn-press shadow-lg shadow-indigo-100">சரிபார்க்கவும்</button>
+                <button id="resendOtpBtn" onclick="requestOTP()" class="mt-8 text-slate-400 text-xs font-bold uppercase underline disabled:opacity-50" disabled>மீண்டும் அனுப்பவும்</button>
             </div>
         </div>
     </div>
 
-    <!-- 2. Dashboard Screen (Full View) -->
+    <!-- 2. Dashboard Screen (முழு காட்சி) -->
     <div id="dashboard" class="pb-32">
-        <header class="p-6 bg-white border-b flex justify-between items-center sticky top-0 z-50">
-            <h1 class="text-xl font-black italic text-indigo-600">காசு-கந்து</h1>
-            <button onclick="showSalaryModal()" class="w-10 h-10 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600 btn-press"><i class="fa-solid fa-pen-to-square"></i></button>
+        <header class="p-6 bg-white border-b flex flex-col gap-4 sticky top-0 z-50 shadow-sm">
+            <div class="flex justify-between items-center">
+                <div class="flex flex-col">
+                    <h1 class="text-xl font-black italic text-indigo-600 tracking-tighter">காசு-கந்து</h1>
+                    <!-- நேரலை நேரம் மற்றும் தேதி -->
+                    <div class="flex flex-col text-[10px] font-bold text-slate-400 uppercase mt-1">
+                        <span id="liveClock">--:--:-- --</span>
+                        <span id="liveDate">--, --- --, ----</span>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                    <!-- ஆட்டோ லாக்அவுட் வசதி (Enable/Disable) -->
+                    <div class="flex items-center gap-2 bg-slate-50 px-3 py-2 rounded-xl border">
+                        <div class="flex flex-col text-right">
+                            <span class="text-[8px] font-black text-slate-400 uppercase leading-none">Auto Logout</span>
+                            <span id="logoutTimerDisplay" class="text-[10px] font-black text-indigo-600">Off</span>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="autoLogoutToggle" onchange="toggleAutoLogout()">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <button onclick="showSalaryModal()" class="w-10 h-10 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600 btn-press"><i class="fa-solid fa-pen-to-square"></i></button>
+                    <button onclick="logout()" class="flex items-center gap-2 bg-rose-50 text-rose-600 px-3 py-2 rounded-xl text-xs font-bold btn-press">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>வெளியேற</span>
+                    </button>
+                </div>
+            </div>
         </header>
 
         <main class="p-6 space-y-6 max-w-md mx-auto">
@@ -141,7 +185,6 @@
             <!-- Loan List -->
             <div id="loanList" class="space-y-4">
                 <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">கடன் தவணைகள்</h3>
-                <!-- Injected via JS -->
             </div>
         </main>
 
@@ -158,7 +201,7 @@
     <!-- Modals -->
     <div id="salaryModal" class="modal-overlay">
         <div class="bg-white w-full max-w-xs p-10 rounded-[3.5rem] shadow-2xl text-center">
-            <h3 class="text-xl font-black text-indigo-600 mb-2 italic">Update Income</h3>
+            <h3 class="text-xl font-black text-indigo-600 mb-2 italic">சம்பளம் மாற்றம்</h3>
             <p class="text-[10px] text-slate-400 mb-8 font-bold uppercase">இந்த மாத சம்பளத்தை மாற்றவும்</p>
             <input type="number" id="newSalaryInput" class="w-full p-6 bg-slate-50 rounded-3xl text-3xl font-extrabold outline-none mb-8 border-2 border-transparent focus:border-indigo-500" placeholder="30000">
             <div class="flex flex-col gap-3">
@@ -169,39 +212,72 @@
     </div>
 
     <script>
-        // Global State
+        // State
         let G_URL = localStorage.getItem('kk_g');
         let session = { user: null, sheetId: null };
+        let otpTimerInterval;
+        let logoutTimerInterval;
+        let logoutTimeLeft = 600; // 10 நிமிடம் (600 வினாடிகள்)
 
-        // 1. Initial Flow Check
+        // 1. ஆரம்ப கால சரிபார்ப்பு
         window.onload = () => {
+            updateLiveTime();
+            setInterval(updateLiveTime, 1000);
+
             if (G_URL) {
                 document.getElementById('gUrlInput').value = G_URL;
-                enableAuthPanel();
+                enableAuthPanel(true);
+                
+                const savedSession = localStorage.getItem('kk_session');
+                if (savedSession) {
+                    session = JSON.parse(savedSession);
+                    enterDashboard(true);
+                }
             }
         };
 
-        // 2. Gateway URL Verification & Logic
+        // நேரலை நேரம் மற்றும் தேதி
+        function updateLiveTime() {
+            const now = new Date();
+            const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+            const dateOptions = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
+            
+            document.getElementById('liveClock').innerText = now.toLocaleTimeString('en-IN', timeOptions);
+            document.getElementById('liveDate').innerText = now.toLocaleDateString('en-IN', dateOptions);
+        }
+
+        // கேட்வே கையாளுதல்
         function saveGateway() {
             const u = document.getElementById('gUrlInput').value.trim();
             if (u.startsWith('https://script.google.com/') && u.includes('/exec')) {
                 localStorage.setItem('kk_g', u);
                 G_URL = u;
-                enableAuthPanel();
+                enableAuthPanel(true);
                 alert("Gateway வெற்றிகரமாக இணைக்கப்பட்டது!");
             } else {
-                alert("தவறான URL! இது https://script.google.com/.../exec என இருக்க வேண்டும்.");
+                enableAuthPanel(false);
+                alert("தவறான URL!");
             }
         }
 
-        function enableAuthPanel() {
+        function enableAuthPanel(isConnected) {
             const panel = document.getElementById('auth-panel');
             const overlay = document.getElementById('auth-overlay');
-            const status = document.getElementById('gw-status');
+            const statusText = document.getElementById('gw-status-text');
+            const statusIcon = document.getElementById('gw-status-icon');
+            const statusContainer = document.getElementById('gw-status');
             
-            panel.classList.remove('auth-disabled');
-            overlay.style.display = 'none';
-            status.classList.remove('hidden');
+            if (isConnected) {
+                panel.classList.remove('auth-disabled');
+                overlay.style.display = 'none';
+                statusText.innerText = "Connected";
+                statusContainer.classList.replace('text-rose-500', 'text-emerald-500');
+                statusIcon.classList.replace('bg-rose-500', 'bg-emerald-500');
+            } else {
+                panel.classList.add('auth-disabled');
+                overlay.style.display = 'flex';
+                statusText.innerText = "Disconnected";
+            }
         }
 
         function toggleAuth(screen) {
@@ -210,109 +286,157 @@
             if(target) target.classList.add('active');
         }
 
-        // 3. Main Communication Engine (JSONP)
         function call(params, cb) {
             if (!G_URL) return;
             const n = 'cb' + Date.now() + Math.floor(Math.random() * 100);
-            window[n] = (res) => { 
-                cb(res); 
-                delete window[n]; 
-                const scriptEl = document.getElementById(n);
-                if (scriptEl) scriptEl.remove(); 
-            };
+            window[n] = (res) => { cb(res); delete window[n]; document.getElementById(n)?.remove(); };
             const s = document.createElement('script'); 
             s.id = n;
             const sep = G_URL.includes('?') ? '&' : '?';
             s.src = `${G_URL}${sep}callback=${n}&${new URLSearchParams(params).toString()}`;
-            s.onerror = () => { alert("இணைப்பு பிழை! Gateway URL அல்லது இணையத்தைச் சரிபார்க்கவும்."); };
+            s.onerror = () => { alert("இணைப்பு பிழை!"); };
             document.body.appendChild(s);
         }
 
-        // 4. Registration Logic
+        function loginUser() {
+            const email = document.getElementById('loginEmail').value;
+            const pass = document.getElementById('loginPass').value;
+            if(!email || !pass) return alert("விவரங்களை உள்ளிடவும்!");
+            toggleLoading('btn-login', true);
+            call({ action: 'login', email, pass }, (res) => {
+                toggleLoading('btn-login', false);
+                if(res.status === "Success") {
+                    session = { user: email, sheetId: res.sheetId };
+                    enterDashboard();
+                } else alert(res.msg);
+            });
+        }
+
+        function requestOTP() {
+            const email = document.getElementById('loginEmail').value;
+            if(!email) return alert("மின்னஞ்சலை உள்ளிடவும்!");
+            toggleLoading('btn-otp-req', true);
+            call({ action: 'sendOTP', email }, (res) => {
+                toggleLoading('btn-otp-req', false);
+                if(res.status === "Sent") { 
+                    session.user = email; 
+                    toggleAuth('otp'); 
+                    startOtpTimer();
+                } else alert("OTP Error!");
+            });
+        }
+
+        // OTP டைமர் லாஜிக்
+        function startOtpTimer() {
+            let timeLeft = 60;
+            const display = document.getElementById('otpTimerDisplay');
+            const resendBtn = document.getElementById('resendOtpBtn');
+            
+            clearInterval(otpTimerInterval);
+            resendBtn.disabled = true;
+            
+            otpTimerInterval = setInterval(() => {
+                timeLeft--;
+                display.innerText = `OTP காலாவதியாக இன்னும் ${timeLeft} வினாடிகள்`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(otpTimerInterval);
+                    display.innerText = "OTP காலாவதியானது!";
+                    resendBtn.disabled = false;
+                }
+            }, 1000);
+        }
+
+        function verifyOTP() {
+            const otp = Array.from(document.querySelectorAll('.otp-box')).map(i => i.value).join('');
+            toggleLoading('btn-verify', true);
+            call({ action: 'login', email: session.user, otp, isOtp: "true" }, (res) => {
+                toggleLoading('btn-verify', false);
+                if(res.status === "Success") {
+                    clearInterval(otpTimerInterval);
+                    session.sheetId = res.sheetId; enterDashboard();
+                } else alert("தவறான OTP!");
+            });
+        }
+
         function registerAccount() {
             const name = document.getElementById('regName').value;
             const email = document.getElementById('regEmail').value;
             const pass = document.getElementById('regPass').value;
             if(!name || !email || !pass) return alert("அனைத்து விவரங்களையும் நிரப்பவும்!");
-            
             toggleLoading('btn-reg', true);
             call({ action: 'register', name, email, pass }, (res) => {
                 toggleLoading('btn-reg', false);
-                if(res && res.status === "Success") { 
-                    alert("பதிவு முடிந்தது! இப்போது லாகின் செய்யவும்."); 
-                    toggleAuth('login'); 
-                } else {
-                    alert(res ? res.msg : "பதிவு தோல்வி!");
-                }
+                if(res.status === "Success") { alert("பதிவு முடிந்தது!"); toggleAuth('login'); }
+                else alert(res.msg);
             });
         }
 
-        // 5. Login Logic (Password)
-        function loginUser() {
-            const email = document.getElementById('loginEmail').value;
-            const pass = document.getElementById('loginPass').value;
-            if(!email || !pass) return alert("Email & Password தேவை!");
-            
-            toggleLoading('btn-login', true);
-            call({ action: 'login', email, pass }, (res) => {
-                toggleLoading('btn-login', false);
-                if(res && res.status === "Success") {
-                    session = { user: email, sheetId: res.sheetId };
-                    enterDashboard();
-                } else {
-                    alert(res ? res.msg : "உள்நுழைய முடியவில்லை!");
-                }
-            });
-        }
-
-        // 6. OTP Logic
-        function requestOTP() {
-            const email = document.getElementById('loginEmail').value;
-            if(!email) return alert("மின்னஞ்சலை உள்ளிடவும்!");
-            
-            toggleLoading('btn-otp-req', true);
-            call({ action: 'sendOTP', email }, (res) => {
-                toggleLoading('btn-otp-req', false);
-                if(res && res.status === "Sent") { 
-                    session.user = email; 
-                    toggleAuth('otp'); 
-                } else {
-                    alert("OTP அனுப்புவதில் பிழை!");
-                }
-            });
-        }
-
-        function verifyOTP() {
-            const otp = Array.from(document.querySelectorAll('.otp-box')).map(i => i.value).join('');
-            if(otp.length < 6) return alert("6 இலக்கக் குறியீட்டை உள்ளிடவும்!");
-            
-            toggleLoading('btn-verify', true);
-            call({ action: 'login', email: session.user, otp, isOtp: "true" }, (res) => {
-                toggleLoading('btn-verify', false);
-                if(res && res.status === "Success") {
-                    session.sheetId = res.sheetId; 
-                    enterDashboard();
-                } else {
-                    alert(res ? res.msg : "தவறான OTP!");
-                }
-            });
-        }
-
-        // 7. Dashboard Management
-        function enterDashboard() {
+        function enterDashboard(skipStorage = false) {
+            if (!skipStorage) {
+                localStorage.setItem('kk_session', JSON.stringify(session));
+            }
             document.getElementById('init-view').style.display = 'none';
             document.getElementById('dashboard').classList.add('active');
+            
+            // சேமிக்கப்பட்ட ஆட்டோ லாக்அவுட் நிலையை சரிபார்த்தல்
+            const isAutoLogoutOn = localStorage.getItem('kk_auto_logout') === 'true';
+            document.getElementById('autoLogoutToggle').checked = isAutoLogoutOn;
+            if (isAutoLogoutOn) startAutoLogoutTimer();
+            
             loadDashboard();
         }
 
-        function loadDashboard() {
-            if(!session.sheetId) return;
-            call({ action: 'getAppData', sheetId: session.sheetId }, (data) => {
-                if(!data || data.status !== "Success") return;
+        // ஆட்டோ லாக்அவுட் வசதியை ஆன்/ஆஃப் செய்தல்
+        function toggleAutoLogout() {
+            const isChecked = document.getElementById('autoLogoutToggle').checked;
+            localStorage.setItem('kk_auto_logout', isChecked);
+            
+            if (isChecked) {
+                alert("தானியங்கி வெளியேற்றம் (10 நிமிடம்) இயக்கப்பட்டது.");
+                startAutoLogoutTimer();
+            } else {
+                clearInterval(logoutTimerInterval);
+                document.getElementById('logoutTimerDisplay').innerText = "Off";
+                document.getElementById('logoutTimerDisplay').classList.remove('text-rose-500');
+                document.getElementById('logoutTimerDisplay').classList.add('text-indigo-600');
+            }
+        }
+
+        // ஆட்டோ லாக்அவுட் டைமர் லாஜிக்
+        function startAutoLogoutTimer() {
+            clearInterval(logoutTimerInterval);
+            logoutTimeLeft = 600; // 10 நிமிடங்கள்
+            const display = document.getElementById('logoutTimerDisplay');
+            display.classList.remove('text-indigo-600');
+            display.classList.add('text-rose-500');
+
+            logoutTimerInterval = setInterval(() => {
+                logoutTimeLeft--;
                 
+                const mins = Math.floor(logoutTimeLeft / 60);
+                const secs = logoutTimeLeft % 60;
+                display.innerText = `${mins}:${secs < 10 ? '0' + secs : secs}`;
+
+                if (logoutTimeLeft <= 0) {
+                    clearInterval(logoutTimerInterval);
+                    alert("10 நிமிடம் முடிந்தது! பாதுகாப்பு கருதி தானாக வெளியேற்றப்படுகிறீர்கள்.");
+                    logout();
+                }
+            }, 1000);
+        }
+
+        function logout() {
+            localStorage.removeItem('kk_session');
+            clearInterval(logoutTimerInterval);
+            location.reload();
+        }
+
+        function loadDashboard() {
+            call({ action: 'getAppData', sheetId: session.sheetId }, (data) => {
+                if(data.status !== "Success") return;
                 document.getElementById('dispSalary').innerText = `₹${Number(data.salary).toLocaleString()}`;
                 document.getElementById('aiAdvice').innerText = data.advice;
-                
                 const dTag = document.getElementById('deficitTag');
                 if (data.deficit < 0) {
                     dTag.innerText = `பற்றாக்குறை: ₹${Math.abs(data.deficit).toLocaleString()}`;
@@ -321,7 +445,6 @@
                     dTag.innerText = `மீதி: ₹${data.deficit.toLocaleString()}`;
                     dTag.classList.replace('bg-rose-500', 'bg-emerald-500');
                 }
-                
                 renderCalendar(data);
                 renderLoans(data.loans);
             });
@@ -331,84 +454,60 @@
             const grid = document.getElementById('calGrid'); grid.innerHTML = "";
             const emiDates = data.loans ? data.loans.map(l => Number(l.date)) : [];
             const holidays = data.holidays || [];
-            
             for(let i=1; i<=31; i++) {
-                const isEMI = emiDates.includes(i);
-                const isH = holidays.includes(i);
-                const cls = isEMI ? 'emi-date' : (isH ? 'holiday' : 'bg-slate-50 text-slate-300');
+                const cls = emiDates.includes(i) ? 'emi-date' : (holidays.includes(i) ? 'holiday' : 'bg-slate-50 text-slate-300');
                 grid.innerHTML += `<div class="p-3 rounded-2xl transition-all ${cls}">${i}</div>`;
             }
         }
 
         function renderLoans(loans) {
             const list = document.getElementById('loanList');
-            list.innerHTML = `<h3 class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-4">Monthly Loans</h3>`;
-            if(!loans || loans.length === 0) return list.innerHTML += `<p class="text-center py-6 text-xs text-slate-300 font-bold uppercase">தகவல்கள் இல்லை</p>`;
-            
+            list.innerHTML = `<h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">கடன் தவணைகள்</h3>`;
             loans.forEach(loan => {
-                list.innerHTML += `
-                    <div class="bg-white p-6 rounded-[3rem] flex justify-between items-center border border-slate-100 shadow-sm transition-transform hover:scale-[1.01]">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center font-extrabold text-lg">${loan.date}</div>
-                            <div>
-                                <h4 class="font-extrabold text-sm text-slate-800">${loan.name}</h4>
-                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-tight">EMI: ₹${Number(loan.amount).toLocaleString()}</p>
-                            </div>
-                        </div>
-                        <i class="fa-solid fa-circle-check text-slate-100 text-2xl"></i>
-                    </div>`;
+                list.innerHTML += `<div class="bg-white p-6 rounded-[3rem] flex justify-between items-center border border-slate-100 shadow-sm">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center font-extrabold text-lg">${loan.date}</div>
+                        <div><h4 class="font-extrabold text-sm text-slate-800">${loan.name}</h4><p class="text-[9px] font-bold text-slate-400 uppercase tracking-tight">EMI: ₹${Number(loan.amount).toLocaleString()}</p></div>
+                    </div>
+                    <i class="fa-solid fa-circle-check text-slate-100 text-2xl"></i>
+                </div>`;
             });
         }
 
-        // 8. Salary Management
         function updateSalary() {
             const amt = document.getElementById('newSalaryInput').value;
             if(!amt || amt < 0) return alert("சரியான தொகையை உள்ளிடவும்!");
-            
             toggleLoading('btn-save-salary', true);
             call({ action: 'updateSalary', amount: amt, sheetId: session.sheetId }, (res) => {
                 toggleLoading('btn-save-salary', false);
-                if(res && res.status === "Success") {
-                    closeSalaryModal(); 
-                    loadDashboard();
-                } else {
-                    alert("புதுப்பிக்க முடியவில்லை!");
-                }
+                if(res.status === "Success") { closeSalaryModal(); loadDashboard(); }
             });
         }
 
         function showSalaryModal() { document.getElementById('salaryModal').style.display = 'flex'; }
         function closeSalaryModal() { document.getElementById('salaryModal').style.display = 'none'; }
-        
-        // 9. Database Initializer
-        function initAppDB() { 
-            if(!confirm("தனிநபர் தரவுத்தளத்தை (Database) அமைக்கவா?")) return;
-            call({ action: 'initSetup', sheetId: session.sheetId }, (res) => {
-                alert(res ? res.status : "தோல்வி!");
-            }); 
-        }
+        function initAppDB() { call({ action: 'initSetup', sheetId: session.sheetId }, (res) => alert(res.status)); }
 
-        // 10. Utility Functions
         function toggleLoading(id, isLoading) {
             const btn = document.getElementById(id);
             if(!btn) return;
-            if(isLoading) {
-                btn.dataset.old = btn.innerText;
-                btn.innerHTML = '<div class="spinner mx-auto"></div>';
-                btn.disabled = true;
-            } else {
-                btn.innerHTML = btn.dataset.old || btn.innerText;
-                btn.disabled = false;
-            }
+            if(isLoading) { btn.dataset.old = btn.innerText; btn.innerHTML = '<div class="spinner mx-auto"></div>'; btn.disabled = true; }
+            else { btn.innerHTML = btn.dataset.old || btn.innerText; btn.disabled = false; }
+        }
+
+        function handleOtpPaste(e) {
+            e.preventDefault();
+            const pasteData = e.clipboardData.getData('text').slice(0, 6);
+            if (!/^\d+$/.test(pasteData)) return;
+            const inputs = document.querySelectorAll('.otp-box');
+            pasteData.split('').forEach((char, i) => { if (inputs[i]) inputs[i].value = char; });
+            inputs[Math.min(pasteData.length, 5)].focus();
         }
 
         function moveNext(el, idx, e) {
-            // Backspace handling
             if (e && e.key === "Backspace" && el.value.length === 0 && idx > 0) {
                 document.querySelectorAll('.otp-box')[idx - 1].focus();
-            } 
-            // Forward handling
-            else if (el.value.length === 1 && idx < 5) {
+            } else if (el.value.length === 1 && idx < 5) {
                 document.querySelectorAll('.otp-box')[idx + 1].focus();
             }
         }
