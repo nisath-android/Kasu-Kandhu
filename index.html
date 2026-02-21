@@ -3,19 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>காசு-கந்து PRO v7.6.0 | Dynamic Theme Engine</title>
+    <title>காசு-கந்து PRO v7.9.0 | Ultimate Customization</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
         
-        /* டைனமிக் வண்ணங்களுக்கான CSS மாறிகள் */
         :root {
             --primary-color: #4f46e5;
             --bg-color: #f8fafc;
             --text-color: #0f172a;
             --topbar-color: #ffffff;
-            --card-text: #ffffff;
         }
 
         body { 
@@ -25,7 +23,6 @@
             transition: all 0.3s ease;
         }
 
-        /* டைனமிக் கலர் அப்ளை செய்யும் கிளாஸ்கள் */
         .theme-bg { background-color: var(--bg-color); }
         .theme-primary { background-color: var(--primary-color); }
         .theme-text { color: var(--text-color); }
@@ -68,10 +65,14 @@
         input:checked + .slider { background-color: var(--primary-color); }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        /* Color Picker Styles */
         input[type="color"] { -webkit-appearance: none; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; background: none; }
-        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
-        input[type="color"]::-webkit-color-swatch { border: 2px solid white; border-radius: 50%; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+        input[type="color"]::-webkit-color-swatch { border: 2px solid white; border-radius: 50%; }
+
+        .sub-pill { padding: 8px 16px; border-radius: 14px; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s; border: 1.5px solid #f1f5f9; background: #f8fafc; color: #64748b; }
+        .sub-pill.active { background: var(--primary-color); border-color: var(--primary-color); color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .add-pill { border: 1.5px dashed var(--primary-color); color: var(--primary-color); background: transparent; }
+
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body>
@@ -81,10 +82,9 @@
         <div class="gateway-panel">
             <div class="w-full max-w-sm bg-white/5 p-8 rounded-[2.5rem] border border-white/10 backdrop-blur-md text-center shadow-2xl">
                 <i class="fa-solid fa-link text-5xl text-indigo-400 mb-6"></i>
-                <h2 class="text-2xl font-extrabold text-white mb-2 italic">Gateway இணைப்பு</h2>
-                <p class="text-[10px] font-bold text-indigo-200 uppercase mb-8">App Script URL-ஐ இணைக்கவும்</p>
-                <input type="text" id="gUrlInput" placeholder="https://script.google.com/.../exec" class="w-full p-4 bg-white/10 border-2 border-white/20 rounded-2xl mb-6 outline-none focus:border-indigo-400 text-xs text-white transition-all">
-                <button id="btn-setup" onclick="saveGateway()" class="w-full bg-indigo-500 text-white py-4 rounded-2xl font-extrabold btn-press shadow-xl uppercase">இணைக்கவும்</button>
+                <h2 class="text-2xl font-extrabold text-white mb-2 italic">Gateway Setup</h2>
+                <input type="text" id="gUrlInput" placeholder="App Script URL" class="w-full p-4 bg-white/10 border-2 border-white/20 rounded-2xl mb-6 outline-none focus:border-indigo-400 text-xs text-white">
+                <button id="btn-setup" onclick="saveGateway()" class="w-full bg-indigo-500 text-white py-4 rounded-2xl font-extrabold btn-press shadow-xl">இணைக்கவும்</button>
                 <p id="gw-status" class="mt-4 text-[10px] text-rose-500 font-black uppercase flex items-center justify-center gap-2">
                     <span id="gw-status-icon" class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
                     <span id="gw-status-text">Disconnected</span>
@@ -96,41 +96,47 @@
             <div id="auth-overlay" class="auth-overlay">கேட்வே (Gateway) <br> முதலில் இணைக்கப்பட வேண்டும்</div>
             <div id="auth-login" class="screen active text-center">
                 <h1 class="text-4xl font-black theme-icon mb-2 italic tracking-tighter">காசு-கந்து</h1>
-                <p class="text-[10px] font-bold text-slate-400 uppercase mb-10">கணக்கில் உள்நுழைக</p>
-                <div class="space-y-4">
-                    <input type="email" id="loginEmail" placeholder="மின்னஞ்சல்" class="w-full p-4 bg-slate-100 border-2 border-transparent rounded-2xl outline-none focus:theme-border transition-all">
-                    <input type="password" id="loginPass" placeholder="கடவுச்சொல்" class="w-full p-4 bg-slate-100 border-2 border-transparent rounded-2xl outline-none focus:theme-border transition-all">
+                <div class="space-y-4 mt-10">
+                    <input type="email" id="loginEmail" placeholder="மின்னஞ்சல்" class="w-full p-4 bg-slate-100 border-2 border-transparent rounded-2xl outline-none focus:theme-border">
+                    <input type="password" id="loginPass" placeholder="கடவுச்சொல்" class="w-full p-4 bg-slate-100 border-2 border-transparent rounded-2xl outline-none focus:theme-border">
                     <button id="btn-login" onclick="loginUser()" class="w-full theme-btn py-4 rounded-2xl font-extrabold btn-press shadow-lg">உள்நுழைக</button>
-                    <div class="flex items-center gap-3 py-2">
-                        <hr class="flex-grow border-slate-200"><span class="text-[10px] font-bold text-slate-300 uppercase">அல்லது</span><hr class="flex-grow border-slate-200">
-                    </div>
                     <button id="btn-otp-req" onclick="requestOTP()" class="w-full border-2 theme-icon border-indigo-100 py-4 rounded-2xl font-bold btn-press">OTP லாகின்</button>
                 </div>
-                <button onclick="toggleAuth('register')" class="mt-8 text-xs font-bold theme-icon uppercase underline">புதிய கணக்கு உருவாக்க</button>
+                <button onclick="toggleAuth('register')" class="mt-8 text-xs font-bold theme-icon uppercase underline">புதிய கணக்கு</button>
             </div>
 
             <!-- OTP Screen -->
             <div id="auth-otp" class="screen text-center">
                 <i class="fa-solid fa-shield-halved text-5xl theme-icon mb-6"></i>
                 <h2 class="text-2xl font-black theme-text mb-2 italic">OTP சரிபார்ப்பு</h2>
-                <p id="otpTimerDisplay" class="text-rose-500 text-xs font-bold mb-6 italic">60 வினாடிகள்</p>
-                <div class="flex justify-between gap-2 mb-10 px-4">
-                    <input type="number" onpaste="handleOtpPaste(event)" onkeyup="moveNext(this, 0, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-100 rounded-xl outline-none focus:ring-2 focus:theme-border otp-box">
-                    <input type="number" onkeyup="moveNext(this, 1, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-100 rounded-xl outline-none focus:ring-2 focus:theme-border otp-box">
-                    <input type="number" onkeyup="moveNext(this, 2, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-100 rounded-xl outline-none focus:ring-2 focus:theme-border otp-box">
-                    <input type="number" onkeyup="moveNext(this, 3, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-100 rounded-xl outline-none focus:ring-2 focus:theme-border otp-box">
-                    <input type="number" onkeyup="moveNext(this, 4, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-100 rounded-xl outline-none focus:ring-2 focus:theme-border otp-box">
-                    <input type="number" onkeyup="moveNext(this, 5, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-100 rounded-xl outline-none focus:ring-2 focus:theme-border otp-box">
+                <div class="flex justify-between gap-2 my-10 px-4">
+                    <input type="number" onpaste="handleOtpPaste(event)" onkeyup="moveNext(this, 0, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-100 rounded-xl outline-none otp-box">
+                    <input type="number" onkeyup="moveNext(this, 1, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-100 rounded-xl outline-none otp-box">
+                    <input type="number" onkeyup="moveNext(this, 2, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-100 rounded-xl outline-none otp-box">
+                    <input type="number" onkeyup="moveNext(this, 3, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-100 rounded-xl outline-none otp-box">
+                    <input type="number" onkeyup="moveNext(this, 4, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-100 rounded-xl outline-none otp-box">
+                    <input type="number" onkeyup="moveNext(this, 5, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-100 rounded-xl outline-none otp-box">
                 </div>
-                <button id="btn-verify" onclick="verifyOTP()" class="w-full theme-btn py-4 rounded-2xl font-extrabold btn-press shadow-lg">சரிபார்க்கவும்</button>
+                <button id="btn-verify" onclick="verifyOTP()" class="w-full theme-btn py-4 rounded-2xl font-extrabold btn-press">சரிபார்க்கவும்</button>
                 <button id="resendOtpBtn" onclick="requestOTP()" class="mt-8 text-slate-400 text-xs font-bold uppercase underline" disabled>மீண்டும் அனுப்ப</button>
+            </div>
+
+            <div id="auth-register" class="screen text-center">
+                <h2 class="text-3xl font-black theme-icon mb-8 italic">பதிவு செய்க</h2>
+                <div class="space-y-4">
+                    <input type="text" id="regName" placeholder="பெயர்" class="w-full p-4 bg-slate-100 border-2 border-transparent rounded-2xl outline-none focus:theme-border">
+                    <input type="email" id="regEmail" placeholder="மின்னஞ்சல்" class="w-full p-4 bg-slate-100 border-2 border-transparent rounded-2xl outline-none focus:theme-border">
+                    <input type="password" id="regPass" placeholder="கடவுச்சொல்" class="w-full p-4 bg-slate-100 border-2 border-transparent rounded-2xl outline-none focus:theme-border">
+                    <button id="btn-reg" onclick="registerAccount()" class="w-full theme-btn py-4 rounded-2xl font-extrabold btn-press">பதிவு செய்</button>
+                    <button onclick="toggleAuth('login')" class="w-full text-slate-400 text-xs font-bold uppercase mt-6">லாகின் பக்கம்</button>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- 2. Dashboard Screen -->
     <div id="dashboard" class="pb-32">
-        <header class="p-6 theme-topbar border-b sticky top-0 z-50 shadow-sm transition-all">
+        <header class="p-6 theme-topbar border-b sticky top-0 z-50 shadow-sm">
             <div class="flex justify-between items-center">
                 <div class="flex flex-col">
                     <h1 class="text-xl font-black italic theme-icon tracking-tighter">காசு-கந்து</h1>
@@ -153,25 +159,17 @@
         <main class="p-6 space-y-6 max-w-md mx-auto">
             <div class="theme-primary p-8 rounded-[3rem] text-white shadow-xl relative overflow-hidden transition-all">
                 <div class="flex justify-between items-start">
-                    <div>
-                        <p class="text-[10px] font-bold uppercase opacity-70 tracking-widest">மாத வருமானம்</p>
-                        <h2 id="dispSalary" class="text-4xl font-black my-1">₹0.00</h2>
-                    </div>
+                    <div><p class="text-[10px] font-bold uppercase opacity-70 tracking-widest">வருமானம்</p><h2 id="dispSalary" class="text-4xl font-black my-1">₹0.00</h2></div>
                     <button onclick="showSalaryModal()" class="bg-white/20 p-2 rounded-xl text-sm"><i class="fa-solid fa-pen-to-square"></i></button>
                 </div>
-                <div class="bg-white/10 p-4 rounded-2xl mt-4 border border-white/10 backdrop-blur-sm">
-                    <p id="aiAdvice" class="text-xs font-medium italic leading-relaxed">தரவுகள் ஆய்வு செய்யப்படுகின்றன...</p>
-                </div>
-                <div id="deficitTag" class="mt-6 inline-block px-4 py-1.5 bg-emerald-500 text-[10px] font-extrabold rounded-full uppercase tracking-tighter">Checking</div>
+                <div id="deficitTag" class="mt-6 inline-block px-4 py-1.5 bg-emerald-500 text-[10px] font-extrabold rounded-full uppercase tracking-tighter shadow-lg">Checking</div>
             </div>
 
-            <!-- சமீபத்திய பரிவர்த்தனைகள் -->
             <div id="recentTransactions" class="space-y-4">
-                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">சமீபத்திய பரிவர்த்தனைகள்</h3>
+                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">பரிவர்த்தனைகள்</h3>
                 <div id="transList" class="space-y-3"></div>
             </div>
 
-            <!-- Calendar -->
             <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100">
                 <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest text-center mb-6">நிதி நாட்காட்டி</h3>
                 <div id="calGrid" class="grid grid-cols-7 gap-3 text-center text-[10px] font-extrabold"></div>
@@ -191,73 +189,53 @@
 
     <!-- 3. Modals -->
     
-    <!-- Theme Palette Modal -->
-    <div id="themeModal" class="modal-overlay">
-        <div class="bg-white w-full max-w-xs p-8 rounded-[3.5rem] shadow-2xl">
-            <h3 class="text-xl font-black theme-icon mb-6 text-center italic">வண்ண மேலாண்மை</h3>
-            <div class="space-y-5">
-                <div class="flex justify-between items-center">
-                    <span class="text-xs font-bold text-slate-600 uppercase">Primary Color</span>
-                    <input type="color" id="color-primary" oninput="updateThemePreview()">
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-xs font-bold text-slate-600 uppercase">Background</span>
-                    <input type="color" id="color-bg" oninput="updateThemePreview()">
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-xs font-bold text-slate-600 uppercase">Top Bar</span>
-                    <input type="color" id="color-topbar" oninput="updateThemePreview()">
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-xs font-bold text-slate-600 uppercase">Text Color</span>
-                    <input type="color" id="color-text" oninput="updateThemePreview()">
-                </div>
-            </div>
-            <div class="flex flex-col gap-3 mt-8">
-                <button onclick="saveTheme()" class="w-full theme-btn py-4 rounded-2xl font-bold uppercase text-xs">Save Theme</button>
-                <button onclick="resetTheme()" class="w-full py-4 bg-slate-50 text-slate-400 rounded-2xl font-bold uppercase text-[10px]">Reset Default</button>
-                <button onclick="closeModals()" class="w-full text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-2">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Salary Modal -->
-    <div id="salaryModal" class="modal-overlay">
-        <div class="bg-white w-full max-w-xs p-10 rounded-[3.5rem] shadow-2xl text-center">
-            <h3 class="text-xl font-black theme-icon mb-2 italic">Update Income</h3>
-            <input type="number" id="newSalaryInput" class="w-full p-6 bg-slate-50 rounded-3xl text-3xl font-extrabold outline-none mb-8 border-2 border-transparent focus:theme-border" placeholder="30000">
-            <button id="btn-save-salary" onclick="updateSalary()" class="w-full theme-btn py-4 rounded-2xl font-bold uppercase text-xs shadow-lg">Save</button>
-            <button onclick="closeModals()" class="w-full py-4 bg-slate-50 text-slate-400 rounded-2xl font-bold text-xs uppercase mt-3">Close</button>
-        </div>
-    </div>
-
-    <!-- Add Transaction Modal -->
+    <!-- Dynamic Transaction Modal (v7.9.0) -->
     <div id="transModal" class="modal-overlay">
-        <div class="bg-white w-full max-w-xs p-10 rounded-[3.5rem] shadow-2xl text-center">
-            <h3 class="text-xl font-black theme-icon mb-6 italic tracking-tight">Add Transaction</h3>
-            <div class="flex gap-2 mb-6">
-                <button id="typeExp" onclick="setTransType('Expense')" class="flex-1 py-3 rounded-xl font-black text-[10px] bg-rose-50 text-rose-500 border-2 border-rose-100 uppercase transition-all">செலவு</button>
-                <button id="typeInc" onclick="setTransType('Income')" class="flex-1 py-3 rounded-xl font-black text-[10px] bg-slate-50 text-slate-400 border-2 border-transparent uppercase transition-all">வரவு</button>
+        <div class="bg-white w-full max-w-md p-8 rounded-[3.5rem] shadow-2xl max-h-[90vh] overflow-y-auto hide-scrollbar">
+            <h3 class="text-xl font-black theme-icon italic text-center mb-8 tracking-tight">பரிவர்த்தனை பதிவு</h3>
+            
+            <div class="flex gap-2 mb-8">
+                <button id="typeExp" onclick="setTransType('Expense')" class="flex-1 py-3 rounded-xl font-black text-[10px] bg-rose-50 text-rose-500 border-2 border-rose-100 uppercase">செலவு</button>
+                <button id="typeInc" onclick="setTransType('Income')" class="flex-1 py-3 rounded-xl font-black text-[10px] bg-slate-50 text-slate-400 border-2 border-transparent uppercase">வரவு</button>
             </div>
+
+            <div class="space-y-4 mb-6">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">வகை (Category)</p>
+                <div id="masterCatGrid" class="flex flex-wrap gap-2">
+                    <!-- டைனமிக் மாஸ்டர் கேட்டகிரிஸ் இங்கு வரும் -->
+                </div>
+            </div>
+
             <div class="space-y-4 mb-8">
-                <select id="transCat" class="w-full p-4 bg-slate-50 rounded-2xl outline-none text-xs font-bold text-slate-600">
-                    <option value="Food">உணவு</option><option value="Rent">வாடகை</option><option value="EMI">கடன்</option><option value="Salary">சம்பளம்</option><option value="Fuel">பெட்ரோல்</option><option value="Other">மற்றவை</option>
-                </select>
-                <input type="number" id="transAmt" placeholder="Amount (₹)" class="w-full p-4 bg-slate-50 rounded-2xl outline-none text-xl font-black">
-                <input type="text" id="transNote" placeholder="குறிப்பு (Optional)" class="w-full p-4 bg-slate-50 rounded-2xl outline-none text-xs font-bold">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">விவரம் (Sub-category)</p>
+                <div id="subCatGrid" class="flex flex-wrap gap-2 mb-4"></div>
+                <input type="text" id="transCat" placeholder="விவரம்" class="w-full p-4 bg-slate-50 rounded-2xl outline-none text-sm font-bold border-2 border-transparent focus:theme-border">
             </div>
-            <button id="btn-save-trans" onclick="saveTransaction()" class="w-full theme-btn py-4 rounded-2xl font-bold shadow-lg uppercase text-xs">சேமிக்க</button>
-            <button onclick="closeModals()" class="w-full py-4 bg-slate-50 text-slate-400 rounded-2xl font-bold text-xs uppercase mt-3">ரத்து</button>
+
+            <div class="space-y-6 mb-8">
+                <div class="relative">
+                    <span class="absolute left-4 top-1/2 -translate-y-1/2 font-black theme-icon text-lg">₹</span>
+                    <input type="number" id="transAmt" placeholder="0.00" class="w-full p-6 pl-10 bg-slate-50 rounded-2xl outline-none text-2xl font-black">
+                </div>
+                <input type="text" id="transNote" placeholder="சிறிய குறிப்பு" class="w-full p-4 bg-slate-50 rounded-2xl outline-none text-xs font-bold">
+            </div>
+
+            <button id="btn-save-trans" onclick="saveTransaction()" class="w-full theme-btn py-5 rounded-2xl font-bold shadow-lg uppercase text-xs">பதிவு செய்</button>
+            <button onclick="closeModals()" class="w-full py-4 text-slate-400 text-xs font-bold mt-2 uppercase">ரத்து</button>
         </div>
     </div>
+
+    <div id="salaryModal" class="modal-overlay"><div class="bg-white w-full max-w-xs p-10 rounded-[3.5rem] shadow-2xl text-center"><h3 class="text-xl font-black theme-icon mb-6 italic">சம்பளம் மாற்றம்</h3><input type="number" id="newSalaryInput" class="w-full p-6 bg-slate-50 rounded-3xl text-3xl font-extrabold outline-none mb-8 border-2 border-transparent focus:theme-border" placeholder="30000"><button id="btn-save-salary" onclick="updateSalary()" class="w-full theme-btn py-4 rounded-2xl font-bold uppercase text-xs">Save</button><button onclick="closeModals()" class="w-full py-4 text-slate-400 text-xs font-bold mt-2">Close</button></div></div>
+    <div id="themeModal" class="modal-overlay"><div class="bg-white w-full max-w-xs p-8 rounded-[3.5rem] shadow-2xl text-center"><h3 class="text-xl font-black theme-icon mb-6 italic">வண்ணங்கள்</h3><div class="space-y-5"><div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-600">Primary</span><input type="color" id="color-primary" oninput="updateThemePreview()"></div><div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-600">Background</span><input type="color" id="color-bg" oninput="updateThemePreview()"></div><div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-600">Top Bar</span><input type="color" id="color-topbar" oninput="updateThemePreview()"></div><div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-600">Text</span><input type="color" id="color-text" oninput="updateThemePreview()"></div></div><button onclick="saveTheme()" class="w-full theme-btn py-4 rounded-2xl font-bold uppercase text-xs mt-8">Save</button><button onclick="closeModals()" class="w-full text-slate-400 text-[10px] font-bold uppercase mt-4">Close</button></div></div>
 
     <script>
         let G_URL = localStorage.getItem('kk_g');
         let session = { user: null, sheetId: null };
         let transType = 'Expense';
+        let currentMasterCat = '';
+        let masterSubCategories = {};
         let logoutTimerInterval, otpTimerInterval;
 
-        // --- Theme Engine ---
         const defaultTheme = { primary: '#4f46e5', bg: '#f8fafc', topbar: '#ffffff', text: '#0f172a' };
 
         window.onload = () => {
@@ -272,57 +250,125 @@
             }
         };
 
+        // --- Theme Engine ---
         function initTheme() {
-            const savedTheme = JSON.parse(localStorage.getItem('kk_theme')) || defaultTheme;
-            applyTheme(savedTheme);
-            // Fill color pickers
-            document.getElementById('color-primary').value = savedTheme.primary;
-            document.getElementById('color-bg').value = savedTheme.bg;
-            document.getElementById('color-topbar').value = savedTheme.topbar;
-            document.getElementById('color-text').value = savedTheme.text;
+            const st = JSON.parse(localStorage.getItem('kk_theme')) || defaultTheme;
+            applyTheme(st);
+            document.getElementById('color-primary').value = st.primary;
+            document.getElementById('color-bg').value = st.bg;
+            document.getElementById('color-topbar').value = st.topbar;
+            document.getElementById('color-text').value = st.text;
         }
 
-        function applyTheme(theme) {
-            document.documentElement.style.setProperty('--primary-color', theme.primary);
-            document.documentElement.style.setProperty('--bg-color', theme.bg);
-            document.documentElement.style.setProperty('--topbar-color', theme.topbar);
-            document.documentElement.style.setProperty('--text-color', theme.text);
+        function applyTheme(t) {
+            const d = document.documentElement.style;
+            d.setProperty('--primary-color', t.primary);
+            d.setProperty('--bg-color', t.bg);
+            d.setProperty('--topbar-color', t.topbar);
+            d.setProperty('--text-color', t.text);
         }
 
         function updateThemePreview() {
-            const tempTheme = {
-                primary: document.getElementById('color-primary').value,
-                bg: document.getElementById('color-bg').value,
-                topbar: document.getElementById('color-topbar').value,
-                text: document.getElementById('color-text').value
-            };
-            applyTheme(tempTheme);
+            const nt = { primary: document.getElementById('color-primary').value, bg: document.getElementById('color-bg').value, topbar: document.getElementById('color-topbar').value, text: document.getElementById('color-text').value };
+            applyTheme(nt);
         }
 
         function saveTheme() {
-            const newTheme = {
-                primary: document.getElementById('color-primary').value,
-                bg: document.getElementById('color-bg').value,
-                topbar: document.getElementById('color-topbar').value,
-                text: document.getElementById('color-text').value
-            };
-            localStorage.setItem('kk_theme', JSON.stringify(newTheme));
-            alert("வண்ணங்கள் சேமிக்கப்பட்டன!");
-            closeModals();
-        }
-
-        function resetTheme() {
-            applyTheme(defaultTheme);
-            localStorage.removeItem('kk_theme');
-            document.getElementById('color-primary').value = defaultTheme.primary;
-            document.getElementById('color-bg').value = defaultTheme.bg;
-            document.getElementById('color-topbar').value = defaultTheme.topbar;
-            document.getElementById('color-text').value = defaultTheme.text;
+            const nt = { primary: document.getElementById('color-primary').value, bg: document.getElementById('color-bg').value, topbar: document.getElementById('color-topbar').value, text: document.getElementById('color-text').value };
+            localStorage.setItem('kk_theme', JSON.stringify(nt)); alert("வண்ணங்கள் சேமிக்கப்பட்டன!"); closeModals();
         }
 
         function showThemeModal() { document.getElementById('themeModal').style.display = 'flex'; }
 
-        // --- Auth & Core ---
+        // --- Categories Logic (v7.9.0) ---
+        function renderMasterCategories() {
+            const grid = document.getElementById('masterCatGrid');
+            grid.innerHTML = '';
+            const cats = Object.keys(masterSubCategories);
+            
+            cats.forEach(cat => {
+                const b = document.createElement('button');
+                b.className = `cat-pill sub-pill ${currentMasterCat === cat ? 'active' : ''}`;
+                b.innerText = cat;
+                b.onclick = () => setMasterCategory(cat);
+                grid.appendChild(b);
+            });
+
+            // முதன்மை வகைக்கான "+" பட்டன்
+            const addB = document.createElement('button');
+            addB.className = 'sub-pill add-pill';
+            addB.innerHTML = '<i class="fa-solid fa-plus"></i> Add';
+            addB.onclick = addNewMasterCategory;
+            grid.appendChild(addB);
+        }
+
+        function setMasterCategory(cat) {
+            currentMasterCat = cat;
+            renderMasterCategories();
+            renderSubCategories();
+            document.getElementById('transCat').value = '';
+        }
+
+        function renderSubCategories() {
+            const grid = document.getElementById('subCatGrid');
+            grid.innerHTML = '';
+            if (!currentMasterCat) return;
+            
+            const items = masterSubCategories[currentMasterCat] || [];
+            items.forEach(item => {
+                const b = document.createElement('button');
+                b.className = 'sub-pill transition-all';
+                b.innerText = item;
+                b.onclick = () => {
+                    document.querySelectorAll('#subCatGrid .sub-pill').forEach(sp => sp.classList.remove('active'));
+                    b.classList.add('active');
+                    document.getElementById('transCat').value = item;
+                };
+                grid.appendChild(b);
+            });
+
+            // துணை வகைக்கான "+" பட்டன்
+            const addB = document.createElement('button');
+            addB.className = 'sub-pill add-pill';
+            addB.innerHTML = '<i class="fa-solid fa-plus"></i> Add';
+            addB.onclick = addNewSubCategory;
+            grid.appendChild(addB);
+        }
+
+        // புதிய மாஸ்டர் வகை சேர்த்தல்
+        async function addNewMasterCategory() {
+            const newCat = prompt("புதிய முதன்மை வகை (Master Category) பெயரை உள்ளிடவும்:");
+            if (!newCat) return;
+            const subItem = prompt(`'${newCat}' வகையின் கீழ் முதல் ஒரு ஐட்டத்தை உள்ளிடவும்:`);
+            if (!subItem) return;
+
+            toggleLoading('btn-save-trans', true);
+            call({ action: 'addNewCategory', masterCat: newCat, subCat: subItem, sheetId: session.sheetId }, (res) => {
+                toggleLoading('btn-save-trans', false);
+                if (res.status === "Success") {
+                    alert("வகை சேர்க்கப்பட்டது!");
+                    loadDashboard(); // தரவுகளைப் புதுப்பிக்க
+                }
+            });
+        }
+
+        // புதிய துணை வகை சேர்த்தல்
+        async function addNewSubCategory() {
+            if (!currentMasterCat) return alert("முதலில் ஒரு கேட்டகிரியைக் கிளிக் செய்யவும்!");
+            const newSub = prompt(`'${currentMasterCat}' பிரிவின் கீழ் புதிய ஐட்டத்தைச் சேர்க்கவும்:`);
+            if (!newSub) return;
+
+            toggleLoading('btn-save-trans', true);
+            call({ action: 'addNewCategory', masterCat: currentMasterCat, subCat: newSub, sheetId: session.sheetId }, (res) => {
+                toggleLoading('btn-save-trans', false);
+                if (res.status === "Success") {
+                    alert("துணை வகை சேர்க்கப்பட்டது!");
+                    loadDashboard();
+                }
+            });
+        }
+
+        // --- UI & Auth ---
         function updateLiveTime() {
             const now = new Date();
             document.getElementById('liveClock').innerText = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -332,9 +378,8 @@
         function saveGateway() {
             const u = document.getElementById('gUrlInput').value.trim();
             if (u.startsWith('https://script.google.com/') && u.includes('/exec')) {
-                localStorage.setItem('kk_g', u); G_URL = u;
-                enableAuthPanel(true); alert("Gateway Connected!");
-            } else alert("தவறான URL!");
+                localStorage.setItem('kk_g', u); G_URL = u; enableAuthPanel(true); alert("Connected!");
+            } else alert("Invalid URL!");
         }
 
         function enableAuthPanel(isC) {
@@ -347,10 +392,7 @@
             } else p.classList.add('auth-disabled');
         }
 
-        function toggleAuth(scr) {
-            document.querySelectorAll('.auth-panel .screen').forEach(s => s.classList.remove('active'));
-            document.getElementById('auth-' + scr).classList.add('active');
-        }
+        function toggleAuth(s) { document.querySelectorAll('.auth-panel .screen').forEach(sc => sc.classList.remove('active')); document.getElementById('auth-' + s).classList.add('active'); }
 
         function call(params, cb) {
             if (!G_URL) return;
@@ -363,7 +405,7 @@
 
         function loginUser() {
             const e = document.getElementById('loginEmail').value, p = document.getElementById('loginPass').value;
-            if(!e || !p) return alert("விவரங்களை உள்ளிடவும்!");
+            if(!e || !p) return alert("விவரங்கள் தேவை!");
             toggleLoading('btn-login', true);
             call({ action: 'login', email: e, pass: p }, (res) => {
                 toggleLoading('btn-login', false);
@@ -373,8 +415,7 @@
         }
 
         function requestOTP() {
-            const e = document.getElementById('loginEmail').value;
-            if(!e) return alert("மின்னஞ்சல் தேவை!");
+            const e = document.getElementById('loginEmail').value; if(!e) return alert("மின்னஞ்சல் தேவை!");
             toggleLoading('btn-otp-req', true);
             call({ action: 'sendOTP', email: e }, (res) => {
                 toggleLoading('btn-otp-req', false);
@@ -396,10 +437,80 @@
         function startOtpTimer() {
             let t = 60; const d = document.getElementById('otpTimerDisplay'), b = document.getElementById('resendOtpBtn');
             clearInterval(otpTimerInterval); b.disabled = true;
-            otpTimerInterval = setInterval(() => {
-                t--; d.innerText = `${t} வினாடிகள்`;
-                if(t <= 0) { clearInterval(otpTimerInterval); d.innerText = "காலாவதியானது!"; b.disabled = false; }
-            }, 1000);
+            otpTimerInterval = setInterval(() => { t--; d.innerText = `${t} வினாடிகள்`; if(t <= 0) { clearInterval(otpTimerInterval); d.innerText = "காலாவதியானது!"; b.disabled = false; } }, 1000);
+        }
+
+        function enterDashboard(skip = false) {
+            if (!skip) localStorage.setItem('kk_session', JSON.stringify(session));
+            document.getElementById('init-view').style.display = 'none'; document.getElementById('dashboard').classList.add('active');
+            const autoOn = localStorage.getItem('kk_auto_logout') === 'true'; document.getElementById('autoLogoutToggle').checked = autoOn;
+            if (autoOn) startAutoLogout(); loadDashboard();
+        }
+
+        function logout() { localStorage.removeItem('kk_session'); location.reload(); }
+
+        function loadDashboard() {
+            if(!session.sheetId) return;
+            call({ action: 'getAppData', sheetId: session.sheetId }, (data) => {
+                if(data.status !== "Success") return;
+                masterSubCategories = data.masterCategories;
+                
+                // Initialize default category if not set
+                if (!currentMasterCat) currentMasterCat = Object.keys(masterSubCategories)[0];
+                
+                document.getElementById('dispSalary').innerText = `₹${Number(data.salary).toLocaleString()}`;
+                const dTag = document.getElementById('deficitTag');
+                dTag.innerText = data.deficit < 0 ? `குறைவு: ₹${Math.abs(data.deficit).toLocaleString()}` : `மீதி: ₹${data.deficit.toLocaleString()}`;
+                dTag.className = `mt-6 inline-block px-4 py-1.5 text-[10px] font-extrabold rounded-full uppercase ${data.deficit < 0 ? 'bg-rose-500' : 'bg-emerald-500'}`;
+                
+                renderCalendar(data);
+                renderLoans(data.loans);
+                renderTransactions(data.transactions);
+            });
+        }
+
+        function showAddModal() { 
+            document.getElementById('transModal').style.display = 'flex'; 
+            renderMasterCategories();
+            renderSubCategories();
+        }
+
+        function renderCalendar(data) {
+            const grid = document.getElementById('calGrid'), emiDates = data.loans ? data.loans.map(l => Number(l.date)) : [];
+            grid.innerHTML = "";
+            for(let i=1; i<=31; i++) {
+                const isEMI = emiDates.includes(i), isH = (data.holidays || []).includes(i);
+                grid.innerHTML += `<div class="p-3 rounded-2xl transition-all ${isEMI ? 'emi-date scale-105 shadow-sm' : (isH ? 'holiday' : 'bg-slate-50 text-slate-400')}">${i}</div>`;
+            }
+        }
+
+        function renderLoans(loans) {
+            const list = document.getElementById('loanList'); list.innerHTML = `<h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">கடன் தவணைகள்</h3>`;
+            loans.forEach(loan => {
+                list.innerHTML += `<div class="bg-white p-6 rounded-[3rem] flex justify-between items-center border border-slate-100 shadow-sm"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center font-black text-lg">${loan.date}</div><div><h4 class="font-black text-sm text-slate-800">${loan.name}</h4><p class="text-[9px] font-bold text-slate-400 uppercase">₹${Number(loan.amount).toLocaleString()}</p></div></div><i class="fa-solid fa-circle-check text-slate-100 text-2xl"></i></div>`;
+            });
+        }
+
+        function renderTransactions(trans) {
+            const list = document.getElementById('transList'); list.innerHTML = "";
+            if(!trans || trans.length === 0) { list.innerHTML = `<p class="text-center py-6 text-[10px] font-black text-slate-300 uppercase">No Data</p>`; return; }
+            trans.forEach(t => {
+                const isExp = t.type === 'Expense';
+                list.innerHTML += `<div class="bg-white p-4 rounded-3xl flex justify-between items-center border border-slate-50 shadow-sm"><div class="flex items-center gap-4"><div class="w-10 h-10 rounded-2xl flex items-center justify-center text-sm ${isExp ? 'bg-rose-50 text-rose-500' : 'bg-emerald-50 text-emerald-500'}"><i class="fa-solid ${isExp ? 'fa-arrow-up' : 'fa-arrow-down'}"></i></div><div><h4 class="text-xs font-black theme-text leading-tight">${t.category}</h4><p class="text-[8px] font-bold text-slate-400 uppercase">${new Date(t.date).toLocaleDateString()}</p></div></div><p class="text-xs font-black ${isExp ? 'text-rose-500' : 'text-emerald-500'}">${isExp ? '-' : '+'}₹${Number(t.amount).toLocaleString()}</p></div>`;
+            });
+        }
+
+        function updateSalary() {
+            const a = document.getElementById('newSalaryInput').value; if(!a) return;
+            toggleLoading('btn-save-salary', true);
+            call({ action: 'updateSalary', amount: a, sheetId: session.sheetId }, (res) => { toggleLoading('btn-save-salary', false); if(res.status === "Success") { closeModals(); loadDashboard(); } });
+        }
+
+        function saveTransaction() {
+            const a = document.getElementById('transAmt').value, c = document.getElementById('transCat').value, n = document.getElementById('transNote').value;
+            if(!a || !c) return alert("விவரங்கள் தேவை!");
+            toggleLoading('btn-save-trans', true);
+            call({ action: 'addTransaction', amount: a, category: c, note: n, type: transType, sheetId: session.sheetId }, (res) => { toggleLoading('btn-save-trans', false); if(res.status === "Success") { closeModals(); loadDashboard(); } });
         }
 
         function registerAccount() {
@@ -413,134 +524,12 @@
             });
         }
 
-        function enterDashboard(skip = false) {
-            if (!skip) localStorage.setItem('kk_session', JSON.stringify(session));
-            document.getElementById('init-view').style.display = 'none';
-            document.getElementById('dashboard').classList.add('active');
-            const autoOn = localStorage.getItem('kk_auto_logout') === 'true';
-            document.getElementById('autoLogoutToggle').checked = autoOn;
-            if (autoOn) startAutoLogout();
-            loadDashboard();
-        }
-
-        function logout() { localStorage.removeItem('kk_session'); location.reload(); }
-
-        function loadDashboard() {
-            if(!session.sheetId) return;
-            call({ action: 'getAppData', sheetId: session.sheetId }, (data) => {
-                if(data.status !== "Success") return;
-                document.getElementById('dispSalary').innerText = `₹${Number(data.salary).toLocaleString()}`;
-                document.getElementById('aiAdvice').innerText = data.advice;
-                const dTag = document.getElementById('deficitTag');
-                dTag.innerText = data.deficit < 0 ? `குறைவு: ₹${Math.abs(data.deficit).toLocaleString()}` : `மீதி: ₹${data.deficit.toLocaleString()}`;
-                dTag.className = `mt-6 inline-block px-4 py-1.5 text-[10px] font-extrabold rounded-full uppercase ${data.deficit < 0 ? 'bg-rose-500' : 'bg-emerald-500'}`;
-                renderCalendar(data);
-                renderLoans(data.loans);
-                renderTransactions(data.transactions);
-            });
-        }
-
-        function renderCalendar(data) {
-            const grid = document.getElementById('calGrid'), emiDates = data.loans ? data.loans.map(l => Number(l.date)) : [];
-            grid.innerHTML = "";
-            for(let i=1; i<=31; i++) {
-                const isEMI = emiDates.includes(i), isH = (data.holidays || []).includes(i);
-                const cls = isEMI ? 'emi-date scale-105 shadow-sm' : (isH ? 'holiday' : 'bg-slate-50 text-slate-400');
-                grid.innerHTML += `<div class="p-3 rounded-2xl transition-all ${cls}">${i}</div>`;
-            }
-        }
-
-        function renderLoans(loans) {
-            const list = document.getElementById('loanList');
-            list.innerHTML = `<h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">கடன் தவணைகள்</h3>`;
-            loans.forEach(loan => {
-                list.innerHTML += `<div class="bg-white p-6 rounded-[3rem] flex justify-between items-center border border-slate-100 shadow-sm">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center font-black text-lg">${loan.date}</div>
-                        <div><h4 class="font-black text-sm text-slate-800">${loan.name}</h4><p class="text-[9px] font-bold text-slate-400 uppercase">₹${Number(loan.amount).toLocaleString()}</p></div>
-                    </div>
-                    <i class="fa-solid fa-circle-check text-slate-100 text-2xl"></i>
-                </div>`;
-            });
-        }
-
-        function renderTransactions(trans) {
-            const list = document.getElementById('transList'); list.innerHTML = "";
-            if(!trans || trans.length === 0) { list.innerHTML = `<p class="text-center py-6 text-[10px] font-black text-slate-300 uppercase">No Data</p>`; return; }
-            trans.forEach(t => {
-                const isExp = t.type === 'Expense';
-                list.innerHTML += `<div class="bg-white p-4 rounded-3xl flex justify-between items-center border border-slate-50 shadow-sm">
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-2xl flex items-center justify-center text-sm ${isExp ? 'bg-rose-50 text-rose-500' : 'bg-emerald-50 text-emerald-500'}"><i class="fa-solid ${isExp ? 'fa-arrow-up' : 'fa-arrow-down'}"></i></div>
-                        <div><h4 class="text-xs font-black theme-text">${t.category}</h4><p class="text-[8px] font-bold text-slate-400 uppercase">${new Date(t.date).toLocaleDateString()}</p></div>
-                    </div>
-                    <p class="text-xs font-black ${isExp ? 'text-rose-500' : 'text-emerald-500'}">${isExp ? '-' : '+'}₹${Number(t.amount).toLocaleString()}</p>
-                </div>`;
-            });
-        }
-
-        function updateSalary() {
-            const a = document.getElementById('newSalaryInput').value; if(!a) return alert("Amount!");
-            toggleLoading('btn-save-salary', true);
-            call({ action: 'updateSalary', amount: a, sheetId: session.sheetId }, (res) => {
-                toggleLoading('btn-save-salary', false);
-                if(res.status === "Success") { closeModals(); loadDashboard(); }
-            });
-        }
-
-        function saveTransaction() {
-            const a = document.getElementById('transAmt').value, c = document.getElementById('transCat').value, n = document.getElementById('transNote').value;
-            if(!a) return alert("Amount!");
-            toggleLoading('btn-save-trans', true);
-            call({ action: 'addTransaction', amount: a, category: c, note: n, type: transType, sheetId: session.sheetId }, (res) => {
-                toggleLoading('btn-save-trans', false);
-                if(res.status === "Success") { closeModals(); loadDashboard(); }
-            });
-        }
-
-        // --- UI Utils ---
-        function setTransType(t) {
-            transType = t;
-            const incB = document.getElementById('typeInc'), expB = document.getElementById('typeExp');
-            if(t === 'Income') {
-                incB.className = "flex-1 py-3 rounded-xl font-black text-[10px] bg-emerald-50 text-emerald-500 border-2 border-emerald-100 uppercase";
-                expB.className = "flex-1 py-3 rounded-xl font-black text-[10px] bg-slate-50 text-slate-400 border-2 border-transparent uppercase";
-            } else {
-                expB.className = "flex-1 py-3 rounded-xl font-black text-[10px] bg-rose-50 text-rose-500 border-2 border-rose-100 uppercase";
-                incB.className = "flex-1 py-3 rounded-xl font-black text-[10px] bg-slate-50 text-slate-400 border-2 border-transparent uppercase";
-            }
-        }
-
-        function showSalaryModal() { document.getElementById('salaryModal').style.display = 'flex'; }
-        function showAddModal() { document.getElementById('transModal').style.display = 'flex'; }
         function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
-        function toggleLoading(id, isL) {
-            const b = document.getElementById(id); if(!b) return;
-            if(isL) { b.dataset.old = b.innerText; b.innerHTML = '<div class="spinner mx-auto"></div>'; b.disabled = true; }
-            else { b.innerHTML = b.dataset.old || b.innerText; b.disabled = false; }
-        }
-        function handleOtpPaste(e) {
-            const d = e.clipboardData.getData('text').slice(0, 6); if(!/^\d+$/.test(d)) return;
-            const ins = document.querySelectorAll('.otp-box');
-            d.split('').forEach((c, i) => { if(ins[i]) ins[i].value = c; }); ins[Math.min(d.length, 5)].focus();
-        }
-        function moveNext(el, idx, e) {
-            if(e.key === "Backspace" && el.value.length === 0 && idx > 0) document.querySelectorAll('.otp-box')[idx - 1].focus();
-            else if(el.value.length === 1 && idx < 5) document.querySelectorAll('.otp-box')[idx + 1].focus();
-        }
-        function toggleAutoLogout() { 
-            const on = document.getElementById('autoLogoutToggle').checked; 
-            localStorage.setItem('kk_auto_logout', on); 
-            if(on) startAutoLogout(); else clearInterval(logoutTimerInterval);
-        }
-        function startAutoLogout() {
-            let t = 600; const d = document.getElementById('logoutTimerDisplay');
-            clearInterval(logoutTimerInterval);
-            logoutTimerInterval = setInterval(() => {
-                t--; const m = Math.floor(t/60), s = t%60; d.innerText = `${m}:${s < 10 ? '0'+s : s}`;
-                if(t <= 0) logout();
-            }, 1000);
-        }
+        function toggleLoading(id, isL) { const b = document.getElementById(id); if(!b) return; if(isL) { b.dataset.old = b.innerText; b.innerHTML = '<div class="spinner mx-auto"></div>'; b.disabled = true; } else { b.innerHTML = b.dataset.old || b.innerText; b.disabled = false; } }
+        function handleOtpPaste(e) { const d = e.clipboardData.getData('text').slice(0, 6); if(!/^\d+$/.test(d)) return; const ins = document.querySelectorAll('.otp-box'); d.split('').forEach((c, i) => { if(ins[i]) ins[i].value = c; }); ins[Math.min(d.length, 5)].focus(); }
+        function moveNext(el, idx, e) { if(e.key === "Backspace" && el.value.length === 0 && idx > 0) document.querySelectorAll('.otp-box')[idx - 1].focus(); else if(el.value.length === 1 && idx < 5) document.querySelectorAll('.otp-box')[idx + 1].focus(); }
+        function toggleAutoLogout() { const on = document.getElementById('autoLogoutToggle').checked; localStorage.setItem('kk_auto_logout', on); if(on) startAutoLogout(); else clearInterval(logoutTimerInterval); }
+        function startAutoLogout() { let t = 600; const d = document.getElementById('logoutTimerDisplay'); clearInterval(logoutTimerInterval); logoutTimerInterval = setInterval(() => { t--; const m = Math.floor(t/60), s = t%60; d.innerText = `${m}:${s < 10 ? '0'+s : s}`; if(t <= 0) logout(); }, 1000); }
         function initAppDB() { call({ action: 'initSetup', sheetId: session.sheetId }, (res) => alert(res.status)); }
     </script>
 </body>
