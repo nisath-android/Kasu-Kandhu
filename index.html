@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>காசு-கந்து PRO v7.2.3</title>
+    <title>காசு-கந்து PRO v7.2.4</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -214,13 +214,22 @@
         }
 
         function call(params, cb) {
+            if (!G_URL) return;
             const n = 'cb' + Date.now() + Math.floor(Math.random() * 100);
-            window[n] = (res) => { cb(res); delete window[n]; document.getElementById(n)?.remove(); };
+            window[n] = (res) => { 
+                cb(res); 
+                delete window[n]; 
+                const scriptEl = document.getElementById(n);
+                if (scriptEl) scriptEl.remove(); 
+            };
             const s = document.createElement('script'); 
             s.id = n;
             const sep = G_URL.includes('?') ? '&' : '?';
             s.src = `${G_URL}${sep}callback=${n}&${new URLSearchParams(params).toString()}`;
-            s.onerror = () => { alert("Gateway Error!"); showScreen('setup'); };
+            s.onerror = () => { 
+                alert("Gateway தொடர்பு துண்டிக்கப்பட்டது! URL-ஐ சரிபார்க்கவும்."); 
+                showScreen('setup'); 
+            };
             document.body.appendChild(s);
         }
 
@@ -234,8 +243,10 @@
             toggleLoading('btn-reg', true);
             call({ action: 'register', name, email, pass }, (res) => {
                 toggleLoading('btn-reg', false);
-                if(res.status === "Success") { alert("பதிவு முடிந்தது!"); showScreen('auth'); }
-                else alert(res.msg);
+                if(res && res.status === "Success") { 
+                    alert("பதிவு முடிந்தது!"); showScreen('auth'); 
+                }
+                else alert(res ? res.msg : "பதிவு செய்ய முடியவில்லை. மீண்டும் முயற்சிக்கவும்.");
             });
         }
 
@@ -246,11 +257,11 @@
             toggleLoading('btn-login', true);
             call({ action: 'login', email, pass }, (res) => {
                 toggleLoading('btn-login', false);
-                if(res.status === "Success") {
+                if(res && res.status === "Success") {
                     session = { user: email, sheetId: res.sheetId };
                     showScreen('dashboard');
                     loadDashboard();
-                } else alert(res.msg);
+                } else alert(res ? res.msg : "உள்நுழைய முடியவில்லை. விவரங்களைச் சரிபார்க்கவும்.");
             });
         }
 
@@ -260,10 +271,10 @@
             toggleLoading('btn-otp-req', true);
             call({ action: 'sendOTP', email }, (res) => {
                 toggleLoading('btn-otp-req', false);
-                if(res.status === "Sent") {
+                if(res && res.status === "Sent") {
                     session.user = email;
                     showScreen('otpScreen');
-                } else alert("OTP அனுப்புவதில் பிழை!");
+                } else alert(res ? res.msg : "OTP அனுப்புவதில் பிழை! சர்வர் பிஸியாக இருக்கலாம்.");
             });
         }
 
@@ -272,15 +283,13 @@
             if(otp.length < 6) return alert("6 இலக்க எண்ணை உள்ளிடவும்!");
             
             toggleLoading('btn-verify', true);
-            // Main Engine 'verifyOTP' logic should be used here. 
-            // For now, it will look for the user details based on the verified state.
             call({ action: 'login', email: session.user, otp: otp, isOtp: true }, (res) => {
                 toggleLoading('btn-verify', false);
-                if(res.status === "Success") {
+                if(res && res.status === "Success") {
                     session.sheetId = res.sheetId;
                     showScreen('dashboard');
                     loadDashboard();
-                } else alert("தவறான OTP!");
+                } else alert(res ? res.msg : "தவறான OTP! மீண்டும் முயற்சிக்கவும்.");
             });
         }
 
@@ -288,7 +297,10 @@
 
         function loadDashboard() {
             call({ action: 'getAppData', sheetId: session.sheetId }, (data) => {
-                if(data.status !== "Success") return;
+                if(!data || data.status !== "Success") {
+                    console.error("Dashboard Data Fetch Failed");
+                    return;
+                }
                 document.getElementById('dispSalary').innerText = `₹${Number(data.salary).toLocaleString()}`;
                 document.getElementById('aiAdvice').innerText = data.advice;
                 const dTag = document.getElementById('deficitTag');
@@ -300,6 +312,7 @@
         }
 
         function renderCalendar(data) {
+            if (!data) return;
             const grid = document.getElementById('calGrid'); grid.innerHTML = "";
             const emiDates = data.loans ? data.loans.map(l => Number(l.date)) : [];
             for(let i=1; i<=31; i++) {
@@ -333,8 +346,12 @@
             toggleLoading('btn-save-salary', true);
             call({ action: 'updateSalary', amount: amt, sheetId: session.sheetId }, (res) => {
                 toggleLoading('btn-save-salary', false);
-                closeSalaryModal();
-                loadDashboard();
+                if (res && res.status === "Success") {
+                    closeSalaryModal();
+                    loadDashboard();
+                } else {
+                    alert("சம்பளத்தைப் புதுப்பிக்க முடியவில்லை.");
+                }
             });
         }
 
@@ -346,7 +363,11 @@
             document.getElementById('salaryModal').style.display = 'none'; 
             document.body.classList.remove('no-scroll');
         }
-        function initAppDB() { call({ action: 'initSetup', sheetId: session.sheetId }, (res) => alert(res.status)); }
+        function initAppDB() { 
+            call({ action: 'initSetup', sheetId: session.sheetId }, (res) => {
+                if (res) alert(res.status);
+            }); 
+        }
 
         function toggleLoading(id, isLoading) {
             const btn = document.getElementById(id);
