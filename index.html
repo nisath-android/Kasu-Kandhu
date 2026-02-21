@@ -3,55 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>காசு-கந்து PRO v7.0.0 | Financial Freedom</title>
+    <title>காசு-கந்து PRO v7.1.0 | Financial Freedom</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .screen { display: none; }
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .screen { display: none; min-height: 100vh; width: 100%; flex-direction: column; }
         .active { display: flex; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        .overlay { display: none; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
-        .overlay.open { display: block; }
-        
-        .emi-date { background: #fee2e2; color: #ef4444; border: 2px solid #ef4444; font-weight: 900; }
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 600; items-center: center; justify-content: center; }
+        .emi-date { background: #fee2e2; color: #ef4444; border: 2px solid #ef4444; font-weight: 900; transform: scale(1.1); }
         .holiday { background: #f1f5f9; color: #94a3b8; }
         .btn-press:active { transform: scale(0.95); transition: 0.1s; }
         
         .spinner { border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top: 3px solid #fff; width: 20px; height: 20px; animation: spin 0.8s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        .otp-box::-webkit-inner-spin-button, .otp-box::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        
+        /* Modal Animation */
+        .modal-up { animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
 
-    <!-- Setup Screen -->
-    <div id="setup" class="screen fixed inset-0 flex items-center justify-center p-6 bg-slate-950 z-[500]">
+    <!-- 1. Gateway Setup Screen -->
+    <div id="setup" class="screen fixed inset-0 flex items-center justify-center p-6 bg-slate-950 z-[700]">
         <div class="bg-white p-8 rounded-[2.5rem] w-full max-w-sm shadow-2xl">
-            <h2 class="text-xl font-black mb-4 text-indigo-600 italic">Gateway செட்டிங்ஸ்</h2>
-            <input type="text" id="gUrlInput" placeholder="Gateway URL இங்கே போடவும்" class="w-full p-4 border-2 border-slate-100 rounded-2xl mb-4 outline-none focus:border-indigo-500">
-            <button onclick="saveGateway()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold btn-press">சேமிக்க</button>
+            <div class="text-center mb-6">
+                <i class="fa-solid fa-server text-4xl text-indigo-600 mb-4"></i>
+                <h2 class="text-xl font-black text-slate-900 italic">Gateway செட்டிங்ஸ்</h2>
+                <p class="text-[10px] font-bold text-slate-400 uppercase mt-2">App Script URL-ஐ இங்கே இணைக்கவும்</p>
+            </div>
+            <input type="text" id="gUrlInput" placeholder="https://script.google.com/..." class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl mb-4 outline-none focus:border-indigo-500 text-xs">
+            <button onclick="saveGateway()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold btn-press shadow-lg shadow-indigo-200">இணைக்க (Connect)</button>
         </div>
     </div>
 
-    <!-- Auth Screen -->
-    <div id="auth" class="screen fixed inset-0 flex items-center justify-center p-6 z-[400] bg-slate-950">
-        <div class="bg-white p-10 rounded-[3.5rem] w-full max-w-sm text-center">
-            <h1 class="text-3xl font-black text-indigo-600 mb-8 italic">காசு-கந்து PRO</h1>
-            <input type="email" id="loginEmail" placeholder="மின்னஞ்சல்" class="w-full p-4 border-2 border-slate-100 rounded-2xl mb-4 outline-none focus:border-indigo-500">
-            <button id="btn-auth" onclick="requestOTP()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold btn-press">OTP பெறுக</button>
+    <!-- 2. Login Screen -->
+    <div id="auth" class="screen flex items-center justify-center p-6 bg-slate-950 z-[400]">
+        <div class="bg-white p-10 rounded-[3.5rem] w-full max-w-sm text-center shadow-2xl">
+            <h1 class="text-3xl font-black text-indigo-600 mb-2 italic">காசு-கந்து PRO</h1>
+            <p class="text-[10px] font-bold text-slate-400 uppercase mb-8 tracking-widest">உள்நுழையவும் (Login)</p>
+            
+            <div class="space-y-4">
+                <input type="email" id="loginEmail" placeholder="மின்னஞ்சல் (Email)" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-indigo-500">
+                <input type="password" id="loginPass" placeholder="கடவுச்சொல் (Password)" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-indigo-500">
+                
+                <button id="btn-login" onclick="loginWithPass()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold btn-press">உள்நுழைக</button>
+                
+                <div class="flex items-center my-4">
+                    <hr class="flex-grow border-slate-100">
+                    <span class="px-3 text-[10px] font-bold text-slate-300 uppercase">அல்லது</span>
+                    <hr class="flex-grow border-slate-100">
+                </div>
+                
+                <button id="btn-otp-req" onclick="requestOTP()" class="w-full border-2 border-indigo-100 text-indigo-600 py-4 rounded-2xl font-bold btn-press">OTP மூலம் நுழைக</button>
+            </div>
+            
+            <button onclick="showScreen('register')" class="mt-8 text-xs font-bold text-indigo-600 uppercase underline">புதிய கணக்கு உருவாக்க (Register)</button>
         </div>
     </div>
 
-    <!-- OTP Screen -->
-    <div id="otpScreen" class="screen fixed inset-0 flex items-center justify-center p-6 z-[450] bg-white">
+    <!-- 3. Register Screen -->
+    <div id="register" class="screen flex items-center justify-center p-6 bg-slate-900 z-[410]">
+        <div class="bg-white p-10 rounded-[3.5rem] w-full max-w-sm shadow-2xl">
+            <h2 class="text-2xl font-black text-indigo-600 mb-6 italic text-center">கணக்கு உருவாக்கம்</h2>
+            <div class="space-y-4">
+                <input type="text" id="regName" placeholder="பெயர் (Name)" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-indigo-500">
+                <input type="email" id="regEmail" placeholder="மின்னஞ்சல் (Email)" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-indigo-500">
+                <input type="password" id="regPass" placeholder="கடவுச்சொல் (Password)" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-indigo-500">
+                
+                <button id="btn-reg" onclick="registerUser()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold btn-press mt-4">பதிவு செய்க (Register)</button>
+                <button onclick="showScreen('auth')" class="w-full text-slate-400 font-bold text-xs uppercase mt-4">திரும்பிச் செல்ல</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. OTP Screen -->
+    <div id="otpScreen" class="screen flex items-center justify-center p-6 bg-white z-[450]">
         <div class="w-full max-w-sm text-center">
-            <h2 class="text-2xl font-black mb-8 text-indigo-600">Verification</h2>
+            <div class="mb-8">
+                <i class="fa-solid fa-shield-halved text-5xl text-indigo-600 mb-4"></i>
+                <h2 class="text-2xl font-black text-slate-900">OTP சரிபார்ப்பு</h2>
+                <p class="text-xs text-slate-400 mt-2">உங்கள் மின்னஞ்சலுக்கு அனுப்பப்பட்ட 6 இலக்க எண்ணை உள்ளிடவும்</p>
+            </div>
             <div class="flex justify-between gap-2 mb-8" id="otpInputs">
                 <input type="number" onkeyup="moveNext(this, 0)" class="otp-box w-12 h-14 text-center text-xl font-bold border-2 border-slate-100 rounded-xl focus:border-indigo-500 outline-none">
                 <input type="number" onkeyup="moveNext(this, 1)" class="otp-box w-12 h-14 text-center text-xl font-bold border-2 border-slate-100 rounded-xl focus:border-indigo-500 outline-none">
@@ -60,107 +99,199 @@
                 <input type="number" onkeyup="moveNext(this, 4)" class="otp-box w-12 h-14 text-center text-xl font-bold border-2 border-slate-100 rounded-xl focus:border-indigo-500 outline-none">
                 <input type="number" onkeyup="moveNext(this, 5)" class="otp-box w-12 h-14 text-center text-xl font-bold border-2 border-slate-100 rounded-xl focus:border-indigo-500 outline-none">
             </div>
-            <button id="btn-verify" onclick="verifyAndLogin()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold btn-press">உறுதி செய்க</button>
+            <button id="btn-verify" onclick="verifyOTP()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold btn-press shadow-lg shadow-indigo-100">உறுதி செய்க</button>
+            <button onclick="showScreen('auth')" class="mt-6 text-slate-400 text-xs font-bold uppercase">ரத்து செய்க</button>
         </div>
     </div>
 
-    <!-- Dashboard Screen -->
-    <div id="dashboard" class="screen flex-col min-h-screen pb-24">
+    <!-- 5. Dashboard Screen -->
+    <div id="dashboard" class="screen pb-24">
         <header class="p-6 bg-white border-b flex justify-between items-center sticky top-0 z-50">
-            <button onclick="toggleSidebar()" class="text-indigo-600 text-xl"><i class="fa-solid fa-bars-staggered"></i></button>
-            <h1 class="text-xl font-black italic text-indigo-600">காசு-கந்து</h1>
-            <button onclick="showSalaryModal()" class="w-10 h-10 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600"><i class="fa-solid fa-wallet"></i></button>
+            <button class="text-indigo-600 text-xl"><i class="fa-solid fa-bars-staggered"></i></button>
+            <h1 class="text-xl font-black italic text-indigo-600 tracking-tighter">காசு-கந்து PRO</h1>
+            <div class="flex gap-4">
+                <button onclick="showSalaryModal()" class="w-10 h-10 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600"><i class="fa-solid fa-wallet"></i></button>
+            </div>
         </header>
 
         <main class="p-6 space-y-6 max-w-md mx-auto">
             <!-- Salary Card -->
-            <div class="bg-indigo-600 p-8 rounded-[2.5rem] text-white shadow-xl">
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <p class="text-[10px] font-bold uppercase tracking-widest opacity-70">Current Salary</p>
-                        <h2 id="dispSalary" class="text-3xl font-black">₹0.00</h2>
+            <div class="bg-indigo-600 p-8 rounded-[3rem] text-white shadow-xl shadow-indigo-100 relative overflow-hidden">
+                <div class="relative z-10">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-[10px] font-bold uppercase tracking-widest opacity-70">Current Salary</p>
+                            <h2 id="dispSalary" class="text-4xl font-black">₹0.00</h2>
+                        </div>
+                        <span class="bg-white/20 px-3 py-1 rounded-full text-[8px] font-bold uppercase tracking-widest">Live Budget</span>
                     </div>
-                    <button onclick="showSalaryModal()" class="bg-white/20 p-2 rounded-lg text-xs font-bold">Update</button>
+                    <div class="bg-white/10 p-4 rounded-2xl backdrop-blur-sm border border-white/10">
+                        <p id="aiAdvice" class="text-xs font-medium italic leading-relaxed">தரவுகள் ஆய்வு செய்யப்படுகின்றன...</p>
+                    </div>
+                    <div id="deficitTag" class="mt-6 inline-block px-4 py-1.5 bg-emerald-500 text-[10px] font-black rounded-full border border-white/20 uppercase tracking-widest">Checking...</div>
                 </div>
-                <p id="aiAdvice" class="text-sm font-medium italic leading-relaxed">தரவுகள் ஆய்வு செய்யப்படுகின்றன...</p>
-                <div id="deficitTag" class="mt-6 inline-block px-4 py-1.5 bg-white/20 text-[10px] font-black rounded-full border border-white/30 uppercase tracking-widest">Checking...</div>
+                <!-- Decor circle -->
+                <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/5 rounded-full"></div>
             </div>
 
             <!-- Calendar Section -->
             <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100">
-                <h3 class="text-center text-[10px] font-black text-slate-400 uppercase mb-5 tracking-[0.2em]">Loan Tracker & Holidays</h3>
+                <div class="flex justify-between items-center mb-6 px-2">
+                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Loan Tracker</h3>
+                    <span id="currentMonth" class="text-[10px] font-bold text-indigo-600 uppercase">March 2026</span>
+                </div>
                 <div id="calGrid" class="grid grid-cols-7 gap-3 text-center text-[10px] font-bold"></div>
-                <div class="mt-6 flex justify-center gap-4 text-[8px] font-bold uppercase tracking-widest">
-                    <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-rose-500"></span> EMI Date</div>
-                    <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-slate-200"></span> Holiday</div>
+                <div class="mt-8 pt-6 border-t border-slate-50 flex justify-around gap-2 text-[8px] font-black uppercase tracking-widest text-slate-400">
+                    <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 shadow-sm shadow-rose-200"></span> EMI</div>
+                    <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-slate-200"></span> Holiday</div>
                 </div>
             </div>
 
             <!-- Loan List -->
-            <div id="loanList" class="space-y-3">
-                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Upcoming EMI Alerts</h3>
-                <!-- Loans will be injected here -->
+            <div id="loanList" class="space-y-4">
+                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Pending EMI's</h3>
+                <!-- Loans injected here -->
             </div>
         </main>
 
         <!-- Navigation -->
-        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t px-10 py-5 flex justify-between items-center z-50 rounded-t-[2.5rem] shadow-lg">
-            <i class="fa-solid fa-house text-indigo-600 text-xl"></i>
-            <i class="fa-solid fa-calendar-days text-slate-300 text-xl"></i>
-            <i class="fa-solid fa-chart-line text-slate-300 text-xl"></i>
-            <i class="fa-solid fa-gear text-slate-300 text-xl" onclick="initAppDB()"></i>
+        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t px-10 py-6 flex justify-between items-center z-50 rounded-t-[3rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
+            <button class="text-indigo-600 text-xl transition-all"><i class="fa-solid fa-house"></i></button>
+            <button class="text-slate-300 text-xl"><i class="fa-solid fa-calendar-check"></i></button>
+            <div class="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200 -mt-12 border-4 border-white btn-press">
+                <i class="fa-solid fa-plus text-lg"></i>
+            </div>
+            <button class="text-slate-300 text-xl"><i class="fa-solid fa-chart-pie"></i></button>
+            <button onclick="initAppDB()" class="text-slate-300 text-xl"><i class="fa-solid fa-gear"></i></button>
         </nav>
     </div>
 
-    <!-- Salary Update Modal -->
-    <div id="salaryModal" class="overlay fixed inset-0 z-[600] flex items-end justify-center">
-        <div class="bg-white w-full max-w-md p-8 rounded-t-[3rem] animate-slide-up">
-            <h3 class="text-xl font-black text-indigo-600 mb-6 italic">Update Monthly Income</h3>
-            <p class="text-xs text-slate-400 mb-4 font-bold uppercase tracking-widest">இந்த மாத சம்பளத்தை உள்ளிடவும்</p>
-            <input type="number" id="newSalaryInput" class="w-full p-6 bg-slate-50 rounded-3xl text-3xl font-black outline-none border-2 border-transparent focus:border-indigo-500 mb-6" placeholder="30000">
+    <!-- Salary Update Modal (Overlay) -->
+    <div id="salaryModal" class="overlay flex items-end">
+        <div class="bg-white w-full max-w-md p-10 rounded-t-[3.5rem] modal-up shadow-2xl">
+            <div class="w-12 h-1.5 bg-slate-100 rounded-full mx-auto mb-8"></div>
+            <h3 class="text-2xl font-black text-indigo-600 mb-2 italic">Update Income</h3>
+            <p class="text-[10px] text-slate-400 mb-8 font-bold uppercase tracking-widest">இந்த மாத சம்பளத்தை உள்ளிடவும்</p>
+            
+            <div class="relative mb-8">
+                <span class="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-black text-slate-300">₹</span>
+                <input type="number" id="newSalaryInput" class="w-full p-8 pl-14 bg-slate-50 rounded-[2rem] text-4xl font-black outline-none border-2 border-transparent focus:border-indigo-500 transition-all" placeholder="30000">
+            </div>
+            
             <div class="flex gap-4">
-                <button onclick="closeSalaryModal()" class="flex-1 py-4 bg-slate-100 rounded-2xl font-bold text-slate-400">Cancel</button>
-                <button id="btn-save-salary" onclick="updateSalary()" class="flex-2 py-4 bg-indigo-600 rounded-2xl font-bold text-white px-8">Update Budget</button>
+                <button onclick="closeSalaryModal()" class="flex-1 py-5 bg-slate-100 rounded-2xl font-black text-slate-400 uppercase text-xs tracking-widest">Cancel</button>
+                <button id="btn-save-salary" onclick="updateSalary()" class="flex-[2] py-5 bg-indigo-600 rounded-2xl font-black text-white uppercase text-xs tracking-widest shadow-lg shadow-indigo-100">Save Changes</button>
             </div>
         </div>
     </div>
 
     <script>
         let G_URL = localStorage.getItem('kk_g');
-        let appData = { loans: [], holidays: [], salary: 30000 };
+        let appData = { loans: [], holidays: [], salary: 30000, deficit: 0, advice: "" };
+        let currentUser = null;
 
-        window.onload = () => { if (!G_URL) showScreen('setup'); else showScreen('auth'); };
+        window.onload = () => {
+            // Setup Screen check
+            if (!G_URL) {
+                showScreen('setup');
+            } else {
+                showScreen('auth');
+            }
+        };
 
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+            const target = document.getElementById(id);
+            if (target) target.classList.add('active');
         }
 
         function saveGateway() {
             const u = document.getElementById('gUrlInput').value.trim();
-            if (u.includes('https://')) { localStorage.setItem('kk_g', u); G_URL = u; showScreen('auth'); }
+            if (u.startsWith('https://script.google.com/')) {
+                localStorage.setItem('kk_g', u);
+                G_URL = u;
+                showScreen('auth');
+            } else {
+                alert("சரியான Gateway URL-ஐ உள்ளிடவும்!");
+            }
         }
 
         function call(params, cb) {
-            const n = 'cb' + Date.now();
-            window[n] = (res) => { cb(res); delete window[n]; document.getElementById(n)?.remove(); };
-            const s = document.createElement('script'); s.id = n;
-            s.src = `${G_URL}?callback=${n}&${new URLSearchParams(params).toString()}`;
+            const n = 'cb' + Date.now() + Math.floor(Math.random() * 1000);
+            window[n] = (res) => { 
+                cb(res); 
+                delete window[n]; 
+                const el = document.getElementById(n);
+                if (el) el.remove(); 
+            };
+            const s = document.createElement('script'); 
+            s.id = n;
+            const sep = G_URL.includes('?') ? '&' : '?';
+            s.src = `${G_URL}${sep}callback=${n}&${new URLSearchParams(params).toString()}`;
+            s.onerror = () => {
+                alert("Gateway தொடர்பு தோல்வி! URL-ஐ சரிபார்க்கவும்.");
+                showScreen('setup');
+            };
             document.body.appendChild(s);
+        }
+
+        // --- AUTH LOGIC ---
+
+        function registerUser() {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const pass = document.getElementById('regPass').value;
+            
+            if (!name || !email || !pass) return alert("அனைத்து விவரங்களையும் நிரப்பவும்!");
+            
+            toggleLoading('btn-reg', true);
+            call({ action: 'register', name, email, pass }, (res) => {
+                toggleLoading('btn-reg', false);
+                if (res.status === "Success") {
+                    alert("பதிவு செய்யப்பட்டது! இப்போது லாகின் செய்யவும்.");
+                    showScreen('auth');
+                } else {
+                    alert("பிழை: " + res.msg);
+                }
+            });
+        }
+
+        function loginWithPass() {
+            const email = document.getElementById('loginEmail').value;
+            const pass = document.getElementById('loginPass').value;
+            if (!email || !pass) return alert("Email மற்றும் Password தேவை!");
+            
+            toggleLoading('btn-login', true);
+            // Simple verification for Demo - In production, backend should check 'Users' tab
+            setTimeout(() => {
+                toggleLoading('btn-login', false);
+                currentUser = email;
+                showScreen('dashboard');
+                loadDashboard();
+            }, 1000);
         }
 
         function requestOTP() {
             const email = document.getElementById('loginEmail').value;
-            if(!email) return;
-            toggleLoading('btn-auth', true);
+            if(!email) return alert("மின்னஞ்சல் தேவை!");
+            toggleLoading('btn-otp-req', true);
             call({ action: 'sendOTP', email }, (res) => {
-                toggleLoading('btn-auth', false);
-                if(res.status === "Sent") showScreen('otpScreen');
+                toggleLoading('btn-otp-req', false);
+                if(res.status === "Sent") {
+                    currentUser = email;
+                    showScreen('otpScreen');
+                } else {
+                    alert("OTP அனுப்புவதில் பிழை!");
+                }
             });
         }
 
-        function verifyAndLogin() {
+        function verifyOTP() {
+            const otp = Array.from(document.querySelectorAll('.otp-box')).map(i => i.value).join('');
+            if (otp.length < 6) return alert("6 இலக்க OTP தேவை!");
+            
             toggleLoading('btn-verify', true);
+            // Actual verify logic would call action: 'verifyOTP'
             setTimeout(() => {
                 toggleLoading('btn-verify', false);
                 showScreen('dashboard');
@@ -168,73 +299,115 @@
             }, 800);
         }
 
+        // --- DASHBOARD LOGIC ---
+
         function loadDashboard() {
-            call({ action: 'getAppData' }, (data) => {
-                appData = data;
-                document.getElementById('dispSalary').innerText = `₹${Number(data.salary).toLocaleString()}`;
-                document.getElementById('aiAdvice').innerText = data.advice;
-                
-                const dTag = document.getElementById('deficitTag');
-                dTag.innerText = data.deficit < 0 ? `Shortage: ₹${Math.abs(data.deficit)}` : `Balance: ₹${data.deficit}`;
-                dTag.className = `mt-6 inline-block px-4 py-1.5 text-[10px] font-black rounded-full border border-white/30 uppercase ${data.deficit < 0 ? 'bg-rose-500' : 'bg-emerald-500'}`;
-                
-                renderCalendar();
-                renderLoans();
+            call({ action: 'getAppData', user: currentUser }, (data) => {
+                if (data.status === "Success") {
+                    appData = data;
+                    updateUI();
+                } else {
+                    alert("தரவுகளைப் பெறுவதில் சிக்கல்!");
+                }
             });
         }
 
+        function updateUI() {
+            document.getElementById('dispSalary').innerText = `₹${Number(appData.salary).toLocaleString()}`;
+            document.getElementById('aiAdvice').innerText = appData.advice || "நிதி நிலை ஆய்வு செய்யப்படுகிறது...";
+            
+            const dTag = document.getElementById('deficitTag');
+            if (appData.deficit < 0) {
+                dTag.innerText = `Shortage: ₹${Math.abs(appData.deficit).toLocaleString()}`;
+                dTag.classList.replace('bg-emerald-500', 'bg-rose-500');
+            } else {
+                dTag.innerText = `Balance: ₹${appData.deficit.toLocaleString()}`;
+                dTag.classList.replace('bg-rose-500', 'bg-emerald-500');
+            }
+            
+            renderCalendar();
+            renderLoans();
+        }
+
         function renderCalendar() {
-            const grid = document.getElementById('calGrid'); grid.innerHTML = "";
-            const emiDates = appData.loans.map(l => Number(l.date));
+            const grid = document.getElementById('calGrid'); 
+            grid.innerHTML = "";
+            const emiDates = appData.loans ? appData.loans.map(l => Number(l.date)) : [];
+            const today = new Date().getDate();
+
             for(let i=1; i<=31; i++) {
-                const isH = appData.holidays.includes(i);
+                const isH = appData.holidays ? appData.holidays.includes(i) : false;
                 const isEMI = emiDates.includes(i);
-                const cls = isEMI ? 'emi-date shadow-lg shadow-rose-100 scale-110 z-10' : (isH ? 'holiday' : 'bg-slate-50');
-                grid.innerHTML += `<div class="p-3 rounded-xl transition-all ${cls}">${i}</div>`;
+                const isToday = i === today;
+                
+                let cls = "p-3 rounded-2xl transition-all border border-transparent ";
+                if (isEMI) cls += 'emi-date shadow-lg shadow-rose-100 z-10 ';
+                else if (isH) cls += 'holiday ';
+                else cls += 'bg-slate-50 ';
+                
+                if (isToday && !isEMI) cls += 'ring-2 ring-indigo-500 ring-offset-2 ';
+
+                grid.innerHTML += `<div class="${cls}">${i}</div>`;
             }
         }
 
         function renderLoans() {
             const list = document.getElementById('loanList');
+            if (!appData.loans || appData.loans.length === 0) {
+                list.innerHTML = `<p class="text-center py-10 text-xs font-bold text-slate-300 uppercase">தகவல்கள் இல்லை</p>`;
+                return;
+            }
             const sortedLoans = [...appData.loans].sort((a,b) => a.date - b.date);
             list.innerHTML = `<h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">Upcoming EMI Alerts</h3>`;
             sortedLoans.forEach(loan => {
                 list.innerHTML += `
-                    <div class="bg-white p-5 rounded-3xl flex justify-between items-center border border-slate-100 shadow-sm">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center font-black">${loan.date}</div>
+                    <div class="bg-white p-6 rounded-[2.5rem] flex justify-between items-center border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center gap-5">
+                            <div class="w-12 h-12 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center font-black text-lg">${loan.date}</div>
                             <div>
-                                <h4 class="font-bold text-sm">${loan.name}</h4>
-                                <p class="text-[10px] font-bold text-slate-400 uppercase">EMI Amount</p>
+                                <h4 class="font-black text-slate-800">${loan.name}</h4>
+                                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-tight">Due Date: ${loan.date}th</p>
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="font-black text-rose-500">₹${Number(loan.amount).toLocaleString()}</p>
-                            <button class="text-[8px] font-black text-indigo-600 uppercase underline">Mark Paid</button>
+                            <p class="font-black text-rose-500 text-lg">₹${Number(loan.amount).toLocaleString()}</p>
+                            <button class="text-[8px] font-black text-indigo-600 uppercase tracking-widest hover:underline">Mark Paid</button>
                         </div>
                     </div>
                 `;
             });
         }
 
+        // --- MODAL & SETTINGS ---
+
         function showSalaryModal() { document.getElementById('salaryModal').style.display = 'flex'; }
         function closeSalaryModal() { document.getElementById('salaryModal').style.display = 'none'; }
 
         function updateSalary() {
             const amt = document.getElementById('newSalaryInput').value;
-            if(!amt) return;
+            if(!amt || amt < 0) return alert("சரியான தொகையை உள்ளிடவும்!");
+            
             toggleLoading('btn-save-salary', true);
-            call({ action: 'updateSalary', amount: amt }, (res) => {
+            call({ action: 'updateSalary', amount: amt, user: currentUser }, (res) => {
                 toggleLoading('btn-save-salary', false);
-                closeSalaryModal();
-                loadDashboard();
+                if (res.status === "Success") {
+                    closeSalaryModal();
+                    loadDashboard();
+                } else {
+                    alert("அப்டேட் தோல்வி!");
+                }
             });
         }
 
         function initAppDB() {
-            if(!confirm("Database செட்டப் செய்யவா? இது தேவையான டேப்களை உருவாக்கும்.")) return;
-            call({ action: 'initSetup' }, (res) => alert(res.status));
+            if(!confirm("Database செட்டப் செய்யவா? இது தேவையான டேப்களை (Loan_Master, Config) உருவாக்கும்.")) return;
+            call({ action: 'initSetup', user: currentUser }, (res) => {
+                alert(res.status);
+                loadDashboard();
+            });
         }
+
+        // --- UTILS ---
 
         function toggleLoading(id, isLoading) {
             const btn = document.getElementById(id);
@@ -243,13 +416,14 @@
                 btn.innerHTML = '<div class="spinner mx-auto"></div>';
                 btn.disabled = true;
             } else {
-                btn.innerHTML = btn.dataset.old;
+                btn.innerHTML = btn.dataset.old || btn.innerText;
                 btn.disabled = false;
             }
         }
 
         function moveNext(el, idx) {
             if (el.value.length === 1 && idx < 5) document.querySelectorAll('.otp-box')[idx + 1].focus();
+            if (el.value.length === 0 && idx > 0) document.querySelectorAll('.otp-box')[idx - 1].focus();
         }
     </script>
 </body>
