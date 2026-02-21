@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>காசு-கந்து PRO v8.0.1 | UI Fixes & Unique Actions</title>
+    <title>காசு-கந்து PRO v8.1.0 | Multi-Year Calendar Support</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -175,13 +175,20 @@
                 <div id="transList" class="space-y-3"></div>
             </div>
 
-            <!-- Calendar Section -->
+            <!-- Smart Calendar Section (v8.1.0 Update with Navigation) -->
             <div class="m-card p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <div class="flex flex-col"><span id="calMonth" class="text-lg font-black theme-text italic">Month</span><span id="calYear" class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Year</span></div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="changeMonth(-1)" class="w-8 h-8 flex items-center justify-center bg-slate-50 rounded-full theme-icon btn-press border border-slate-100"><i class="fa-solid fa-chevron-left"></i></button>
+                        <div class="flex flex-col items-center min-w-[100px]">
+                            <span id="calMonth" class="text-lg font-black theme-text italic">Month</span>
+                            <span id="calYear" class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Year</span>
+                        </div>
+                        <button onclick="changeMonth(1)" class="w-8 h-8 flex items-center justify-center bg-slate-50 rounded-full theme-icon btn-press border border-slate-100"><i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
                     <i class="fa-solid fa-calendar-day theme-icon text-xl opacity-20"></i>
                 </div>
-                <div class="grid grid-cols-7 gap-1 text-center mb-4"><div class="cal-day-header">Su</div><div class="cal-day-header">Mo</div><div class="cal-day-header">Tu</div><div class="cal-day-header">We</div><div class="cal-day-header">Th</div><div class="cal-day-header">Fr</div><div class="cal-day-header">Sa</div></div>
+                <div class="grid grid-cols-7 gap-1 text-center mb-4"><div class="cal-day-header">ஞா</div><div class="cal-day-header">தி</div><div class="cal-day-header">செ</div><div class="cal-day-header">பு</div><div class="cal-day-header">வி</div><div class="cal-day-header">வெ</div><div class="cal-day-header">ச</div></div>
                 <div id="calGrid" class="grid grid-cols-7 gap-2 text-center text-[10px] font-extrabold"></div>
             </div>
 
@@ -195,7 +202,7 @@
         <nav class="fixed bottom-0 left-0 right-0 bg-white border-t px-10 py-6 flex justify-between items-center z-[82] rounded-t-[3.5rem] shadow-2xl">
             <i class="fa-solid fa-house theme-icon text-xl"></i>
             <i class="fa-solid fa-list-check text-slate-300 text-xl"></i>
-            <div onclick="showAddModal()" class="w-14 h-14 theme-primary rounded-2xl flex items-center justify-center text-white shadow-lg -mt-14 border-4 border-white btn-press"><i class="fa-solid fa-plus text-xl"></i></div>
+            <div onclick="showAddModal()" class="w-14 h-14 theme-primary rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200 -mt-14 border-4 border-white btn-press"><i class="fa-solid fa-plus text-xl"></i></div>
             <i class="fa-solid fa-chart-pie text-slate-300 text-xl"></i>
             <i class="fa-solid fa-gear text-slate-300 text-xl btn-press" onclick="initAppDB()"></i>
         </nav>
@@ -238,7 +245,6 @@
             <div class="space-y-4 mb-6"><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">வகை (Category)</p><div id="masterCatGrid" class="flex flex-wrap gap-2"></div></div>
             <div class="space-y-4 mb-8"><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">விவரம் (Sub-category)</p><div id="subCatGrid" class="flex flex-wrap gap-2 mb-4"></div><input type="text" id="transCat" placeholder="விவரம்" class="w-full p-4 bg-slate-50 rounded-2xl outline-none text-sm font-bold border-2 border-transparent focus:theme-border"></div>
             <div class="space-y-6 mb-8"><div class="relative"><span class="absolute left-4 top-1/2 -translate-y-1/2 font-black theme-icon text-lg">₹</span><input type="number" id="transAmt" placeholder="0.00" class="w-full p-6 pl-10 bg-slate-50 rounded-2xl outline-none text-2xl font-black"></div><input type="text" id="transNote" placeholder="சிறிய குறிப்பு" class="w-full p-4 bg-slate-50 rounded-2xl outline-none text-xs font-bold"></div>
-            <!-- Fix: Explicitly ensuring button text visibility -->
             <button id="btn-save-trans" onclick="saveTransaction()" class="w-full theme-btn py-5 rounded-2xl font-extrabold shadow-lg uppercase text-xs tracking-widest">பதிவு செய் (Save)</button>
             <button onclick="closeModals()" class="w-full py-4 text-slate-400 text-xs font-bold mt-2 uppercase">ரத்து</button>
         </div>
@@ -254,6 +260,10 @@
         let masterSubCategories = {};
         let logoutTimerInterval, otpTimerInterval;
         let selectedLoanForEdit = null;
+        
+        // Calendar State (v8.1.0)
+        let calViewMonth = new Date().getMonth();
+        let calViewYear = new Date().getFullYear();
 
         const defaultTheme = { primary: '#6366f1', bg: '#fcfdfe', topbar: '#ffffff', text: '#1e293b' };
 
@@ -377,7 +387,8 @@
 
         function loadDashboard() {
             if(!session.sheetId) return;
-            call({ action: 'getAppData', sheetId: session.sheetId }, (data) => {
+            // v8.1.0: Passing current calendar month/year to backend
+            call({ action: 'getAppData', sheetId: session.sheetId, month: calViewMonth, year: calViewYear }, (data) => {
                 if(data.status !== "Success") return;
                 masterSubCategories = data.masterCategories;
                 if (!currentMasterCat) currentMasterCat = Object.keys(masterSubCategories)[0];
@@ -390,25 +401,42 @@
             });
         }
 
-        // --- Smart Calendar ---
+        // --- Smart Calendar (v8.1.0 Enhanced with Navigation) ---
         function renderCalendar(data) {
             const grid = document.getElementById('calGrid'), mLabel = document.getElementById('calMonth'), yLabel = document.getElementById('calYear');
-            const now = new Date(), y = now.getFullYear(), m = now.getMonth(), today = now.getDate();
-            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-            mLabel.innerText = monthNames[m]; yLabel.innerText = y; grid.innerHTML = "";
-            const fDay = new Date(y, m, 1).getDay(), dInM = new Date(y, m + 1, 0).getDate();
+            
+            const monthNames = ["ஜனவரி", "பிப்ரவரி", "மார்ச்", "ஏப்ரல்", "மே", "ஜூன்", "ஜூலை", "ஆகஸ்ட்", "செப்டம்பர்", "அக்டோபர்", "நவம்பர்", "டிசம்பர்"];
+            mLabel.innerText = monthNames[calViewMonth]; 
+            yLabel.innerText = calViewYear; 
+            
+            grid.innerHTML = "";
+            const now = new Date();
+            const isCurrentMonth = now.getMonth() === calViewMonth && now.getFullYear() === calViewYear;
+            const today = now.getDate();
+            
+            const fDay = new Date(calViewYear, calViewMonth, 1).getDay();
+            const dInM = new Date(calViewYear, calViewMonth + 1, 0).getDate();
+            
             const emiDates = data.loans ? data.loans.map(l => Number(l.date)) : [];
             const holidays = data.holidays || [];
+            
             for (let i = 0; i < fDay; i++) grid.innerHTML += `<div></div>`;
             for (let i = 1; i <= dInM; i++) {
-                const isEMI = emiDates.includes(i), isH = holidays.includes(i), isT = i === today;
+                const isEMI = emiDates.includes(i), isH = holidays.includes(i), isT = isCurrentMonth && i === today;
                 let cls = 'bg-slate-50 text-slate-400 p-3 rounded-2xl transition-all';
                 if (isEMI) cls = 'emi-date p-3 rounded-2xl'; else if (isH) cls = 'holiday p-3 rounded-2xl'; else if (isT) cls = 'today-date p-3 rounded-2xl';
                 grid.innerHTML += `<div class="${cls}">${i}</div>`;
             }
         }
 
-        // --- EMI Edit (v8.0.1 Fix) ---
+        function changeMonth(offset) {
+            calViewMonth += offset;
+            if (calViewMonth > 11) { calViewMonth = 0; calViewYear++; }
+            if (calViewMonth < 0) { calViewMonth = 11; calViewYear--; }
+            loadDashboard(); // Refresh data for the selected month
+        }
+
+        // --- EMI Edit ---
         function renderLoans(loans) {
             const list = document.getElementById('loanItems'); list.innerHTML = "";
             if(!loans || loans.length === 0) { list.innerHTML = `<p class="text-center py-4 text-xs text-slate-300 font-bold uppercase">No Active Loans</p>`; return; }
