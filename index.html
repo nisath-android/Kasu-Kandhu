@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>காசு-கந்து PRO v7.9.1 | Fix UI & Tabs</title>
+    <title>காசு-கந்து PRO v8.0.0 | Material UI & Smart Calendar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
         
         :root {
-            --primary-color: #4f46e5;
-            --bg-color: #f8fafc;
-            --text-color: #0f172a;
+            --primary-color: #6366f1;
+            --bg-color: #fcfdfe;
+            --text-color: #1e293b;
             --topbar-color: #ffffff;
         }
 
@@ -38,7 +38,7 @@
         .auth-panel { background: var(--bg-color); flex: 1.2; display: flex; align-items: center; justify-content: center; padding: 2rem; position: relative; transition: all 0.5s ease; }
         
         .auth-disabled { opacity: 0.3; pointer-events: none; filter: blur(6px); }
-        .auth-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.1); z-index: 20; color: #64748b; font-weight: 800; text-transform: uppercase; text-align: center; padding: 20px; }
+        .auth-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.05); z-index: 20; color: #94a3b8; font-weight: 800; text-transform: uppercase; text-align: center; padding: 20px; }
 
         .screen { display: none; width: 100%; max-width: 400px; animation: slideIn 0.5s ease; }
         .screen.active { display: block; }
@@ -47,32 +47,37 @@
         #dashboard { display: none; position: fixed; inset: 0; background: var(--bg-color); z-index: 100; overflow-y: auto; }
         #dashboard.active { display: block; }
 
-        .emi-date { background: #fee2e2; color: #ef4444; border: 2px solid #ef4444; font-weight: 800; }
-        .holiday { background: #e2e8f0; color: #94a3b8; }
+        /* Calendar Styling */
+        .cal-day-header { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; padding-bottom: 8px; }
+        .emi-date { background: #fee2e2; color: #ef4444; border: 1.5px solid #fecaca; font-weight: 800; transform: scale(1.05); box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.1); }
+        .holiday { background: #f1f5f9; color: #94a3b8; }
+        .today-date { border: 2px solid var(--primary-color); color: var(--primary-color); font-weight: 800; }
+        
         .btn-press:active { transform: scale(0.96); transition: 0.1s; }
         
         .spinner { border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top: 3px solid #fff; width: 18px; height: 18px; animation: spin 0.8s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
         
         .otp-box::-webkit-inner-spin-button, .otp-box::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
 
         .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 20px; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #e2e8f0; transition: .4s; border-radius: 20px; }
         .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--primary-color); }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        input[type="color"] { -webkit-appearance: none; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; background: none; }
-        input[type="color"]::-webkit-color-swatch { border: 2px solid white; border-radius: 50%; }
-
-        .sub-pill { padding: 8px 16px; border-radius: 14px; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s; border: 1.5px solid #f1f5f9; background: #f8fafc; color: #64748b; }
-        .sub-pill.active { background: var(--primary-color); border-color: var(--primary-color); color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .add-pill { border: 1.5px dashed var(--primary-color); color: var(--primary-color); background: transparent; }
+        .sub-pill { padding: 8px 16px; border-radius: 14px; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s; border: 1px solid #f1f5f9; background: #ffffff; color: #64748b; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .sub-pill.active { background: var(--primary-color); border-color: var(--primary-color); color: white; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2); }
+        .add-pill { border: 1.5px dashed #cbd5e1; color: #94a3b8; background: transparent; }
 
         .hide-scrollbar::-webkit-scrollbar { display: none; }
+        
+        /* Material Card Style */
+        .m-card { background: white; border-radius: 24px; border: 1px solid #f1f5f9; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.03); transition: all 0.3s ease; }
+        .m-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
     </style>
 </head>
 <body>
@@ -80,7 +85,7 @@
     <!-- 1. Initial Split View -->
     <div id="init-view" class="split-view">
         <div class="gateway-panel">
-            <div class="w-full max-w-sm bg-white/5 p-8 rounded-[2.5rem] border border-white/10 backdrop-blur-md text-center shadow-2xl">
+            <div class="w-full max-w-sm bg-white/5 p-8 rounded-[3rem] border border-white/10 backdrop-blur-md text-center shadow-2xl">
                 <i class="fa-solid fa-link text-5xl text-indigo-400 mb-6"></i>
                 <h2 class="text-2xl font-extrabold text-white mb-2 italic">Gateway Setup</h2>
                 <input type="text" id="gUrlInput" placeholder="App Script URL" class="w-full p-4 bg-white/10 border-2 border-white/20 rounded-2xl mb-6 outline-none focus:border-indigo-400 text-xs text-white">
@@ -97,25 +102,24 @@
             <div id="auth-login" class="screen active text-center">
                 <h1 class="text-4xl font-black theme-icon mb-2 italic tracking-tighter">காசு-கந்து</h1>
                 <div class="space-y-4 mt-10">
-                    <input type="email" id="loginEmail" placeholder="மின்னஞ்சல்" class="w-full p-4 bg-slate-100 border-2 border-transparent rounded-2xl outline-none focus:theme-border">
-                    <input type="password" id="loginPass" placeholder="கடவுச்சொல்" class="w-full p-4 bg-slate-100 border-2 border-transparent rounded-2xl outline-none focus:theme-border">
+                    <input type="email" id="loginEmail" placeholder="மின்னஞ்சல்" class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:theme-border">
+                    <input type="password" id="loginPass" placeholder="கடவுச்சொல்" class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:theme-border">
                     <button id="btn-login" onclick="loginUser()" class="w-full theme-btn py-4 rounded-2xl font-extrabold btn-press shadow-lg">உள்நுழைக</button>
-                    <button id="btn-otp-req" onclick="requestOTP()" class="w-full border-2 theme-icon border-indigo-100 py-4 rounded-2xl font-bold btn-press">OTP லாகின்</button>
+                    <button id="btn-otp-req" onclick="requestOTP()" class="w-full border-2 theme-icon border-indigo-50 py-4 rounded-2xl font-bold btn-press">OTP லாகின்</button>
                 </div>
                 <button onclick="toggleAuth('register')" class="mt-8 text-xs font-bold theme-icon uppercase underline">புதிய கணக்கு</button>
             </div>
 
-            <!-- OTP Screen -->
             <div id="auth-otp" class="screen text-center">
                 <i class="fa-solid fa-shield-halved text-5xl theme-icon mb-6"></i>
                 <h2 class="text-2xl font-black theme-text mb-2 italic">OTP சரிபார்ப்பு</h2>
                 <div class="flex justify-between gap-2 my-10 px-4">
-                    <input type="number" onpaste="handleOtpPaste(event)" onkeyup="moveNext(this, 0, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-100 rounded-xl outline-none otp-box">
-                    <input type="number" onkeyup="moveNext(this, 1, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-100 rounded-xl outline-none otp-box">
-                    <input type="number" onkeyup="moveNext(this, 2, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-100 rounded-xl outline-none otp-box">
-                    <input type="number" onkeyup="moveNext(this, 3, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-100 rounded-xl outline-none otp-box">
-                    <input type="number" onkeyup="moveNext(this, 4, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-100 rounded-xl outline-none otp-box">
-                    <input type="number" onkeyup="moveNext(this, 5, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-100 rounded-xl outline-none otp-box">
+                    <input type="number" onpaste="handleOtpPaste(event)" onkeyup="moveNext(this, 0, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-50 rounded-xl outline-none otp-box">
+                    <input type="number" onkeyup="moveNext(this, 1, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-50 rounded-xl outline-none otp-box">
+                    <input type="number" onkeyup="moveNext(this, 2, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-50 rounded-xl outline-none otp-box">
+                    <input type="number" onkeyup="moveNext(this, 3, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-50 rounded-xl outline-none otp-box">
+                    <input type="number" onkeyup="moveNext(this, 4, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-50 rounded-xl outline-none otp-box">
+                    <input type="number" onkeyup="moveNext(this, 5, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-50 rounded-xl outline-none otp-box">
                 </div>
                 <button id="btn-verify" onclick="verifyOTP()" class="w-full theme-btn py-4 rounded-2xl font-extrabold btn-press shadow-lg">சரிபார்க்கவும்</button>
                 <button id="resendOtpBtn" onclick="requestOTP()" class="mt-8 text-slate-400 text-xs font-bold uppercase underline" disabled>மீண்டும் அனுப்ப</button>
@@ -124,9 +128,9 @@
             <div id="auth-register" class="screen text-center">
                 <h2 class="text-3xl font-black theme-icon mb-8 italic">பதிவு செய்க</h2>
                 <div class="space-y-4">
-                    <input type="text" id="regName" placeholder="பெயர்" class="w-full p-4 bg-slate-100 border-2 border-transparent rounded-2xl outline-none focus:theme-border">
-                    <input type="email" id="regEmail" placeholder="மின்னஞ்சல்" class="w-full p-4 bg-slate-100 border-2 border-transparent rounded-2xl outline-none focus:theme-border">
-                    <input type="password" id="regPass" placeholder="கடவுச்சொல்" class="w-full p-4 bg-slate-100 border-2 border-transparent rounded-2xl outline-none focus:theme-border">
+                    <input type="text" id="regName" placeholder="பெயர்" class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:theme-border">
+                    <input type="email" id="regEmail" placeholder="மின்னஞ்சல்" class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:theme-border">
+                    <input type="password" id="regPass" placeholder="கடவுச்சொல்" class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:theme-border">
                     <button id="btn-reg" onclick="registerAccount()" class="w-full theme-btn py-4 rounded-2xl font-extrabold btn-press">பதிவு செய்</button>
                     <button onclick="toggleAuth('login')" class="w-full text-slate-400 text-xs font-bold uppercase mt-6">லாகின் பக்கம்</button>
                 </div>
@@ -136,7 +140,7 @@
 
     <!-- 2. Dashboard Screen -->
     <div id="dashboard" class="pb-32">
-        <header class="p-6 theme-topbar border-b sticky top-0 z-50 shadow-sm">
+        <header class="p-6 theme-topbar border-b sticky top-0 z-50 shadow-sm transition-all">
             <div class="flex justify-between items-center">
                 <div class="flex flex-col">
                     <h1 class="text-xl font-black italic theme-icon tracking-tighter">காசு-கந்து</h1>
@@ -146,46 +150,65 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <div class="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border">
+                    <div class="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100">
                         <span id="logoutTimerDisplay" class="text-[10px] font-black theme-icon">Off</span>
                         <label class="switch"><input type="checkbox" id="autoLogoutToggle" onchange="toggleAutoLogout()"><span class="slider"></span></label>
                     </div>
-                    <button onclick="showThemeModal()" class="w-10 h-10 bg-slate-50 theme-icon rounded-full flex items-center justify-center text-sm border"><i class="fa-solid fa-palette"></i></button>
-                    <button onclick="logout()" class="w-10 h-10 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center text-sm btn-press"><i class="fa-solid fa-power-off"></i></button>
+                    <button onclick="showThemeModal()" class="w-10 h-10 bg-slate-50 theme-icon rounded-full flex items-center justify-center text-sm border border-slate-100 shadow-sm"><i class="fa-solid fa-palette"></i></button>
+                    <button onclick="logout()" class="w-10 h-10 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center text-sm btn-press border border-rose-100 shadow-sm"><i class="fa-solid fa-power-off"></i></button>
                 </div>
             </div>
         </header>
 
         <main class="p-6 space-y-6 max-w-md mx-auto">
-            <!-- Salary Card (Fix: Added Click to edit) -->
-            <div onclick="showSalaryModal()" class="theme-primary p-8 rounded-[3rem] text-white shadow-xl relative overflow-hidden transition-all cursor-pointer">
+            <!-- Salary Card -->
+            <div onclick="showSalaryModal()" class="theme-primary p-8 rounded-[2.5rem] text-white shadow-xl relative overflow-hidden transition-all cursor-pointer">
                 <div class="flex justify-between items-start">
-                    <div><p class="text-[10px] font-bold uppercase opacity-70 tracking-widest">வருமானம் (கிளிக் செய்க)</p><h2 id="dispSalary" class="text-4xl font-black my-1">₹0.00</h2></div>
+                    <div><p class="text-[10px] font-bold uppercase opacity-70 tracking-widest">வருமானம் (Edit)</p><h2 id="dispSalary" class="text-4xl font-black my-1">₹0.00</h2></div>
                     <div class="bg-white/20 p-2 rounded-xl text-sm"><i class="fa-solid fa-pen-to-square"></i></div>
                 </div>
                 <div class="bg-white/10 p-4 rounded-2xl mt-4 border border-white/10 backdrop-blur-sm">
-                    <p id="aiAdvice" class="text-xs font-medium italic leading-relaxed">தரவுகள் ஆய்வு செய்யப்படுகின்றன...</p>
+                    <p id="aiAdvice" class="text-xs font-medium italic leading-relaxed">பகுப்பாய்வு செய்யப்படுகிறது...</p>
                 </div>
-                <div id="deficitTag" class="mt-6 inline-block px-4 py-1.5 bg-emerald-500 text-[10px] font-extrabold rounded-full uppercase tracking-tighter shadow-lg">Checking</div>
+                <div id="deficitTag" class="mt-6 inline-block px-4 py-1.5 bg-emerald-500 text-[10px] font-extrabold rounded-full uppercase shadow-lg">Checking</div>
             </div>
 
+            <!-- Recent Transactions -->
             <div id="recentTransactions" class="space-y-4">
-                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">பரிவர்த்தனைகள்</h3>
+                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">சமீபத்திய பரிவர்த்தனைகள்</h3>
                 <div id="transList" class="space-y-3"></div>
             </div>
 
-            <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100">
-                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest text-center mb-6">நிதி நாட்காட்டி</h3>
-                <div id="calGrid" class="grid grid-cols-7 gap-3 text-center text-[10px] font-extrabold"></div>
+            <!-- Smart Calendar Section (v8.0.0 Update) -->
+            <div class="m-card p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex flex-col">
+                        <span id="calMonth" class="text-lg font-black theme-text italic">February</span>
+                        <span id="calYear" class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">2024</span>
+                    </div>
+                    <i class="fa-solid fa-calendar-day theme-icon text-xl opacity-20"></i>
+                </div>
+                <div class="grid grid-cols-7 gap-1 text-center mb-4">
+                    <div class="cal-day-header">Su</div><div class="cal-day-header">Mo</div><div class="cal-day-header">Tu</div>
+                    <div class="cal-day-header">We</div><div class="cal-day-header">Th</div><div class="cal-day-header">Fr</div>
+                    <div class="cal-day-header">Sa</div>
+                </div>
+                <div id="calGrid" class="grid grid-cols-7 gap-2 text-center text-[10px] font-extrabold"></div>
             </div>
 
-            <div id="loanList" class="space-y-4 pb-10"></div>
+            <!-- Loan List (v8.0.0: Editable via Click) -->
+            <div id="loanList" class="space-y-4 pb-10">
+                <div class="flex justify-between items-center px-2">
+                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">கடன் தவணைகள் (எடிட் செய்ய கிளிக் செய்க)</h3>
+                </div>
+                <div id="loanItems" class="space-y-4"></div>
+            </div>
         </main>
 
-        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t px-10 py-6 flex justify-between items-center z-[82] rounded-t-[3.5rem] shadow-2xl">
+        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t px-10 py-6 flex justify-between items-center z-[82] rounded-t-[3.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
             <i class="fa-solid fa-house theme-icon text-xl"></i>
             <i class="fa-solid fa-list-check text-slate-300 text-xl"></i>
-            <div onclick="showAddModal()" class="w-14 h-14 theme-primary rounded-2xl flex items-center justify-center text-white shadow-lg -mt-14 border-4 border-white btn-press"><i class="fa-solid fa-plus text-xl"></i></div>
+            <div onclick="showAddModal()" class="w-14 h-14 theme-primary rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200 -mt-14 border-4 border-white btn-press"><i class="fa-solid fa-plus text-xl"></i></div>
             <i class="fa-solid fa-chart-pie text-slate-300 text-xl"></i>
             <i class="fa-solid fa-gear text-slate-300 text-xl btn-press" onclick="initAppDB()"></i>
         </nav>
@@ -193,43 +216,48 @@
 
     <!-- 3. Modals -->
     
-    <!-- Dynamic Transaction Modal (v7.9.1 Fixed Tabs) -->
+    <!-- Edit EMI Modal -->
+    <div id="emiEditModal" class="modal-overlay">
+        <div class="bg-white w-full max-w-xs p-10 rounded-[3rem] shadow-2xl text-center">
+            <h3 class="text-xl font-black theme-icon mb-2 italic">கடன் விவரம் மாற்றம்</h3>
+            <p id="editLoanTitle" class="text-[10px] text-slate-400 mb-8 font-bold uppercase">Loan Name</p>
+            <div class="space-y-4 mb-8">
+                <input type="number" id="editLoanAmt" placeholder="தொகை" class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-black text-xl border-2 border-transparent focus:theme-border">
+                <input type="number" id="editLoanDate" placeholder="தேதி (1-31)" class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-bold border-2 border-transparent focus:theme-border">
+            </div>
+            <button onclick="saveEMIChange()" class="w-full theme-btn py-4 rounded-2xl font-bold uppercase text-xs shadow-lg">Save Changes</button>
+            <button onclick="closeModals()" class="w-full py-4 text-slate-400 text-xs font-bold mt-2">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Salary Modal -->
+    <div id="salaryModal" class="modal-overlay">
+        <div class="bg-white w-full max-w-xs p-10 rounded-[3.5rem] shadow-2xl text-center">
+            <h3 class="text-xl font-black theme-icon mb-6 italic">சம்பளம் மாற்றம்</h3>
+            <input type="number" id="newSalaryInput" class="w-full p-6 bg-slate-50 rounded-3xl text-3xl font-extrabold outline-none mb-8 border-2 border-transparent focus:theme-border" placeholder="30000">
+            <button id="btn-save-salary" onclick="updateSalary()" class="w-full theme-btn py-4 rounded-2xl font-bold uppercase text-xs">Save</button>
+            <button onclick="closeModals()" class="w-full py-4 text-slate-400 text-xs font-bold mt-2 uppercase">Close</button>
+        </div>
+    </div>
+
+    <!-- Dynamic Transaction Modal -->
     <div id="transModal" class="modal-overlay">
         <div class="bg-white w-full max-w-md p-8 rounded-[3.5rem] shadow-2xl max-h-[90vh] overflow-y-auto hide-scrollbar">
             <h3 class="text-xl font-black theme-icon italic text-center mb-8 tracking-tight">பரிவர்த்தனை பதிவு</h3>
-            
-            <!-- Fixed Tabs Logic -->
             <div class="flex gap-2 mb-8 bg-slate-100 p-1 rounded-2xl">
                 <button id="typeExp" onclick="setTransType('Expense')" class="flex-1 py-3 rounded-xl font-black text-[10px] bg-white text-rose-500 shadow-sm uppercase transition-all">செலவு</button>
                 <button id="typeInc" onclick="setTransType('Income')" class="flex-1 py-3 rounded-xl font-black text-[10px] text-slate-400 uppercase transition-all">வரவு</button>
             </div>
-
-            <div class="space-y-4 mb-6">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">வகை (Category)</p>
-                <div id="masterCatGrid" class="flex flex-wrap gap-2"></div>
-            </div>
-
-            <div class="space-y-4 mb-8">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">விவரம் (Sub-category)</p>
-                <div id="subCatGrid" class="flex flex-wrap gap-2 mb-4"></div>
-                <input type="text" id="transCat" placeholder="விவரம்" class="w-full p-4 bg-slate-50 rounded-2xl outline-none text-sm font-bold border-2 border-transparent focus:theme-border">
-            </div>
-
-            <div class="space-y-6 mb-8">
-                <div class="relative">
-                    <span class="absolute left-4 top-1/2 -translate-y-1/2 font-black theme-icon text-lg">₹</span>
-                    <input type="number" id="transAmt" placeholder="0.00" class="w-full p-6 pl-10 bg-slate-50 rounded-2xl outline-none text-2xl font-black">
-                </div>
-                <input type="text" id="transNote" placeholder="சிறிய குறிப்பு" class="w-full p-4 bg-slate-50 rounded-2xl outline-none text-xs font-bold">
-            </div>
-
+            <div class="space-y-4 mb-6"><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">வகை (Category)</p><div id="masterCatGrid" class="flex flex-wrap gap-2"></div></div>
+            <div class="space-y-4 mb-8"><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">விவரம் (Sub-category)</p><div id="subCatGrid" class="flex flex-wrap gap-2 mb-4"></div><input type="text" id="transCat" placeholder="விவரம்" class="w-full p-4 bg-slate-50 rounded-2xl outline-none text-sm font-bold border-2 border-transparent focus:theme-border"></div>
+            <div class="space-y-6 mb-8"><div class="relative"><span class="absolute left-4 top-1/2 -translate-y-1/2 font-black theme-icon text-lg">₹</span><input type="number" id="transAmt" placeholder="0.00" class="w-full p-6 pl-10 bg-slate-50 rounded-2xl outline-none text-2xl font-black"></div><input type="text" id="transNote" placeholder="சிறிய குறிப்பு" class="w-full p-4 bg-slate-50 rounded-2xl outline-none text-xs font-bold"></div>
             <button id="btn-save-trans" onclick="saveTransaction()" class="w-full theme-btn py-5 rounded-2xl font-bold shadow-lg uppercase text-xs">பதிவு செய்</button>
             <button onclick="closeModals()" class="w-full py-4 text-slate-400 text-xs font-bold mt-2 uppercase">ரத்து</button>
         </div>
     </div>
 
-    <div id="salaryModal" class="modal-overlay"><div class="bg-white w-full max-w-xs p-10 rounded-[3.5rem] shadow-2xl text-center"><h3 class="text-xl font-black theme-icon mb-6 italic">சம்பளம் மாற்றம்</h3><input type="number" id="newSalaryInput" class="w-full p-6 bg-slate-50 rounded-3xl text-3xl font-extrabold outline-none mb-8 border-2 border-transparent focus:theme-border" placeholder="30000"><button id="btn-save-salary" onclick="updateSalary()" class="w-full theme-btn py-4 rounded-2xl font-bold uppercase text-xs">Save</button><button onclick="closeModals()" class="w-full py-4 text-slate-400 text-xs font-bold mt-2 uppercase">Close</button></div></div>
-    <div id="themeModal" class="modal-overlay"><div class="bg-white w-full max-w-xs p-8 rounded-[3.5rem] shadow-2xl text-center"><h3 class="text-xl font-black theme-icon mb-6 italic">வண்ணங்கள்</h3><div class="space-y-5"><div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-600 uppercase">Primary</span><input type="color" id="color-primary" oninput="updateThemePreview()"></div><div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-600 uppercase">Background</span><input type="color" id="color-bg" oninput="updateThemePreview()"></div><div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-600 uppercase">Top Bar</span><input type="color" id="color-topbar" oninput="updateThemePreview()"></div><div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-600 uppercase">Text</span><input type="color" id="color-text" oninput="updateThemePreview()"></div></div><button onclick="saveTheme()" class="w-full theme-btn py-4 rounded-2xl font-bold uppercase text-xs mt-8">Save</button><button onclick="closeModals()" class="w-full text-slate-400 text-[10px] font-bold uppercase mt-4">Close</button></div></div>
+    <!-- Theme Modal -->
+    <div id="themeModal" class="modal-overlay"><div class="bg-white w-full max-w-xs p-8 rounded-[3rem] shadow-2xl text-center"><h3 class="text-xl font-black theme-icon mb-6 italic">வண்ணங்கள்</h3><div class="space-y-5"><div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-600 uppercase">Primary</span><input type="color" id="color-primary" oninput="updateThemePreview()"></div><div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-600 uppercase">Background</span><input type="color" id="color-bg" oninput="updateThemePreview()"></div><div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-600 uppercase">Top Bar</span><input type="color" id="color-topbar" oninput="updateThemePreview()"></div><div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-600 uppercase">Text</span><input type="color" id="color-text" oninput="updateThemePreview()"></div></div><button onclick="saveTheme()" class="w-full theme-btn py-4 rounded-2xl font-bold uppercase text-xs mt-8">Save</button><button onclick="closeModals()" class="w-full text-slate-400 text-[10px] font-bold uppercase mt-4">Close</button></div></div>
 
     <script>
         let G_URL = localStorage.getItem('kk_g');
@@ -238,8 +266,9 @@
         let currentMasterCat = '';
         let masterSubCategories = {};
         let logoutTimerInterval, otpTimerInterval;
+        let selectedLoanForEdit = null;
 
-        const defaultTheme = { primary: '#4f46e5', bg: '#f8fafc', topbar: '#ffffff', text: '#0f172a' };
+        const defaultTheme = { primary: '#6366f1', bg: '#fcfdfe', topbar: '#ffffff', text: '#1e293b' };
 
         window.onload = () => {
             initTheme();
@@ -278,79 +307,12 @@
 
         function saveTheme() {
             const nt = { primary: document.getElementById('color-primary').value, bg: document.getElementById('color-bg').value, topbar: document.getElementById('color-topbar').value, text: document.getElementById('color-text').value };
-            localStorage.setItem('kk_theme', JSON.stringify(nt)); alert("Saved!"); closeModals();
+            localStorage.setItem('kk_theme', JSON.stringify(nt)); alert("வண்ணங்கள் சேமிக்கப்பட்டன!"); closeModals();
         }
 
         function showThemeModal() { document.getElementById('themeModal').style.display = 'flex'; }
 
-        // --- Categories Logic ---
-        function renderMasterCategories() {
-            const grid = document.getElementById('masterCatGrid'); grid.innerHTML = '';
-            const cats = Object.keys(masterSubCategories);
-            cats.forEach(cat => {
-                const b = document.createElement('button');
-                b.className = `cat-pill sub-pill ${currentMasterCat === cat ? 'active' : ''}`;
-                b.innerText = cat;
-                b.onclick = () => setMasterCategory(cat);
-                grid.appendChild(b);
-            });
-            const addB = document.createElement('button');
-            addB.className = 'sub-pill add-pill'; addB.innerHTML = '<i class="fa-solid fa-plus"></i> Add';
-            addB.onclick = addNewMasterCategory; grid.appendChild(addB);
-        }
-
-        function setMasterCategory(cat) { currentMasterCat = cat; renderMasterCategories(); renderSubCategories(); document.getElementById('transCat').value = ''; }
-
-        function renderSubCategories() {
-            const grid = document.getElementById('subCatGrid'); grid.innerHTML = '';
-            if (!currentMasterCat) return;
-            const items = masterSubCategories[currentMasterCat] || [];
-            items.forEach(item => {
-                const b = document.createElement('button');
-                b.className = 'sub-pill transition-all'; b.innerText = item;
-                b.onclick = () => {
-                    document.querySelectorAll('#subCatGrid .sub-pill').forEach(sp => sp.classList.remove('active'));
-                    b.classList.add('active'); document.getElementById('transCat').value = item;
-                };
-                grid.appendChild(b);
-            });
-            const addB = document.createElement('button');
-            addB.className = 'sub-pill add-pill'; addB.innerHTML = '<i class="fa-solid fa-plus"></i> Add';
-            addB.onclick = addNewSubCategory; grid.appendChild(addB);
-        }
-
-        async function addNewMasterCategory() {
-            const newCat = prompt("புதிய முதன்மை வகை:"); if (!newCat) return;
-            const subItem = prompt(`'${newCat}' கீழ் ஒரு ஐட்டம்:`); if (!subItem) return;
-            toggleLoading('btn-save-trans', true);
-            call({ action: 'addNewCategory', masterCat: newCat, subCat: subItem, sheetId: session.sheetId }, (res) => {
-                toggleLoading('btn-save-trans', false); if (res.status === "Success") loadDashboard();
-            });
-        }
-
-        async function addNewSubCategory() {
-            if (!currentMasterCat) return alert("Category-ஐ கிளிக் செய்க!");
-            const newSub = prompt(`'${currentMasterCat}' கீழ் புதிய ஐட்டம்:`); if (!newSub) return;
-            toggleLoading('btn-save-trans', true);
-            call({ action: 'addNewCategory', masterCat: currentMasterCat, subCat: newSub, sheetId: session.sheetId }, (res) => {
-                toggleLoading('btn-save-trans', false); if (res.status === "Success") loadDashboard();
-            });
-        }
-
-        // --- Tabs Logic (Fixed v7.9.1) ---
-        function setTransType(t) {
-            transType = t;
-            const incB = document.getElementById('typeInc'), expB = document.getElementById('typeExp');
-            if(t === 'Income') {
-                incB.className = "flex-1 py-3 rounded-xl font-black text-[10px] bg-white text-emerald-500 shadow-sm uppercase transition-all";
-                expB.className = "flex-1 py-3 rounded-xl font-black text-[10px] text-slate-400 uppercase transition-all";
-            } else {
-                expB.className = "flex-1 py-3 rounded-xl font-black text-[10px] bg-white text-rose-500 shadow-sm uppercase transition-all";
-                incB.className = "flex-1 py-3 rounded-xl font-black text-[10px] text-slate-400 uppercase transition-all";
-            }
-        }
-
-        // --- Core Functions ---
+        // --- Core Auth ---
         function saveGateway() {
             const u = document.getElementById('gUrlInput').value.trim();
             if (u.startsWith('https://script.google.com/') && u.includes('/exec')) {
@@ -440,22 +402,152 @@
             });
         }
 
-        function showAddModal() { document.getElementById('transModal').style.display = 'flex'; renderMasterCategories(); renderSubCategories(); }
-
+        // --- Smart Calendar (v8.0.0 Update) ---
         function renderCalendar(data) {
-            const grid = document.getElementById('calGrid'), emiDates = data.loans ? data.loans.map(l => Number(l.date)) : [];
+            const grid = document.getElementById('calGrid');
+            const monthLabel = document.getElementById('calMonth');
+            const yearLabel = document.getElementById('calYear');
+            
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth();
+            
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            monthLabel.innerText = monthNames[month];
+            yearLabel.innerText = year;
+
             grid.innerHTML = "";
-            for(let i=1; i<=31; i++) {
-                const isEMI = emiDates.includes(i), isH = (data.holidays || []).includes(i);
-                grid.innerHTML += `<div class="p-3 rounded-2xl transition-all ${isEMI ? 'emi-date scale-105 shadow-sm' : (isH ? 'holiday' : 'bg-slate-50 text-slate-400')}">${i}</div>`;
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const emiDates = data.loans ? data.loans.map(l => Number(l.date)) : [];
+            const holidays = data.holidays || [];
+            const today = now.getDate();
+
+            // Padding for first week
+            for (let i = 0; i < firstDay; i++) {
+                grid.innerHTML += `<div></div>`;
+            }
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                const isEMI = emiDates.includes(i);
+                const isH = holidays.includes(i);
+                const isToday = i === today;
+                
+                let cls = 'bg-slate-50 text-slate-400 p-3 rounded-2xl transition-all';
+                if (isEMI) cls = 'emi-date p-3 rounded-2xl';
+                else if (isH) cls = 'holiday p-3 rounded-2xl';
+                else if (isToday) cls = 'today-date p-3 rounded-2xl';
+
+                grid.innerHTML += `<div class="${cls}">${i}</div>`;
             }
         }
 
+        // --- Loan Management (v8.0.0 Update: Click to Edit) ---
         function renderLoans(loans) {
-            const list = document.getElementById('loanList'); list.innerHTML = `<h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">கடன் தவணைகள்</h3>`;
+            const list = document.getElementById('loanItems'); 
+            list.innerHTML = "";
+            if(!loans || loans.length === 0) {
+                list.innerHTML = `<p class="text-center py-4 text-xs text-slate-300 font-bold uppercase">No Active Loans</p>`;
+                return;
+            }
             loans.forEach(loan => {
-                list.innerHTML += `<div class="bg-white p-6 rounded-[3rem] flex justify-between items-center border border-slate-100 shadow-sm"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center font-black text-lg">${loan.date}</div><div><h4 class="font-black text-sm text-slate-800">${loan.name}</h4><p class="text-[9px] font-bold text-slate-400 uppercase">₹${Number(loan.amount).toLocaleString()}</p></div></div><i class="fa-solid fa-circle-check text-slate-100 text-2xl"></i></div>`;
+                list.innerHTML += `
+                    <div onclick="openEMIEdit('${loan.name}', ${loan.amount}, ${loan.date})" class="bg-white p-6 rounded-[2.5rem] flex justify-between items-center border border-slate-100 shadow-sm cursor-pointer hover:theme-border transition-all">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center font-black text-lg">${loan.date}</div>
+                            <div>
+                                <h4 class="font-black text-sm text-slate-800">${loan.name}</h4>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tight">EMI: ₹${Number(loan.amount).toLocaleString()}</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-pen-to-square text-slate-200 text-xl"></i>
+                    </div>`;
             });
+        }
+
+        function openEMIEdit(name, amt, date) {
+            selectedLoanForEdit = name;
+            document.getElementById('editLoanTitle').innerText = name;
+            document.getElementById('editLoanAmt').value = amt;
+            document.getElementById('editLoanDate').value = date;
+            document.getElementById('emiEditModal').style.display = 'flex';
+        }
+
+        function saveEMIChange() {
+            const name = selectedLoanForEdit;
+            const amt = document.getElementById('editLoanAmt').value;
+            const date = document.getElementById('editLoanDate').value;
+
+            if(!amt || !date) return alert("விவரங்கள் தேவை!");
+            
+            toggleLoading('btn-save-trans', true); // Use any generic button id for loading
+            call({ action: 'updateLoan', loanName: name, amount: amt, dueDate: date, sheetId: session.sheetId }, (res) => {
+                toggleLoading('btn-save-trans', false);
+                if (res.status === "Success") {
+                    closeModals();
+                    loadDashboard();
+                } else {
+                    alert("பிழை: " + res.msg);
+                }
+            });
+        }
+
+        // --- Categories & Transactions ---
+        function renderMasterCategories() {
+            const grid = document.getElementById('masterCatGrid'); grid.innerHTML = '';
+            const cats = Object.keys(masterSubCategories);
+            cats.forEach(cat => {
+                const b = document.createElement('button');
+                b.className = `cat-pill sub-pill ${currentMasterCat === cat ? 'active' : ''}`;
+                b.innerText = cat; b.onclick = () => setMasterCategory(cat); grid.appendChild(b);
+            });
+            const addB = document.createElement('button');
+            addB.className = 'sub-pill add-pill'; addB.innerHTML = '<i class="fa-solid fa-plus"></i> Add';
+            addB.onclick = addNewMasterCategory; grid.appendChild(addB);
+        }
+
+        function setMasterCategory(cat) { currentMasterCat = cat; renderMasterCategories(); renderSubCategories(); document.getElementById('transCat').value = ''; }
+
+        function renderSubCategories() {
+            const grid = document.getElementById('subCatGrid'); grid.innerHTML = '';
+            if (!currentMasterCat) return;
+            const items = masterSubCategories[currentMasterCat] || [];
+            items.forEach(item => {
+                const b = document.createElement('button');
+                b.className = 'sub-pill transition-all'; b.innerText = item;
+                b.onclick = () => {
+                    document.querySelectorAll('#subCatGrid .sub-pill').forEach(sp => sp.classList.remove('active'));
+                    b.classList.add('active'); document.getElementById('transCat').value = item;
+                };
+                grid.appendChild(b);
+            });
+            const addB = document.createElement('button');
+            addB.className = 'sub-pill add-pill'; addB.innerHTML = '<i class="fa-solid fa-plus"></i> Add';
+            addB.onclick = addNewSubCategory; grid.appendChild(addB);
+        }
+
+        async function addNewMasterCategory() {
+            const newCat = prompt("புதிய முதன்மை வகை:"); if (!newCat) return;
+            const subItem = prompt(`'${newCat}' கீழ் ஒரு ஐட்டம்:`); if (!subItem) return;
+            call({ action: 'addNewCategory', masterCat: newCat, subCat: subItem, sheetId: session.sheetId }, (res) => { if (res.status === "Success") loadDashboard(); });
+        }
+
+        async function addNewSubCategory() {
+            if (!currentMasterCat) return alert("Category-ஐ கிளிக் செய்க!");
+            const newSub = prompt(`'${currentMasterCat}' கீழ் புதிய ஐட்டம்:`); if (!newSub) return;
+            call({ action: 'addNewCategory', masterCat: currentMasterCat, subCat: newSub, sheetId: session.sheetId }, (res) => { if (res.status === "Success") loadDashboard(); });
+        }
+
+        function setTransType(t) {
+            transType = t;
+            const incB = document.getElementById('typeInc'), expB = document.getElementById('typeExp');
+            if(t === 'Income') {
+                incB.className = "flex-1 py-3 rounded-xl font-black text-[10px] bg-white text-emerald-500 shadow-sm uppercase transition-all";
+                expB.className = "flex-1 py-3 rounded-xl font-black text-[10px] text-slate-400 uppercase transition-all";
+            } else {
+                expB.className = "flex-1 py-3 rounded-xl font-black text-[10px] bg-white text-rose-500 shadow-sm uppercase transition-all";
+                incB.className = "flex-1 py-3 rounded-xl font-black text-[10px] text-slate-400 uppercase transition-all";
+            }
         }
 
         function renderTransactions(trans) {
@@ -469,27 +561,26 @@
 
         function updateSalary() {
             const a = document.getElementById('newSalaryInput').value; if(!a) return;
-            toggleLoading('btn-save-salary', true);
-            call({ action: 'updateSalary', amount: a, sheetId: session.sheetId }, (res) => { toggleLoading('btn-save-salary', false); if(res.status === "Success") { closeModals(); loadDashboard(); } });
+            call({ action: 'updateSalary', amount: a, sheetId: session.sheetId }, (res) => { if(res.status === "Success") { closeModals(); loadDashboard(); } });
         }
 
         function saveTransaction() {
             const a = document.getElementById('transAmt').value, c = document.getElementById('transCat').value, n = document.getElementById('transNote').value;
             if(!a || !c) return alert("விவரங்கள் தேவை!");
-            toggleLoading('btn-save-trans', true);
-            call({ action: 'addTransaction', amount: a, category: c, note: n, type: transType, sheetId: session.sheetId }, (res) => { toggleLoading('btn-save-trans', false); if(res.status === "Success") { closeModals(); loadDashboard(); } });
+            call({ action: 'addTransaction', amount: a, category: c, note: n, type: transType, sheetId: session.sheetId }, (res) => { if(res.status === "Success") { closeModals(); loadDashboard(); } });
         }
 
         function registerAccount() {
             const n = document.getElementById('regName').value, e = document.getElementById('regEmail').value, p = document.getElementById('regPass').value;
             if(!n || !e || !p) return alert("விவரங்கள் தேவை!");
-            toggleLoading('btn-reg', true);
             call({ action: 'register', name: n, email: e, pass: p }, (res) => {
-                toggleLoading('btn-reg', false); if(res.status === "Success") { alert("பதிவு முடிந்தது!"); toggleAuth('login'); } else alert(res.msg);
+                if(res.status === "Success") { alert("பதிவு முடிந்தது!"); toggleAuth('login'); } else alert(res.msg);
             });
         }
 
+        // --- Utils ---
         function showSalaryModal() { document.getElementById('salaryModal').style.display = 'flex'; }
+        function showAddModal() { document.getElementById('transModal').style.display = 'flex'; renderMasterCategories(); renderSubCategories(); }
         function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
         function toggleLoading(id, isL) { const b = document.getElementById(id); if(!b) return; if(isL) { b.dataset.old = b.innerText; b.innerHTML = '<div class="spinner mx-auto"></div>'; b.disabled = true; } else { b.innerHTML = b.dataset.old || b.innerText; b.disabled = false; } }
         function updateLiveTime() {
