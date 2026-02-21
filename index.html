@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>காசு-கந்து PRO v8.1.0 | Multi-Year Calendar Support</title>
+    <title>காசு-கந்து PRO v8.1.1 | Calendar Loader Support</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -47,6 +47,7 @@
         #dashboard { display: none; position: fixed; inset: 0; background: var(--bg-color); z-index: 100; overflow-y: auto; }
         #dashboard.active { display: block; }
 
+        /* Calendar Styling */
         .cal-day-header { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; padding-bottom: 8px; }
         .emi-date { background: #fee2e2; color: #ef4444; border: 1.5px solid #fecaca; font-weight: 800; transform: scale(1.05); box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.1); }
         .holiday { background: #f1f5f9; color: #94a3b8; }
@@ -55,6 +56,7 @@
         .btn-press:active { transform: scale(0.96); transition: 0.1s; }
         
         .spinner { border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top: 3px solid #fff; width: 18px; height: 18px; animation: spin 0.8s linear infinite; }
+        .cal-spinner { border: 3px solid rgba(99, 102, 241, 0.1); border-top: 3px solid var(--primary-color); width: 30px; height: 30px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
@@ -73,7 +75,10 @@
         .add-pill { border: 1.5px dashed #cbd5e1; color: #94a3b8; background: transparent; }
 
         .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .m-card { background: white; border-radius: 24px; border: 1px solid #f1f5f9; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.03); transition: all 0.3s ease; }
+        .m-card { background: white; border-radius: 24px; border: 1px solid #f1f5f9; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.03); transition: all 0.3s ease; position: relative; }
+        
+        /* Calendar Loader Overlay */
+        #calLoader { position: absolute; inset: 0; background: rgba(255,255,255,0.7); display: none; align-items: center; justify-content: center; z-index: 10; border-radius: 24px; backdrop-filter: blur(2px); }
     </style>
 </head>
 <body>
@@ -175,8 +180,13 @@
                 <div id="transList" class="space-y-3"></div>
             </div>
 
-            <!-- Smart Calendar Section (v8.1.0 Update with Navigation) -->
-            <div class="m-card p-6">
+            <!-- Smart Calendar Section with Loader -->
+            <div class="m-card p-6" id="calendarCard">
+                <!-- Loader Overlay -->
+                <div id="calLoader">
+                    <div class="spinner cal-spinner"></div>
+                </div>
+
                 <div class="flex justify-between items-center mb-6">
                     <div class="flex items-center gap-3">
                         <button onclick="changeMonth(-1)" class="w-8 h-8 flex items-center justify-center bg-slate-50 rounded-full theme-icon btn-press border border-slate-100"><i class="fa-solid fa-chevron-left"></i></button>
@@ -261,7 +271,6 @@
         let logoutTimerInterval, otpTimerInterval;
         let selectedLoanForEdit = null;
         
-        // Calendar State (v8.1.0)
         let calViewMonth = new Date().getMonth();
         let calViewYear = new Date().getFullYear();
 
@@ -317,7 +326,8 @@
             const s = document.createElement('script'); s.id = n;
             const sep = G_URL.includes('?') ? '&' : '?';
             s.src = `${G_URL}${sep}callback=${n}&${new URLSearchParams(params).toString()}`;
-            s.onerror = () => alert("பிழை!"); document.body.appendChild(s);
+            s.onerror = () => { toggleCalLoader(false); alert("பிழை!"); };
+            document.body.appendChild(s);
         }
 
         function saveGateway() {
@@ -387,8 +397,11 @@
 
         function loadDashboard() {
             if(!session.sheetId) return;
-            // v8.1.0: Passing current calendar month/year to backend
+            // v8.1.1: Show Calendar Loader
+            toggleCalLoader(true);
             call({ action: 'getAppData', sheetId: session.sheetId, month: calViewMonth, year: calViewYear }, (data) => {
+                // Hide Loader when data arrives
+                toggleCalLoader(false);
                 if(data.status !== "Success") return;
                 masterSubCategories = data.masterCategories;
                 if (!currentMasterCat) currentMasterCat = Object.keys(masterSubCategories)[0];
@@ -401,25 +414,24 @@
             });
         }
 
-        // --- Smart Calendar (v8.1.0 Enhanced with Navigation) ---
+        function toggleCalLoader(show) {
+            document.getElementById('calLoader').style.display = show ? 'flex' : 'none';
+        }
+
+        // --- Smart Calendar ---
         function renderCalendar(data) {
             const grid = document.getElementById('calGrid'), mLabel = document.getElementById('calMonth'), yLabel = document.getElementById('calYear');
-            
             const monthNames = ["ஜனவரி", "பிப்ரவரி", "மார்ச்", "ஏப்ரல்", "மே", "ஜூன்", "ஜூலை", "ஆகஸ்ட்", "செப்டம்பர்", "அக்டோபர்", "நவம்பர்", "டிசம்பர்"];
             mLabel.innerText = monthNames[calViewMonth]; 
             yLabel.innerText = calViewYear; 
-            
             grid.innerHTML = "";
             const now = new Date();
             const isCurrentMonth = now.getMonth() === calViewMonth && now.getFullYear() === calViewYear;
             const today = now.getDate();
-            
             const fDay = new Date(calViewYear, calViewMonth, 1).getDay();
             const dInM = new Date(calViewYear, calViewMonth + 1, 0).getDate();
-            
             const emiDates = data.loans ? data.loans.map(l => Number(l.date)) : [];
             const holidays = data.holidays || [];
-            
             for (let i = 0; i < fDay; i++) grid.innerHTML += `<div></div>`;
             for (let i = 1; i <= dInM; i++) {
                 const isEMI = emiDates.includes(i), isH = holidays.includes(i), isT = isCurrentMonth && i === today;
@@ -433,7 +445,7 @@
             calViewMonth += offset;
             if (calViewMonth > 11) { calViewMonth = 0; calViewYear++; }
             if (calViewMonth < 0) { calViewMonth = 11; calViewYear--; }
-            loadDashboard(); // Refresh data for the selected month
+            loadDashboard(); 
         }
 
         // --- EMI Edit ---
