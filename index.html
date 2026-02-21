@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>காசு-கந்து PRO v8.2.4 | Fixed Live Rates & Full UI</title>
+    <title>காசு-கந்து PRO v8.2.6 | Spreadsheet-Sync Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -28,6 +28,7 @@
         .theme-primary { background-color: var(--primary-color); }
         .theme-text { color: var(--text-color); }
         .theme-topbar { background-color: var(--topbar-color); }
+        .theme-border { border-color: var(--primary-color); }
         .theme-btn { background-color: var(--primary-color); color: white; }
         .theme-icon { color: var(--primary-color); }
 
@@ -47,6 +48,7 @@
         #dashboard { display: none; position: fixed; inset: 0; background: var(--bg-color); z-index: 100; overflow-y: auto; }
         #dashboard.active { display: block; }
 
+        /* Calendar Styling */
         .cal-day-header { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; padding-bottom: 8px; }
         .emi-pending { background: #fee2e2; color: #ef4444; border: 1.5px solid #fecaca; font-weight: 800; transform: scale(1.05); }
         .emi-paid { background: #dcfce7; color: #16a34a; border: 1.5px solid #bbf7d0; font-weight: 800; transform: scale(1.05); }
@@ -67,9 +69,6 @@
         .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: #10b981; }
         input:checked + .slider:before { transform: translateX(20px); }
-
-        .sub-pill { padding: 8px 16px; border-radius: 14px; font-size: 11px; font-weight: 700; cursor: pointer; transition: all 0.2s; border: 1px solid #f1f5f9; background: #ffffff; color: #64748b; }
-        .sub-pill.active { background: var(--primary-color); border-color: var(--primary-color); color: white; }
 
         .m-card { background: white; border-radius: 24px; border: 1px solid #f1f5f9; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.03); transition: all 0.3s ease; position: relative; }
         #calLoader { position: absolute; inset: 0; background: rgba(255,255,255,0.7); display: none; align-items: center; justify-content: center; z-index: 10; border-radius: 24px; backdrop-filter: blur(2px); }
@@ -95,8 +94,8 @@
             <div id="auth-login" class="screen active text-center">
                 <h1 class="text-4xl font-black theme-icon mb-2 italic tracking-tighter">காசு-கந்து</h1>
                 <div class="space-y-4 mt-10">
-                    <input type="email" id="loginEmail" placeholder="மின்னஞ்சல்" class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:theme-border">
-                    <input type="password" id="loginPass" placeholder="கடவுச்சொல்" class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:theme-border">
+                    <input type="email" id="loginEmail" placeholder="மின்னஞ்சல்" class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:theme-border transition-all">
+                    <input type="password" id="loginPass" placeholder="கடவுச்சொல்" class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:theme-border transition-all">
                     <button id="btn-login" onclick="loginUser()" class="w-full theme-btn py-4 rounded-2xl font-extrabold btn-press shadow-lg">உள்நுழைக</button>
                 </div>
                 <button onclick="toggleAuth('register')" class="mt-8 text-xs font-bold theme-icon uppercase underline">புதிய கணக்கு</button>
@@ -118,14 +117,14 @@
         </header>
 
         <main class="p-6 space-y-6 max-w-md mx-auto">
-            <!-- v8.2.4: Live Metal Rates Bar -->
+            <!-- v8.2.6: Live Metal Rates Sync -->
             <div class="rate-card shadow-sm">
                 <div class="flex items-center gap-1"><i class="fa-solid fa-coins text-amber-500"></i> <span>22K: ₹<span id="rate22k">...</span>/g</span></div>
                 <div class="flex items-center gap-1"><span>24K: ₹<span id="rate24k">...</span>/g</span></div>
                 <div class="flex items-center gap-1"><i class="fa-solid fa-circle text-slate-400"></i> <span>வெள்ளி: ₹<span id="rateSilver">...</span>/g</span></div>
             </div>
 
-            <!-- Salary Card (Edit restored) -->
+            <!-- Salary Card -->
             <div onclick="showSalaryModal()" class="theme-primary p-8 rounded-[2.5rem] text-white shadow-xl relative overflow-hidden transition-all cursor-pointer">
                 <div class="flex justify-between items-start">
                     <div><p class="text-[10px] font-bold uppercase opacity-70 tracking-widest">வருமானம் (Edit)</p><h2 id="dispSalary" class="text-4xl font-black my-1">₹0.00</h2></div>
@@ -262,7 +261,7 @@
                 
                 currentMonthLoans = data.loans;
                 
-                // Live Rates Update
+                // v8.2.6: Spreadsheet-based Live Rates Update
                 document.getElementById('rate22k').innerText = data.metalRates.gold22k;
                 document.getElementById('rate24k').innerText = data.metalRates.gold24k;
                 document.getElementById('rateSilver').innerText = data.metalRates.silver;
