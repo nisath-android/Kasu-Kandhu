@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>காசு-கந்து PRO v7.2.2</title>
+    <title>காசு-கந்து PRO v7.2.3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; overflow-x: hidden; }
         
         /* Screen management */
         .screen { display: none; min-height: 100vh; flex-direction: column; animation: slideUp 0.4s ease-out; }
@@ -27,13 +27,17 @@
         .spinner { border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top: 3px solid #fff; width: 18px; height: 18px; animation: spin 0.8s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* Prevent scroll when modal is open */
+        input::-webkit-inner-spin-button, input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         .no-scroll { overflow: hidden; }
+        
+        /* OTP Box Styles */
+        .otp-box { width: 3rem; height: 3.5rem; text-align: center; font-size: 1.5rem; font-weight: 800; border: 2px solid #f1f5f9; border-radius: 1rem; outline: none; transition: all 0.2s; }
+        .otp-box:focus { border-color: #4f46e5; background: #f8faff; }
     </style>
 </head>
-<body class="overflow-x-hidden">
+<body>
 
-    <!-- 1. Gateway Setup Screen (முதலில் தோன்றும் திரை) -->
+    <!-- 1. Gateway Setup Screen -->
     <div id="setup" class="screen flex items-center justify-center p-6 bg-slate-950 text-white">
         <div class="bg-white p-8 rounded-[2.5rem] w-full max-w-sm text-center shadow-2xl">
             <div class="mb-6">
@@ -41,46 +45,67 @@
                 <h2 class="text-2xl font-extrabold mb-2 text-slate-900">Gateway இணைப்பு</h2>
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">App Script URL-ஐ உள்ளிடவும்</p>
             </div>
-            
             <input type="text" id="gUrlInput" placeholder="https://script.google.com/..." 
                 class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl mb-4 outline-none focus:border-indigo-500 text-xs text-slate-900 transition-all">
-            
             <button onclick="saveGateway()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold btn-press shadow-lg shadow-indigo-200">
                 இணைத்துத் தொடங்குக
             </button>
-            
-            <p class="mt-6 text-[8px] text-slate-400 uppercase font-bold tracking-tighter leading-relaxed">
-                சரியான Gateway URL இருந்தால் மட்டுமே <br> ஆப் வேலை செய்யும்.
-            </p>
         </div>
     </div>
 
-    <!-- 2. Login Screen -->
+    <!-- 2. Auth (Login) Screen -->
     <div id="auth" class="screen flex items-center justify-center p-6 bg-slate-950">
         <div class="bg-white p-10 rounded-[3.5rem] w-full max-w-sm text-center shadow-2xl">
             <h1 class="text-3xl font-extrabold text-indigo-600 mb-2 italic tracking-tighter">காசு-கந்து PRO</h1>
             <p class="text-[10px] font-bold text-slate-400 uppercase mb-10 tracking-widest">Login to continue</p>
             
             <div class="space-y-4">
-                <div class="relative">
-                    <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
-                    <input type="email" id="loginEmail" placeholder="Email Address" class="w-full p-4 pl-12 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-indigo-500 transition-all">
+                <input type="email" id="loginEmail" placeholder="Email Address" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-indigo-500 transition-all">
+                <input type="password" id="loginPass" placeholder="Password" class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-indigo-500 transition-all">
+                
+                <button id="btn-login" onclick="loginUser()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold btn-press shadow-lg shadow-indigo-100">Login with Password</button>
+                
+                <div class="flex items-center gap-3 py-2">
+                    <hr class="flex-grow border-slate-100">
+                    <span class="text-[10px] font-bold text-slate-300 uppercase">OR</span>
+                    <hr class="flex-grow border-slate-100">
                 </div>
-                <div class="relative">
-                    <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-300"></i>
-                    <input type="password" id="loginPass" placeholder="Password" class="w-full p-4 pl-12 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-indigo-500 transition-all">
-                </div>
-                <button id="btn-login" onclick="loginUser()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold btn-press shadow-lg shadow-indigo-100 mt-4">Login</button>
+                
+                <button id="btn-otp-req" onclick="requestOTP()" class="w-full border-2 border-indigo-100 text-indigo-600 py-4 rounded-2xl font-bold btn-press">Login with OTP</button>
             </div>
             
             <div class="mt-8 flex flex-col gap-4">
                 <button onclick="showScreen('register')" class="text-xs font-bold text-indigo-600 uppercase underline">Create Account</button>
-                <button onclick="localStorage.removeItem('kk_g'); location.reload();" class="text-[8px] font-bold text-slate-300 uppercase">Gateway-ஐ மாற்றவும்</button>
+                <button onclick="localStorage.removeItem('kk_g'); location.reload();" class="text-[8px] font-bold text-slate-300 uppercase">Change Gateway</button>
             </div>
         </div>
     </div>
 
-    <!-- 3. Register Screen -->
+    <!-- 3. OTP Verification Screen -->
+    <div id="otpScreen" class="screen flex items-center justify-center p-6 bg-white">
+        <div class="w-full max-w-sm text-center">
+            <div class="mb-10">
+                <i class="fa-solid fa-shield-halved text-5xl text-indigo-600 mb-4"></i>
+                <h2 class="text-2xl font-extrabold text-slate-900 italic">OTP சரிபார்ப்பு</h2>
+                <p class="text-xs text-slate-400 mt-2">உங்கள் மின்னஞ்சலுக்கு அனுப்பப்பட்ட <br> 6 இலக்கக் குறியீட்டை உள்ளிடவும்</p>
+            </div>
+            
+            <div class="flex justify-between gap-2 mb-10" id="otpInputs">
+                <input type="number" onkeyup="moveNext(this, 0)" class="otp-box" maxlength="1">
+                <input type="number" onkeyup="moveNext(this, 1)" class="otp-box" maxlength="1">
+                <input type="number" onkeyup="moveNext(this, 2)" class="otp-box" maxlength="1">
+                <input type="number" onkeyup="moveNext(this, 3)" class="otp-box" maxlength="1">
+                <input type="number" onkeyup="moveNext(this, 4)" class="otp-box" maxlength="1">
+                <input type="number" onkeyup="moveNext(this, 5)" class="otp-box" maxlength="1">
+            </div>
+
+            <button id="btn-verify" onclick="verifyOTP()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold btn-press shadow-lg shadow-indigo-200">உறுதி செய்க (Verify)</button>
+            
+            <button onclick="showScreen('auth')" class="mt-8 text-slate-400 font-bold text-xs uppercase tracking-widest">ரத்து செய்க</button>
+        </div>
+    </div>
+
+    <!-- 4. Register Screen -->
     <div id="register" class="screen flex items-center justify-center p-6 bg-slate-900">
         <div class="bg-white p-10 rounded-[3.5rem] w-full max-w-sm shadow-2xl">
             <h2 class="text-2xl font-extrabold text-indigo-600 mb-8 text-center italic">Register</h2>
@@ -94,42 +119,36 @@
         </div>
     </div>
 
-    <!-- 4. Dashboard Screen -->
+    <!-- 5. Dashboard Screen -->
     <div id="dashboard" class="screen pb-32">
         <header class="p-6 bg-white border-b flex justify-between items-center sticky top-0 z-50">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white"><i class="fa-solid fa-coins"></i></div>
+                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white shadow-sm"><i class="fa-solid fa-wallet text-xs"></i></div>
                 <h1 class="text-xl font-extrabold italic text-indigo-600 tracking-tighter">காசு-கந்து</h1>
             </div>
-            <button onclick="showSalaryModal()" class="w-10 h-10 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600 btn-press"><i class="fa-solid fa-wallet"></i></button>
+            <button onclick="showSalaryModal()" class="w-10 h-10 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600 btn-press"><i class="fa-solid fa-pen-to-square"></i></button>
         </header>
 
         <main class="p-6 space-y-6 max-w-md mx-auto">
             <!-- Salary Card -->
-            <div class="bg-gradient-to-br from-indigo-600 to-violet-700 p-8 rounded-[2.5rem] text-white shadow-xl shadow-indigo-200 relative overflow-hidden">
+            <div class="bg-gradient-to-br from-indigo-600 to-indigo-800 p-8 rounded-[2.5rem] text-white shadow-xl shadow-indigo-100 relative overflow-hidden">
                 <div class="relative z-10">
                     <p class="text-[10px] font-bold uppercase opacity-70 tracking-widest">Monthly Estimated Income</p>
                     <h2 id="dispSalary" class="text-4xl font-extrabold my-1">₹0.00</h2>
                     <div class="bg-white/10 p-4 rounded-2xl mt-4 border border-white/10 backdrop-blur-sm">
                         <p id="aiAdvice" class="text-[11px] font-medium italic leading-relaxed text-indigo-50">நிதி நிலைமை ஆய்வு செய்யப்படுகிறது...</p>
                     </div>
-                    <div id="deficitTag" class="mt-6 inline-block px-4 py-1.5 bg-emerald-500 text-[10px] font-extrabold rounded-full uppercase tracking-tighter">Budget Status</div>
+                    <div id="deficitTag" class="mt-6 inline-block px-4 py-1.5 bg-emerald-500 text-[10px] font-extrabold rounded-full uppercase tracking-tighter shadow-lg">Budget Status</div>
                 </div>
-                <!-- Decor -->
-                <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-white/5 rounded-full"></div>
             </div>
 
             <!-- Calendar Section -->
             <div class="bg-white p-6 rounded-[2.5rem] shadow-sm border border-slate-100">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Financial Calendar</h3>
-                    <i class="fa-solid fa-calendar-day text-indigo-100"></i>
+                    <i class="fa-solid fa-calendar-day text-indigo-200"></i>
                 </div>
                 <div id="calGrid" class="grid grid-cols-7 gap-3 text-center text-[10px] font-extrabold"></div>
-                <div class="mt-6 pt-4 border-t border-slate-50 flex justify-center gap-4 text-[8px] font-bold uppercase text-slate-300">
-                    <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-rose-500"></span> EMI</div>
-                    <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-slate-200"></span> Holiday</div>
-                </div>
             </div>
 
             <!-- Loan List -->
@@ -140,7 +159,7 @@
         </main>
 
         <!-- Navigation -->
-        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t px-10 py-6 flex justify-between items-center z-50 rounded-t-[3rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
+        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t px-10 py-6 flex justify-between items-center z-50 rounded-t-[3rem] shadow-lg">
             <i class="fa-solid fa-house text-indigo-600 text-xl"></i>
             <i class="fa-solid fa-calendar-check text-slate-300 text-xl"></i>
             <div class="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200 -mt-14 border-4 border-white btn-press">
@@ -151,108 +170,79 @@
         </nav>
     </div>
 
-    <!-- Salary Update Modal -->
+    <!-- Salary Modal -->
     <div id="salaryModal" class="overlay flex items-end">
         <div class="bg-white w-full max-w-md p-10 rounded-t-[3.5rem] shadow-2xl">
-            <div class="w-12 h-1 bg-slate-100 rounded-full mx-auto mb-8"></div>
             <h3 class="text-2xl font-extrabold text-indigo-600 mb-2 italic">Update Income</h3>
             <p class="text-[10px] text-slate-400 mb-8 font-bold uppercase tracking-widest">இந்த மாத வருமானத்தை உள்ளிடவும்</p>
-            
-            <div class="relative mb-8">
-                <span class="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-extrabold text-slate-300">₹</span>
-                <input type="number" id="newSalaryInput" class="w-full p-8 pl-12 bg-slate-50 rounded-[2rem] text-4xl font-extrabold outline-none border-2 border-transparent focus:border-indigo-500 transition-all" placeholder="30000">
-            </div>
-            
+            <input type="number" id="newSalaryInput" class="w-full p-8 bg-slate-50 rounded-[2rem] text-4xl font-extrabold outline-none border-2 border-transparent focus:border-indigo-500 transition-all mb-8" placeholder="30000">
             <div class="flex gap-4">
-                <button onclick="closeSalaryModal()" class="flex-1 py-5 bg-slate-100 rounded-2xl font-bold text-slate-400 uppercase text-xs">Cancel</button>
-                <button id="btn-save-salary" onclick="updateSalary()" class="flex-[2] py-5 bg-indigo-600 rounded-2xl font-bold text-white shadow-lg shadow-indigo-100 uppercase text-xs">Save Update</button>
+                <button onclick="closeSalaryModal()" class="flex-1 py-5 bg-slate-100 rounded-2xl font-bold text-slate-400 text-xs">Cancel</button>
+                <button id="btn-save-salary" onclick="updateSalary()" class="flex-[2] py-5 bg-indigo-600 rounded-2xl font-bold text-white shadow-lg text-xs">Save Update</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Global State
+        // State
         let G_URL = localStorage.getItem('kk_g');
         let session = { user: null, sheetId: null };
 
-        // Initialization
+        // Init
         window.onload = () => {
-            if (!G_URL || G_URL.trim() === "") {
-                showScreen('setup');
-            } else {
-                showScreen('auth');
-            }
+            if (!G_URL) showScreen('setup');
+            else showScreen('auth');
         };
 
-        // Screen Management
         function showScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => {
-                s.classList.remove('active');
-                s.style.display = 'none'; // Ensure hidden
-            });
+            document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
             const target = document.getElementById(id);
             if (target) {
-                target.classList.add('active');
                 target.style.display = (id === 'dashboard' ? 'block' : 'flex');
+                target.classList.add('active');
             }
         }
 
-        // Gateway Handling
+        // Gateway
         function saveGateway() {
             const u = document.getElementById('gUrlInput').value.trim();
             if (u.startsWith('https://script.google.com/')) {
                 localStorage.setItem('kk_g', u);
                 G_URL = u;
-                alert("Gateway இணைக்கப்பட்டது!");
                 location.reload(); 
-            } else {
-                alert("சரியான கூகுள் ஸ்கிரிப்ட் URL-ஐ உள்ளிடவும்!");
-            }
+            } else alert("சரியான Gateway URL-ஐ உள்ளிடவும்!");
         }
 
-        // Script Injection for JSONP
         function call(params, cb) {
-            if (!G_URL) return alert("Gateway URL இல்லை!");
             const n = 'cb' + Date.now() + Math.floor(Math.random() * 100);
-            window[n] = (res) => { 
-                cb(res); 
-                delete window[n]; 
-                document.getElementById(n)?.remove(); 
-            };
+            window[n] = (res) => { cb(res); delete window[n]; document.getElementById(n)?.remove(); };
             const s = document.createElement('script'); 
             s.id = n;
             const sep = G_URL.includes('?') ? '&' : '?';
             s.src = `${G_URL}${sep}callback=${n}&${new URLSearchParams(params).toString()}`;
-            s.onerror = () => { 
-                alert("தொடர்பு பிழை! Gateway URL அல்லது இணையத்தை சரிபார்க்கவும்."); 
-                showScreen('setup'); 
-            };
+            s.onerror = () => { alert("Gateway Error!"); showScreen('setup'); };
             document.body.appendChild(s);
         }
 
-        // --- AUTH ---
+        // --- AUTH LOGIC ---
 
         function registerAccount() {
             const name = document.getElementById('regName').value;
             const email = document.getElementById('regEmail').value;
             const pass = document.getElementById('regPass').value;
             if(!name || !email || !pass) return alert("அனைத்து விவரங்களையும் நிரப்பவும்!");
-            
             toggleLoading('btn-reg', true);
             call({ action: 'register', name, email, pass }, (res) => {
                 toggleLoading('btn-reg', false);
-                if(res.status === "Success") {
-                    alert("பதிவு முடிந்தது! இப்போது லாகின் செய்யவும்.");
-                    showScreen('auth');
-                } else alert(res.msg);
+                if(res.status === "Success") { alert("பதிவு முடிந்தது!"); showScreen('auth'); }
+                else alert(res.msg);
             });
         }
 
         function loginUser() {
             const email = document.getElementById('loginEmail').value;
             const pass = document.getElementById('loginPass').value;
-            if(!email || !pass) return alert("Email மற்றும் Password தேவை!");
-            
+            if(!email || !pass) return alert("Email & Password தேவை!");
             toggleLoading('btn-login', true);
             call({ action: 'login', email, pass }, (res) => {
                 toggleLoading('btn-login', false);
@@ -264,25 +254,46 @@
             });
         }
 
+        function requestOTP() {
+            const email = document.getElementById('loginEmail').value;
+            if(!email) return alert("மின்னஞ்சலை உள்ளிடவும்!");
+            toggleLoading('btn-otp-req', true);
+            call({ action: 'sendOTP', email }, (res) => {
+                toggleLoading('btn-otp-req', false);
+                if(res.status === "Sent") {
+                    session.user = email;
+                    showScreen('otpScreen');
+                } else alert("OTP அனுப்புவதில் பிழை!");
+            });
+        }
+
+        function verifyOTP() {
+            const otp = Array.from(document.querySelectorAll('.otp-box')).map(i => i.value).join('');
+            if(otp.length < 6) return alert("6 இலக்க எண்ணை உள்ளிடவும்!");
+            
+            toggleLoading('btn-verify', true);
+            // Main Engine 'verifyOTP' logic should be used here. 
+            // For now, it will look for the user details based on the verified state.
+            call({ action: 'login', email: session.user, otp: otp, isOtp: true }, (res) => {
+                toggleLoading('btn-verify', false);
+                if(res.status === "Success") {
+                    session.sheetId = res.sheetId;
+                    showScreen('dashboard');
+                    loadDashboard();
+                } else alert("தவறான OTP!");
+            });
+        }
+
         // --- DASHBOARD ---
 
         function loadDashboard() {
             call({ action: 'getAppData', sheetId: session.sheetId }, (data) => {
                 if(data.status !== "Success") return;
-                
-                // Update UI elements
                 document.getElementById('dispSalary').innerText = `₹${Number(data.salary).toLocaleString()}`;
                 document.getElementById('aiAdvice').innerText = data.advice;
-                
                 const dTag = document.getElementById('deficitTag');
-                if (data.deficit < 0) {
-                    dTag.innerText = `Shortage: ₹${Math.abs(data.deficit).toLocaleString()}`;
-                    dTag.classList.replace('bg-emerald-500', 'bg-rose-500');
-                } else {
-                    dTag.innerText = `Balance: ₹${data.deficit.toLocaleString()}`;
-                    dTag.classList.replace('bg-rose-500', 'bg-emerald-500');
-                }
-                
+                dTag.innerText = data.deficit < 0 ? `Shortage: ₹${Math.abs(data.deficit).toLocaleString()}` : `Balance: ₹${data.deficit.toLocaleString()}`;
+                dTag.className = `mt-6 inline-block px-4 py-1.5 text-[10px] font-extrabold rounded-full uppercase ${data.deficit < 0 ? 'bg-rose-500' : 'bg-emerald-500'}`;
                 renderCalendar(data);
                 renderLoans(data.loans);
             });
@@ -291,12 +302,8 @@
         function renderCalendar(data) {
             const grid = document.getElementById('calGrid'); grid.innerHTML = "";
             const emiDates = data.loans ? data.loans.map(l => Number(l.date)) : [];
-            const holidays = data.holidays || [];
-            
             for(let i=1; i<=31; i++) {
-                const isEMI = emiDates.includes(i);
-                const isH = holidays.includes(i);
-                const cls = isEMI ? 'emi-date' : (isH ? 'holiday' : 'bg-slate-50 text-slate-400');
+                const cls = emiDates.includes(i) ? 'emi-date' : (data.holidays && data.holidays.includes(i) ? 'holiday' : 'bg-slate-50 text-slate-400');
                 grid.innerHTML += `<div class="p-3 rounded-2xl transition-all ${cls}">${i}</div>`;
             }
         }
@@ -304,10 +311,7 @@
         function renderLoans(loans) {
             const list = document.getElementById('loanList');
             list.innerHTML = `<h3 class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-4">Monthly Commitments</h3>`;
-            if (!loans || loans.length === 0) {
-                list.innerHTML += `<p class="text-center py-6 text-xs text-slate-300 font-bold">தகவல்கள் இல்லை</p>`;
-                return;
-            }
+            if(!loans || loans.length === 0) return list.innerHTML += `<p class="text-center py-6 text-xs text-slate-300 font-bold">No Records Found</p>`;
             loans.forEach(loan => {
                 list.innerHTML += `
                     <div class="bg-white p-6 rounded-[2.5rem] flex justify-between items-center border border-slate-100 shadow-sm transition-transform hover:scale-[1.01]">
@@ -323,12 +327,9 @@
             });
         }
 
-        // --- SALARY MODAL ---
-
         function updateSalary() {
             const amt = document.getElementById('newSalaryInput').value;
             if(!amt || amt < 0) return alert("சரியான சம்பளத்தை உள்ளிடவும்!");
-            
             toggleLoading('btn-save-salary', true);
             call({ action: 'updateSalary', amount: amt, sheetId: session.sheetId }, (res) => {
                 toggleLoading('btn-save-salary', false);
@@ -341,32 +342,21 @@
             document.getElementById('salaryModal').style.display = 'flex'; 
             document.body.classList.add('no-scroll');
         }
-        
         function closeSalaryModal() { 
             document.getElementById('salaryModal').style.display = 'none'; 
             document.body.classList.remove('no-scroll');
         }
-
-        function initAppDB() {
-            if(!confirm("தனிநபர் டேட்டாபேஸ் மற்றும் டேப்களை (Tabs) செட்டப் செய்யவா?")) return;
-            call({ action: 'initSetup', sheetId: session.sheetId }, (res) => {
-                alert(res.status);
-                loadDashboard();
-            });
-        }
-
-        // --- HELPERS ---
+        function initAppDB() { call({ action: 'initSetup', sheetId: session.sheetId }, (res) => alert(res.status)); }
 
         function toggleLoading(id, isLoading) {
             const btn = document.getElementById(id);
-            if(isLoading) {
-                btn.dataset.old = btn.innerText;
-                btn.innerHTML = '<div class="spinner mx-auto"></div>';
-                btn.disabled = true;
-            } else {
-                btn.innerHTML = btn.dataset.old || btn.innerText;
-                btn.disabled = false;
-            }
+            if(isLoading) { btn.dataset.old = btn.innerText; btn.innerHTML = '<div class="spinner mx-auto"></div>'; btn.disabled = true; }
+            else { btn.innerHTML = btn.dataset.old || btn.innerText; btn.disabled = false; }
+        }
+
+        function moveNext(el, idx) {
+            if (el.value.length === 1 && idx < 5) document.querySelectorAll('.otp-box')[idx + 1].focus();
+            if (el.value.length === 0 && idx > 0) document.querySelectorAll('.otp-box')[idx - 1].focus();
         }
     </script>
 </body>
