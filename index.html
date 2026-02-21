@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>காசு-கந்து PRO v8.5.0 | Secure Logout & Cloud Theme</title>
+    <title>காசு-கந்து PRO v8.5.2 | OTP Fixed & Status UI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -28,6 +28,7 @@
         .theme-primary { background-color: var(--primary-color); }
         .theme-text { color: var(--text-color); }
         .theme-topbar { background-color: var(--topbar-color); }
+        .theme-border { border-color: var(--primary-color); }
         .theme-btn { background-color: var(--primary-color); color: white; }
         .theme-icon { color: var(--primary-color); }
 
@@ -61,6 +62,8 @@
         
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
         
+        .otp-box::-webkit-inner-spin-button, .otp-box::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
         .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #e2e8f0; transition: .4s; border-radius: 20px; }
@@ -84,20 +87,57 @@
                 <h2 class="text-2xl font-extrabold text-white mb-2 italic">Gateway Setup</h2>
                 <input type="text" id="gUrlInput" placeholder="App Script URL" class="w-full p-4 bg-white/10 border-2 border-white/20 rounded-2xl mb-6 outline-none text-xs text-white">
                 <button id="btn-setup" onclick="saveGateway()" class="w-full bg-indigo-500 text-white py-4 rounded-2xl font-extrabold btn-press shadow-xl">இணைக்கவும்</button>
-                <p id="gw-status" class="mt-4 text-[10px] text-rose-500 font-black uppercase flex items-center justify-center gap-2"><span id="gw-status-icon" class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span><span id="gw-status-text">Disconnected</span></p>
+                
+                <!-- Gateway Status Display -->
+                <p id="gw-status" class="mt-4 text-[10px] text-rose-500 font-black uppercase flex items-center justify-center gap-2">
+                    <span id="gw-status-icon" class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+                    <span id="gw-status-text">இணைக்கப்படவில்லை</span>
+                </p>
             </div>
         </div>
 
         <div id="auth-panel" class="auth-panel auth-disabled">
             <div id="auth-overlay" class="auth-overlay">கேட்வே (Gateway) <br> முதலில் இணைக்கப்பட வேண்டும்</div>
+            
+            <!-- Login Screen -->
             <div id="auth-login" class="screen active text-center">
                 <h1 class="text-4xl font-black theme-icon mb-2 italic tracking-tighter">காசு-கந்து</h1>
                 <div class="space-y-4 mt-10">
                     <input type="email" id="loginEmail" placeholder="மின்னஞ்சல்" class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:theme-border">
                     <input type="password" id="loginPass" placeholder="கடவுச்சொல்" class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:theme-border">
                     <button id="btn-login" onclick="loginUser()" class="w-full theme-btn py-4 rounded-2xl font-extrabold btn-press shadow-lg">உள்நுழைக</button>
+                    <button onclick="requestOTP()" class="w-full border-2 theme-icon border-indigo-50 py-4 rounded-2xl font-bold btn-press">OTP மூலம் லாகின்</button>
                 </div>
                 <button onclick="toggleAuth('register')" class="mt-8 text-xs font-bold theme-icon uppercase underline">புதிய கணக்கு</button>
+            </div>
+
+            <!-- OTP Screen -->
+            <div id="auth-otp" class="screen text-center">
+                <i class="fa-solid fa-shield-halved text-5xl theme-icon mb-6"></i>
+                <h2 class="text-2xl font-black theme-text mb-2 italic">OTP சரிபார்ப்பு</h2>
+                <p class="text-[10px] text-slate-400 font-bold mb-8">மின்னஞ்சலுக்கு அனுப்பப்பட்ட குறியீட்டை உள்ளிடவும்</p>
+                <div class="flex justify-between gap-2 my-10 px-4">
+                    <input type="number" onpaste="handleOtpPaste(event)" onkeyup="moveNext(this, 0, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-50 rounded-xl outline-none otp-box">
+                    <input type="number" onkeyup="moveNext(this, 1, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-50 rounded-xl outline-none otp-box">
+                    <input type="number" onkeyup="moveNext(this, 2, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-50 rounded-xl outline-none otp-box">
+                    <input type="number" onkeyup="moveNext(this, 3, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-50 rounded-xl outline-none otp-box">
+                    <input type="number" onkeyup="moveNext(this, 4, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-50 rounded-xl outline-none otp-box">
+                    <input type="number" onkeyup="moveNext(this, 5, event)" class="w-12 h-14 text-center text-xl font-bold bg-slate-50 rounded-xl outline-none otp-box">
+                </div>
+                <button id="btn-verify" onclick="verifyOTP()" class="w-full theme-btn py-4 rounded-2xl font-extrabold btn-press shadow-lg">சரிபார்க்கவும்</button>
+                <button onclick="toggleAuth('login')" class="mt-8 text-slate-400 text-xs font-bold uppercase underline">திரும்பச் செல்</button>
+            </div>
+
+            <!-- Register Screen -->
+            <div id="auth-register" class="screen text-center">
+                <h2 class="text-3xl font-black theme-icon mb-8 italic">பதிவு செய்க</h2>
+                <div class="space-y-4">
+                    <input type="text" id="regName" placeholder="பெயர்" class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:theme-border">
+                    <input type="email" id="regEmail" placeholder="மின்னஞ்சல்" class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:theme-border">
+                    <input type="password" id="regPass" placeholder="கடவுச்சொல்" class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:theme-border">
+                    <button id="btn-reg" onclick="registerAccount()" class="w-full theme-btn py-4 rounded-2xl font-extrabold btn-press">பதிவு செய்</button>
+                    <button onclick="toggleAuth('login')" class="w-full text-slate-400 text-xs font-bold uppercase mt-6">லாகின் பக்கம்</button>
+                </div>
             </div>
         </div>
     </div>
@@ -137,6 +177,7 @@
                     <div class="flex flex-col items-center min-w-[100px]"><span id="calMonth" class="text-lg font-black theme-text italic">Month</span><span id="calYear" class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Year</span></div>
                     <button onclick="changeMonth(1)" class="w-8 h-8 flex items-center justify-center bg-slate-50 rounded-full theme-icon border"><i class="fa-solid fa-chevron-right"></i></button>
                 </div>
+                <div class="grid grid-cols-7 gap-1 text-center mb-4"><div class="cal-day-header">ஞா</div><div class="cal-day-header">தி</div><div class="cal-day-header">செ</div><div class="cal-day-header">பு</div><div class="cal-day-header">வி</div><div class="cal-day-header">வெ</div><div class="cal-day-header">ச</div></div>
                 <div id="calGrid" class="grid grid-cols-7 gap-2 text-center text-[10px] font-extrabold"></div>
             </div>
 
@@ -208,7 +249,6 @@
             applyTheme(nt);
         }
 
-        // v8.5.0: Save theme to Spreadsheet Profile
         function saveThemeToCloud() {
             const nt = { primary: document.getElementById('color-primary').value, bg: document.getElementById('color-bg').value, topbar: document.getElementById('color-topbar').value, text: document.getElementById('color-text').value };
             localStorage.setItem('kk_theme', JSON.stringify(nt));
@@ -218,9 +258,8 @@
         }
 
         function logout() {
-            // v8.5.0: Full clear of security data
             localStorage.clear();
-            alert("நீங்கள் வெற்றிகரமாக வெளியேறிவிட்டீர்கள். அனைத்துத் தரவுகளும் அழிக்கப்பட்டன.");
+            alert("வெளியேறிவிட்டீர்கள். தரவுகள் அழிக்கப்பட்டன.");
             location.reload();
         }
 
@@ -238,29 +277,84 @@
             const u = document.getElementById('gUrlInput').value.trim();
             if (u.startsWith('https://script.google.com/') && u.includes('/exec')) {
                 localStorage.setItem('kk_g', u); G_URL = u; enableAuthPanel(true);
+            } else {
+                alert("தவறான URL!");
             }
         }
 
         function enableAuthPanel(isC) {
             const p = document.getElementById('auth-panel'), o = document.getElementById('auth-overlay');
+            const st = document.getElementById('gw-status-text'), si = document.getElementById('gw-status-icon'), gs = document.getElementById('gw-status');
             if (isC) {
                 p.classList.remove('auth-disabled'); o.style.display = 'none';
-                document.getElementById('gw-status-text').innerText = "Connected";
-                document.getElementById('gw-status').className = "mt-4 text-[10px] text-emerald-500 font-black uppercase flex items-center justify-center gap-2";
-                document.getElementById('gw-status-icon').className = "w-2 h-2 rounded-full bg-emerald-500";
+                st.innerText = "இணைக்கப்பட்டது";
+                gs.className = gs.className.replace('text-rose-500', 'text-emerald-500');
+                si.className = si.className.replace('bg-rose-500', 'bg-emerald-500');
+            } else {
+                p.classList.add('auth-disabled'); o.style.display = 'block';
+                st.innerText = "இணைக்கப்படவில்லை";
+                gs.className = gs.className.replace('text-emerald-500', 'text-rose-500');
+                si.className = si.className.replace('bg-emerald-500', 'bg-rose-500');
             }
+        }
+
+        function toggleAuth(s) {
+            document.querySelectorAll('.auth-panel .screen').forEach(sc => sc.classList.remove('active'));
+            document.getElementById('auth-' + s).classList.add('active');
         }
 
         function loginUser() {
             const e = document.getElementById('loginEmail').value, p = document.getElementById('loginPass').value;
+            if(!e || !p) return alert("விவரங்கள் தேவை!");
             call({ action: 'login', email: e, pass: p }, (res) => {
                 if(res.status === "Success") { 
                     session = { user: e, sheetId: res.sheetId };
-                    // Apply cloud theme immediately on login
                     if(res.theme) { localStorage.setItem('kk_theme', JSON.stringify(res.theme)); applyTheme(res.theme); }
                     enterDashboard(); 
-                }
-                else alert(res.msg);
+                } else alert(res.msg);
+            });
+        }
+
+        function requestOTP() {
+            const e = document.getElementById('loginEmail').value;
+            if(!e) return alert("மின்னஞ்சல் தேவை!");
+            call({ action: 'sendOTP', email: e }, (res) => {
+                if(res.status === "Sent") { 
+                    session.user = e;
+                    toggleAuth('otp'); 
+                } else alert("பிழை!");
+            });
+        }
+
+        function verifyOTP() {
+            const otp = Array.from(document.querySelectorAll('.otp-box')).map(i => i.value).join('');
+            if(otp.length < 6) return alert("6 இலக்க OTP தேவை!");
+            call({ action: 'login', email: session.user, otp, isOtp: "true" }, (res) => {
+                if(res.status === "Success") { 
+                    session.sheetId = res.sheetId; 
+                    enterDashboard(); 
+                } else alert("தவறான OTP!");
+            });
+        }
+
+        function handleOtpPaste(e) { 
+            const d = e.clipboardData.getData('text').slice(0, 6); 
+            if(!/^\d+$/.test(d)) return; 
+            const ins = document.querySelectorAll('.otp-box'); 
+            d.split('').forEach((c, i) => { if(ins[i]) ins[i].value = c; }); 
+            ins[Math.min(d.length, 5)].focus(); 
+        }
+
+        function moveNext(el, idx, e) { 
+            if(e.key === "Backspace" && el.value.length === 0 && idx > 0) document.querySelectorAll('.otp-box')[idx - 1].focus(); 
+            else if(el.value.length === 1 && idx < 5) document.querySelectorAll('.otp-box')[idx + 1].focus(); 
+        }
+
+        function registerAccount() {
+            const n = document.getElementById('regName').value, e = document.getElementById('regEmail').value, p = document.getElementById('regPass').value;
+            if(!n || !e || !p) return alert("விவரங்கள் தேவை!");
+            call({ action: 'register', name: n, email: e, pass: p }, (res) => {
+                if(res.status === "Success") { alert("பதிவு முடிந்தது!"); toggleAuth('login'); } else alert(res.msg);
             });
         }
 
