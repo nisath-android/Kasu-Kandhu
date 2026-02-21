@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>காசு-கந்து PRO v9.0.0 | Profile & Setup Edition</title>
+    <title>காசு-கந்து PRO v9.0.1 | Profile Fix & Setup Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -62,9 +62,6 @@
         @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
         .animate-float { animation: float 4s ease-in-out infinite; }
         
-        .pulse-text { animation: pulseFade 1.5s infinite; }
-        @keyframes pulseFade { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.95); } }
-
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
         
         .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
@@ -114,7 +111,7 @@
             <div id="auth-overlay" class="auth-overlay text-center px-10">கேட்வே (Gateway) <br> முதலில் இணைக்கப்பட வேண்டும்</div>
             
             <div id="auth-login" class="screen active text-center">
-                <h1 class="text-5xl font-black theme-icon mb-4 italic tracking-tighter">காசு-கந்து</h1>
+                <h1 class="text-5xl font-black theme-icon mb-4 italic tracking-tighter leading-none">காசு-கந்து</h1>
                 <p class="text-[11px] font-bold text-slate-400 uppercase tracking-[0.3em] mb-12">நிதி மேலாண்மை</p>
                 <div class="space-y-4">
                     <input type="email" id="loginEmail" placeholder="மின்னஞ்சல்" class="w-full p-5 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:theme-border transition-all">
@@ -241,7 +238,7 @@
         </nav>
     </div>
 
-    <!-- v9.0.0 NEW: Profile Modal -->
+    <!-- Profile Modal -->
     <div id="profileModal" class="modal-overlay">
         <div class="bg-white w-full max-w-md p-10 rounded-[4rem] shadow-2xl max-h-[90vh] overflow-y-auto hide-scrollbar text-center">
             <h3 class="text-2xl font-black theme-icon italic mb-10 tracking-tighter">சுயவிவரம்</h3>
@@ -276,7 +273,7 @@
         </div>
     </div>
 
-    <!-- Modals (Transaction, Salary, EMI remain with round loaders) -->
+    <!-- Other Modals (Transaction, Salary, EMI) -->
     <div id="transModal" class="modal-overlay">
         <div class="bg-white w-full max-w-md p-10 rounded-[4rem] shadow-2xl max-h-[95vh] overflow-y-auto hide-scrollbar">
             <h3 class="text-2xl font-black theme-icon italic text-center mb-10 tracking-tighter">புதிய பதிவு</h3>
@@ -304,14 +301,14 @@
         </div>
     </div>
 
-    <!-- Small Add Modals -->
+    <!-- Dynamic Category Modals -->
     <div id="addMasterCatModal" class="modal-overlay"><div class="bg-white w-full max-w-xs p-10 rounded-[3.5rem] shadow-2xl text-center"><h3 class="text-xl font-black theme-icon mb-8 italic">புதிய வகை</h3><input type="text" id="newMasterCatInput" class="w-full p-5 bg-slate-50 rounded-2xl font-bold outline-none mb-10 border-2 border-transparent focus:theme-border" placeholder="உதாரணம்: பயணம்"><button id="btn-save-mastercat" onclick="saveNewCategory('master')" class="w-full theme-btn py-4 rounded-2xl font-black uppercase text-[10px] shadow-xl flex items-center justify-center tracking-widest">சேமி</button><button onclick="closeSmallModals()" class="w-full py-4 text-slate-400 text-[10px] font-black mt-2 uppercase">மூடு</button></div></div>
     <div id="addSubCatModal" class="modal-overlay"><div class="bg-white w-full max-w-xs p-10 rounded-[3.5rem] shadow-2xl text-center"><h3 class="text-xl font-black theme-icon mb-8 italic">புதிய விவரம்</h3><p id="currentMasterDisplay" class="text-[10px] text-slate-400 mb-6 uppercase font-bold"></p><input type="text" id="newSubCatInput" class="w-full p-5 bg-slate-50 rounded-2xl font-bold outline-none mb-10 border-2 border-transparent focus:theme-border" placeholder="உதாரணம்: பெட்ரோல்"><button id="btn-save-subcat" onclick="saveNewCategory('sub')" class="w-full theme-btn py-4 rounded-2xl font-black uppercase text-[10px] shadow-xl flex items-center justify-center tracking-widest">சேமி</button><button onclick="closeSmallModals()" class="w-full py-4 text-slate-400 text-[10px] font-black mt-2 uppercase">மூடு</button></div></div>
 
-    <!-- Salary/EMI/Theme Modals remain same as v8.9.0 with loader support -->
-    <div id="salaryModal" class="modal-overlay"><div class="bg-white w-full max-w-xs p-10 rounded-[4rem] shadow-2xl text-center"><h3 class="text-2xl font-black theme-icon mb-8 italic">சம்பளம் மாற்றம்</h3><input type="number" id="newSalaryInput" class="w-full p-8 bg-slate-50 rounded-[2.5rem] text-4xl font-black outline-none mb-10 border-2 border-transparent focus:theme-border transition-all" placeholder="30000"><button id="btn-save-salary" onclick="updateSalary()" class="w-full theme-btn py-5 rounded-3xl font-black uppercase text-xs shadow-xl flex items-center justify-center">சேமிக்க</button><button onclick="closeModals()" class="w-full py-5 text-slate-400 text-[10px] font-black mt-2 uppercase">மூடுக</button></div></div>
-    <div id="emiEditModal" class="modal-overlay"><div class="bg-white w-full max-w-xs p-10 rounded-[4rem] shadow-2xl text-center"><h3 class="text-2xl font-black theme-icon mb-2 italic">EMI விவரங்கள்</h3><p id="editLoanTitle" class="text-[11px] text-slate-400 mb-10 font-black uppercase tracking-tighter"></p><div class="space-y-5 mb-10"><input type="number" id="editLoanAmt" placeholder="தொகை" class="w-full p-6 bg-slate-50 rounded-2xl outline-none font-black text-2xl border-2 border-transparent focus:theme-border"><input type="number" id="editLoanDate" placeholder="தேதி (1-31)" class="w-full p-6 bg-slate-50 rounded-2xl outline-none font-black text-xl border-2 border-transparent focus:theme-border"></div><button id="btn-save-emi" onclick="saveEMIChange()" class="w-full theme-btn py-5 rounded-3xl font-black uppercase text-xs shadow-xl flex items-center justify-center">சேமிக்க</button><button onclick="closeModals()" class="w-full py-5 text-slate-400 text-[10px] font-black mt-2 uppercase">ரத்து</button></div></div>
-    <div id="themeModal" class="modal-overlay"><div class="bg-white w-full max-w-xs p-10 rounded-[4rem] shadow-2xl text-center"><h3 class="text-2xl font-black theme-icon mb-10 italic tracking-tighter">வண்ணங்கள்</h3><div class="space-y-6"><div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-600 uppercase">முதன்மை</span><input type="color" id="color-primary" oninput="updateThemePreview()"></div><div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-600 uppercase">பின்னணி</span><input type="color" id="color-bg" oninput="updateThemePreview()"></div><div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-600 uppercase">Header</span><input type="color" id="color-topbar" oninput="updateThemePreview()"></div><div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-600 uppercase">எழுத்து</span><input type="color" id="color-text" oninput="updateThemePreview()"></div></div><button id="btn-save-theme" onclick="saveThemeToCloud()" class="w-full theme-btn py-5 rounded-3xl font-black uppercase text-[10px] mt-10 shadow-xl flex items-center justify-center">சேமிக்க</button><button onclick="closeModals()" class="w-full text-slate-400 text-[10px] font-black mt-4 uppercase">மூடுக</button></div></div>
+    <!-- Utilities -->
+    <div id="salaryModal" class="modal-overlay"><div class="bg-white w-full max-w-xs p-10 rounded-[4rem] shadow-2xl text-center"><h3 class="text-2xl font-black theme-icon mb-8 italic tracking-tighter">சம்பளம் மாற்றம்</h3><input type="number" id="newSalaryInput" class="w-full p-8 bg-slate-50 rounded-[2.5rem] text-4xl font-black outline-none mb-10 border-2 border-transparent focus:theme-border transition-all" placeholder="30000"><button id="btn-save-salary" onclick="updateSalary()" class="w-full theme-btn py-5 rounded-3xl font-black uppercase text-xs shadow-xl flex items-center justify-center tracking-widest">சேமிக்க</button><button onclick="closeModals()" class="w-full py-5 text-slate-400 text-[10px] font-black mt-2 uppercase tracking-widest">மூடுக</button></div></div>
+    <div id="emiEditModal" class="modal-overlay"><div class="bg-white w-full max-w-xs p-10 rounded-[4rem] shadow-2xl text-center"><h3 class="text-2xl font-black theme-icon mb-2 italic tracking-tighter">EMI விவரங்கள்</h3><p id="editLoanTitle" class="text-[11px] text-slate-400 mb-10 font-black uppercase tracking-tighter"></p><div class="space-y-5 mb-10"><input type="number" id="editLoanAmt" placeholder="தொகை" class="w-full p-6 bg-slate-50 rounded-2xl outline-none font-black text-2xl border-2 border-transparent focus:theme-border"><input type="number" id="editLoanDate" placeholder="தேதி (1-31)" class="w-full p-6 bg-slate-50 rounded-2xl outline-none font-black text-xl border-2 border-transparent focus:theme-border"></div><button id="btn-save-emi" onclick="saveEMIChange()" class="w-full theme-btn py-5 rounded-3xl font-black uppercase text-xs shadow-xl flex items-center justify-center tracking-widest">சேமிக்க</button><button onclick="closeModals()" class="w-full py-5 text-slate-400 text-[10px] font-black mt-2 uppercase tracking-widest">ரத்து</button></div></div>
+    <div id="themeModal" class="modal-overlay"><div class="bg-white w-full max-w-xs p-10 rounded-[4rem] shadow-2xl text-center"><h3 class="text-2xl font-black theme-icon mb-10 italic tracking-tighter">வண்ணங்கள்</h3><div class="space-y-6"><div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-600 uppercase">Primary</span><input type="color" id="color-primary" oninput="updateThemePreview()"></div><div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-600 uppercase">Background</span><input type="color" id="color-bg" oninput="updateThemePreview()"></div><div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-600 uppercase">Header</span><input type="color" id="color-topbar" oninput="updateThemePreview()"></div><div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-600 uppercase">Text</span><input type="color" id="color-text" oninput="updateThemePreview()"></div></div><button id="btn-save-theme" onclick="saveThemeToCloud()" class="w-full theme-btn py-5 rounded-3xl font-black uppercase text-[10px] mt-10 shadow-xl flex items-center justify-center tracking-widest">சேமிக்க</button><button onclick="closeModals()" class="w-full text-slate-400 text-[10px] font-black mt-4 uppercase tracking-widest">மூடுக</button></div></div>
 
     <script>
         let G_URL = localStorage.getItem('kk_g');
@@ -344,7 +341,7 @@
             }
         };
 
-        // --- UI Logic ---
+        // --- Basic UI Logic ---
         function applyTheme(t) {
             const d = document.documentElement.style;
             d.setProperty('--primary-color', t.primary); d.setProperty('--bg-color', t.bg);
@@ -374,9 +371,27 @@
 
         function logout() { clearInterval(autoLogoutInterval); localStorage.clear(); alert("வெளியேற்றப்பட்டீர்கள்."); location.reload(); }
 
-        // --- Core Backend Call ---
-        function call(params, cb) {
+        // --- Core Backend Call v9.0.1 (POST Support) ---
+        async function call(params, cb) {
             if (!G_URL) return;
+
+            // v9.0.1: Large data (Profile) must use POST via fetch
+            if (params.action === 'updateProfile') {
+                try {
+                    const response = await fetch(G_URL, {
+                        method: 'POST',
+                        body: JSON.stringify(params)
+                    });
+                    const res = await response.json();
+                    cb(res);
+                } catch (e) {
+                    toggleLoading('btn-save-profile', false);
+                    alert("இணைப்பு பிழை! பட அளவு மிக அதிகமாக இருக்கலாம்.");
+                }
+                return;
+            }
+
+            // Old school JSONP for all other small actions
             const n = 'cb' + Date.now();
             window[n] = (res) => { cb(res); delete window[n]; document.getElementById(n)?.remove(); };
             const s = document.createElement('script'); s.id = n;
@@ -404,7 +419,7 @@
 
         function toggleAuth(s) { document.querySelectorAll('.auth-panel .screen').forEach(sc => sc.classList.remove('active')); document.getElementById('auth-' + s).classList.add('active'); }
 
-        // --- Auth & Profile v9.0.0 ---
+        // --- Auth & Setup ---
         function loginUser() {
             const e = document.getElementById('loginEmail').value, p = document.getElementById('loginPass').value;
             if(!e || !p) return alert("விவரங்கள் தேவை!");
@@ -445,9 +460,6 @@
             });
         }
 
-        function moveNext(el, idx, e) { if(e.key === "Backspace" && el.value.length === 0 && idx > 0) document.querySelectorAll('.otp-box')[idx - 1].focus(); else if(el.value.length === 1 && idx < 5) document.querySelectorAll('.otp-box')[idx + 1].focus(); }
-        function handleOtpPaste(e) { const d = e.clipboardData.getData('text').slice(0, 6); if(!/^\d+$/.test(d)) return; const ins = document.querySelectorAll('.otp-box'); d.split('').forEach((c, i) => { if(ins[i]) ins[i].value = c; }); ins[Math.min(d.length, 5)].focus(); }
-
         function registerAccount() {
             const n = document.getElementById('regName').value, e = document.getElementById('regEmail').value, p = document.getElementById('regPass').value;
             if(!n || !e || !p) return alert("விவரங்கள் தேவை!");
@@ -455,9 +467,12 @@
             call({ action: 'register', name: n, email: e, pass: p }, (res) => { toggleLoading('btn-reg', false); if(res.status === "Success") { alert("பதிவு முடிந்தது!"); toggleAuth('login'); } else alert(res.msg); });
         }
 
-        // v9.0.0 Profile Actions
+        function moveNext(el, idx, e) { if(e.key === "Backspace" && el.value.length === 0 && idx > 0) document.querySelectorAll('.otp-box')[idx - 1].focus(); else if(el.value.length === 1 && idx < 5) document.querySelectorAll('.otp-box')[idx + 1].focus(); }
+        function handleOtpPaste(e) { const d = e.clipboardData.getData('text').slice(0, 6); if(!/^\d+$/.test(d)) return; const ins = document.querySelectorAll('.otp-box'); d.split('').forEach((c, i) => { if(ins[i]) ins[i].value = c; }); ins[Math.min(d.length, 5)].focus(); }
+
+        // --- Profile Management v9.0.1 (Compressed Image Fix) ---
         function showProfileModal() {
-            document.getElementById('profileNameInput').value = session.name || "பயனர்";
+            document.getElementById('profileNameInput').value = session.name || "";
             document.getElementById('profileLargeAvatar').src = session.photo || `https://ui-avatars.com/api/?name=${session.name}&background=6366f1&color=fff`;
             document.getElementById('profileModal').style.display = 'flex';
         }
@@ -466,9 +481,19 @@
             const file = e.target.files[0]; if(!file) return;
             const reader = new FileReader();
             reader.onload = (ev) => {
-                const base64 = ev.target.result;
-                document.getElementById('profileLargeAvatar').src = base64;
-                session.photo = base64;
+                const img = new Image();
+                img.src = ev.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    // v9.0.1: Resize image to 200px max to avoid connection errors
+                    const size = 200;
+                    canvas.width = size; canvas.height = size;
+                    ctx.drawImage(img, 0, 0, size, size);
+                    const base64 = canvas.toDataURL('image/jpeg', 0.7); // High compression
+                    document.getElementById('profileLargeAvatar').src = base64;
+                    session.photo = base64;
+                };
             };
             reader.readAsDataURL(file);
         }
@@ -476,9 +501,11 @@
         function saveProfile() {
             const n = document.getElementById('profileNameInput').value, p = document.getElementById('profilePassInput').value;
             toggleLoading('btn-save-profile', true);
+            // v9.0.1: call() now uses POST automatically for updateProfile
             call({ action: 'updateProfile', sheetId: session.sheetId, newName: n, newPass: p, photoData: session.photo }, (res) => {
                 toggleLoading('btn-save-profile', false);
                 if(res.status === "Success") { session.name = n; alert("சுயவிவரம் புதுப்பிக்கப்பட்டது!"); updateAvatarUI(); closeModals(); }
+                else { alert("பிழை: " + res.msg); }
             });
         }
 
@@ -488,13 +515,12 @@
             else av.src = `https://ui-avatars.com/api/?name=${session.name}&background=6366f1&color=fff`;
         }
 
-        // --- Dashboard Sync ---
+        // --- Dashboard & Features ---
         function enterDashboard(skip = false) {
             if (!skip) localStorage.setItem('kk_session', JSON.stringify(session));
             document.getElementById('init-view').style.display = 'none'; document.getElementById('dashboard').classList.add('active');
             const autoOn = localStorage.getItem('kk_autologout') === 'true'; document.getElementById('autoLogoutToggle').checked = autoOn; if(autoOn) startAutoLogout();
-            updateAvatarUI();
-            loadDashboard();
+            updateAvatarUI(); loadDashboard();
         }
 
         function loadDashboard() {
@@ -516,7 +542,7 @@
             });
         }
 
-        // Rendering functions (Calendar, Loans, Transactions) - Simplified logic
+        // Render Helpers (Simplified)
         function renderCalendar(data) {
             const grid = document.getElementById('calGrid'), names = ["ஜனவரி", "பிப்ரவரி", "மார்ச்", "ஏப்ரல்", "மே", "ஜூன்", "ஜூலை", "ஆகஸ்ட்", "செப்டம்பர்", "அக்டோபர்", "நவம்பர்", "டிசம்பர்"];
             document.getElementById('calMonth').innerText = names[calViewMonth]; document.getElementById('calYear').innerText = calViewYear; grid.innerHTML = "";
@@ -536,7 +562,7 @@
             const list = document.getElementById('loanItems'); list.innerHTML = "";
             loans.forEach(loan => {
                 const isPaid = loan.status === 'Paid';
-                list.innerHTML += `<div class="m-card p-6 flex justify-between items-center transition-all hover:border-indigo-100"><div onclick="openEMIEdit('${loan.name}', ${loan.amount}, ${loan.date})" class="flex items-center gap-5 flex-1 cursor-pointer"><div class="w-14 h-14 ${isPaid ? 'bg-emerald-50 text-emerald-500' : 'bg-rose-50 text-rose-500'} rounded-[1.2rem] flex items-center justify-center font-black text-xl">${loan.date}</div><div><h4 class="font-black text-sm text-slate-800">${loan.name}</h4><p class="text-[11px] font-bold text-slate-400 uppercase">₹${Number(loan.amount).toLocaleString()}</p></div></div><div class="flex flex-col items-center gap-1.5"><span class="text-[8px] font-black uppercase ${isPaid ? 'text-emerald-500' : 'text-slate-300'}">${loan.status}</span><label class="switch"><input type="checkbox" ${isPaid ? 'checked' : ''} onchange="toggleEMIStatus('${loan.name}', this.checked)"><span class="slider"></span></label></div></div>`;
+                list.innerHTML += `<div class="m-card p-6 flex justify-between items-center"><div onclick="openEMIEdit('${loan.name}', ${loan.amount}, ${loan.date})" class="flex items-center gap-5 flex-1 cursor-pointer"><div class="w-14 h-14 ${isPaid ? 'bg-emerald-50 text-emerald-500' : 'bg-rose-50 text-rose-500'} rounded-[1.2rem] flex items-center justify-center font-black text-xl">${loan.date}</div><div><h4 class="font-black text-sm text-slate-800">${loan.name}</h4><p class="text-[11px] font-bold text-slate-400 uppercase">₹${Number(loan.amount).toLocaleString()}</p></div></div><div class="flex flex-col items-center gap-1.5"><span class="text-[8px] font-black uppercase ${isPaid ? 'text-emerald-500' : 'text-slate-300'}">${loan.status}</span><label class="switch"><input type="checkbox" ${isPaid ? 'checked' : ''} onchange="toggleEMIStatus('${loan.name}', this.checked)"><span class="slider"></span></label></div></div>`;
             });
         }
 
@@ -548,58 +574,29 @@
             });
         }
 
-        // --- Core Functions ---
+        // Management Actions
         function handleLogoutToggle() { const isC = document.getElementById('autoLogoutToggle').checked; localStorage.setItem('kk_autologout', isC); if(isC) startAutoLogout(); else { clearInterval(autoLogoutInterval); document.getElementById('logout-timer-ui').innerText = "OFF"; } }
         function startAutoLogout() { logoutTimeRemaining = 600; clearInterval(autoLogoutInterval); autoLogoutInterval = setInterval(() => { logoutTimeRemaining--; const m = Math.floor(logoutTimeRemaining/60), s = logoutTimeRemaining%60; document.getElementById('logout-timer-ui').innerText = `${m}:${s<10?'0'+s:s}`; if(logoutTimeRemaining<=0) logout(); }, 1000); }
-        
         function showAddModal() { document.getElementById('transModal').style.display = 'flex'; renderMasterCategories(); }
         function showAddMasterCat() { document.getElementById('addMasterCatModal').style.display = 'flex'; }
-        function showAddSubCat() { if(!currentMasterCat) return alert("முதலில் ஒரு வகையைத் தேர்வு செய்யவும்!"); document.getElementById('currentMasterDisplay').innerText = `வகை: ${currentMasterCat}`; document.getElementById('addSubCatModal').style.display = 'flex'; }
+        function showAddSubCat() { if(!currentMasterCat) return alert("முதலில் வகைப்பாட்டை தேர்வு செய்யவும்!"); document.getElementById('currentMasterDisplay').innerText = `வகை: ${currentMasterCat}`; document.getElementById('addSubCatModal').style.display = 'flex'; }
         function closeSmallModals() { document.getElementById('addMasterCatModal').style.display = 'none'; document.getElementById('addSubCatModal').style.display = 'none'; }
-        
-        function renderMasterCategories() {
-            const grid = document.getElementById('masterCatGrid'); grid.innerHTML = '';
-            Object.keys(masterSubCategories).forEach(cat => { const b = document.createElement('button'); b.className = `sub-pill ${currentMasterCat === cat ? 'active' : ''}`; b.innerText = cat; b.onclick = () => { currentMasterCat = cat; renderMasterCategories(); }; grid.appendChild(b); });
-            renderSubCategories();
-        }
-        function renderSubCategories() {
-            const grid = document.getElementById('subCatGrid'); grid.innerHTML = ''; if (!currentMasterCat) return;
-            (masterSubCategories[currentMasterCat] || []).forEach(item => { const b = document.createElement('button'); b.className = 'sub-pill'; b.innerText = item; b.onclick = () => { document.querySelectorAll('#subCatGrid .sub-pill').forEach(s => s.classList.remove('active')); b.classList.add('active'); document.getElementById('transCat').value = item; }; grid.appendChild(b); });
-        }
+        function renderMasterCategories() { const grid = document.getElementById('masterCatGrid'); grid.innerHTML = ''; Object.keys(masterSubCategories).forEach(cat => { const b = document.createElement('button'); b.className = `sub-pill ${currentMasterCat === cat ? 'active' : ''}`; b.innerText = cat; b.onclick = () => { currentMasterCat = cat; renderMasterCategories(); }; grid.appendChild(b); }); renderSubCategories(); }
+        function renderSubCategories() { const grid = document.getElementById('subCatGrid'); grid.innerHTML = ''; if (!currentMasterCat) return; (masterSubCategories[currentMasterCat] || []).forEach(item => { const b = document.createElement('button'); b.className = 'sub-pill'; b.innerText = item; b.onclick = () => { document.querySelectorAll('#subCatGrid .sub-pill').forEach(s => s.classList.remove('active')); b.classList.add('active'); document.getElementById('transCat').value = item; }; grid.appendChild(b); }); }
         function setTransType(t) { transType = t; document.getElementById('typeInc').className = t==='Income' ? "flex-1 py-4 rounded-[1.2rem] font-black text-[11px] bg-white text-emerald-500 shadow-sm uppercase tracking-widest" : "flex-1 py-4 rounded-[1.2rem] font-black text-[11px] text-slate-400 uppercase tracking-widest"; document.getElementById('typeExp').className = t==='Expense' ? "flex-1 py-4 rounded-[1.2rem] font-black text-[11px] bg-white text-rose-500 shadow-sm uppercase tracking-widest" : "flex-1 py-4 rounded-[1.2rem] font-black text-[11px] text-slate-400 uppercase tracking-widest"; }
-        
-        function saveTransaction() {
-            const a = document.getElementById('transAmt').value, c = document.getElementById('transCat').value, n = document.getElementById('transNote').value;
-            if(!a || !c) return alert("விவரங்கள் தேவை!"); toggleLoading('btn-save-trans', true);
-            call({ action: 'addTransaction', amount: a, category: c, note: n, type: transType, sheetId: session.sheetId }, (res) => { toggleLoading('btn-save-trans', false); if(res.status === "Success") { closeModals(); loadDashboard(); } });
-        }
-        
-        function saveNewCategory(mode) {
-            const val = mode === 'master' ? document.getElementById('newMasterCatInput').value : document.getElementById('newSubCatInput').value;
-            if(!val) return; toggleLoading(mode==='master'?'btn-save-mastercat':'btn-save-subcat', true);
-            const mCat = mode==='master'?val:currentMasterCat, sCat = mode==='master'?"":val;
-            call({ action: 'addNewCategory', masterCat: mCat, subCat: sCat, sheetId: session.sheetId }, (res) => {
-                toggleLoading(mode==='master'?'btn-save-mastercat':'btn-save-subcat', false);
-                if(res.status === "Success") { if(mode==='master') { masterSubCategories[val] = []; currentMasterCat = val; } else masterSubCategories[currentMasterCat].push(val); closeSmallModals(); renderMasterCategories(); }
-            });
-        }
-
-        // Utilities
+        function saveTransaction() { const a = document.getElementById('transAmt').value, c = document.getElementById('transCat').value, n = document.getElementById('transNote').value; if(!a || !c) return alert("விவரங்கள் தேவை!"); toggleLoading('btn-save-trans', true); call({ action: 'addTransaction', amount: a, category: c, note: n, type: transType, sheetId: session.sheetId }, (res) => { toggleLoading('btn-save-trans', false); if(res.status === "Success") { closeModals(); loadDashboard(); } }); }
+        function saveNewCategory(mode) { const val = mode === 'master' ? document.getElementById('newMasterCatInput').value : document.getElementById('newSubCatInput').value; if(!val) return; toggleLoading(mode==='master'?'btn-save-mastercat':'btn-save-subcat', true); const mCat = mode==='master'?val:currentMasterCat, sCat = mode==='master'?"":val; call({ action: 'addNewCategory', masterCat: mCat, subCat: sCat, sheetId: session.sheetId }, (res) => { toggleLoading(mode==='master'?'btn-save-mastercat':'btn-save-subcat', false); if(res.status === "Success") { if(mode==='master') { masterSubCategories[val] = []; currentMasterCat = val; } else masterSubCategories[currentMasterCat].push(val); closeSmallModals(); renderMasterCategories(); } }); }
         function updateSalary() { const a = document.getElementById('newSalaryInput').value; toggleLoading('btn-save-salary', true); call({ action: 'updateSalary', amount: a, sheetId: session.sheetId }, (res) => { toggleLoading('btn-save-salary', false); if(res.status === "Success") { closeModals(); loadDashboard(); } }); }
         function openEMIEdit(n, a, d) { selectedLoanForEdit = n; document.getElementById('editLoanTitle').innerText = n; document.getElementById('editLoanAmt').value = a; document.getElementById('editLoanDate').value = d; document.getElementById('emiEditModal').style.display = 'flex'; }
         function saveEMIChange() { const n = selectedLoanForEdit, a = document.getElementById('editLoanAmt').value, d = document.getElementById('editLoanDate').value; toggleLoading('btn-save-emi', true); call({ action: 'updateLoan', loanName: n, amount: a, dueDate: d, sheetId: session.sheetId }, (res) => { toggleLoading('btn-save-emi', false); if (res.status === "Success") { closeModals(); loadDashboard(); } }); }
         function toggleEMIStatus(loanName, isChecked) { call({ action: 'updateEMIStatus', loanName: loanName, status: isChecked ? 'Paid' : 'Pending', month: calViewMonth, year: calViewYear, sheetId: session.sheetId }, (res) => { if(res.status === "Success") loadDashboard(); }); }
-        
         function changeMonth(offset) { calViewMonth += offset; if (calViewMonth > 11) { calViewMonth = 0; calViewYear++; } if (calViewMonth < 0) { calViewMonth = 11; calViewYear--; } loadDashboard(); }
         function toggleCalLoader(show) { document.getElementById('calLoader').style.display = show ? 'flex' : 'none'; }
         function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
         function showSalaryModal() { document.getElementById('salaryModal').style.display = 'flex'; }
         function showThemeModal() { document.getElementById('themeModal').style.display = 'flex'; }
         function updateLiveTime() { const now = new Date(); document.getElementById('liveClock').innerText = now.toLocaleTimeString('ta-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }); }
-        function initAppDB() { 
-            const b = event.currentTarget; b.innerHTML = '<div class="spinner border-slate-300 border-t-slate-500 w-5 h-5"></div>';
-            call({ action: 'initSetup', sheetId: session.sheetId }, (res) => { b.innerHTML = '<i class="fa-solid fa-gear"></i>'; alert("ஆப் அமைப்பு தயார்!"); loadDashboard(); }); 
-        }
+        function initAppDB() { const b = event.currentTarget; b.innerHTML = '<div class="spinner border-slate-300 border-t-slate-500 w-5 h-5"></div>'; call({ action: 'initSetup', sheetId: session.sheetId }, (res) => { b.innerHTML = '<i class="fa-solid fa-gear"></i>'; alert("ஆப் அமைப்பு தயார்!"); loadDashboard(); }); }
     </script>
 </body>
 </html>
