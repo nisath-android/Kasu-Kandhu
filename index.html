@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>காசு-கந்து PRO v8.2.3 | Live Rates Fixed</title>
+    <title>காசு-கந்து PRO v8.2.4 | Fixed Live Rates & Full UI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -86,7 +86,7 @@
                 <i class="fa-solid fa-link text-5xl text-indigo-400 mb-6"></i>
                 <h2 class="text-2xl font-extrabold text-white mb-2 italic">Gateway Setup</h2>
                 <input type="text" id="gUrlInput" placeholder="App Script URL" class="w-full p-4 bg-white/10 border-2 border-white/20 rounded-2xl mb-6 outline-none text-xs text-white">
-                <button id="btn-setup" onclick="saveGateway()" class="w-full bg-indigo-500 text-white py-4 rounded-2xl font-extrabold btn-press">இணைக்கவும்</button>
+                <button id="btn-setup" onclick="saveGateway()" class="w-full bg-indigo-500 text-white py-4 rounded-2xl font-extrabold btn-press shadow-xl">இணைக்கவும்</button>
                 <p id="gw-status" class="mt-4 text-[10px] text-rose-500 font-black uppercase flex items-center justify-center gap-2"><span id="gw-status-icon" class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span><span id="gw-status-text">Disconnected</span></p>
             </div>
         </div>
@@ -101,7 +101,6 @@
                 </div>
                 <button onclick="toggleAuth('register')" class="mt-8 text-xs font-bold theme-icon uppercase underline">புதிய கணக்கு</button>
             </div>
-            <!-- Additional auth screens like Register/OTP (Condensed for space) -->
         </div>
     </div>
 
@@ -119,14 +118,14 @@
         </header>
 
         <main class="p-6 space-y-6 max-w-md mx-auto">
-            <!-- v8.2.3: Live Metal Rates -->
+            <!-- v8.2.4: Live Metal Rates Bar -->
             <div class="rate-card shadow-sm">
                 <div class="flex items-center gap-1"><i class="fa-solid fa-coins text-amber-500"></i> <span>22K: ₹<span id="rate22k">...</span>/g</span></div>
                 <div class="flex items-center gap-1"><span>24K: ₹<span id="rate24k">...</span>/g</span></div>
                 <div class="flex items-center gap-1"><i class="fa-solid fa-circle text-slate-400"></i> <span>வெள்ளி: ₹<span id="rateSilver">...</span>/g</span></div>
             </div>
 
-            <!-- Salary Card -->
+            <!-- Salary Card (Edit restored) -->
             <div onclick="showSalaryModal()" class="theme-primary p-8 rounded-[2.5rem] text-white shadow-xl relative overflow-hidden transition-all cursor-pointer">
                 <div class="flex justify-between items-start">
                     <div><p class="text-[10px] font-bold uppercase opacity-70 tracking-widest">வருமானம் (Edit)</p><h2 id="dispSalary" class="text-4xl font-black my-1">₹0.00</h2></div>
@@ -147,14 +146,13 @@
                 <div id="calGrid" class="grid grid-cols-7 gap-2 text-center text-[10px] font-extrabold"></div>
             </div>
 
-            <!-- Loan Management -->
+            <!-- EMI Management -->
             <div id="loanList" class="space-y-4 pb-10">
                 <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 italic">EMI மேலாண்மை (Edit/Status)</h3>
                 <div id="loanItems" class="space-y-4"></div>
             </div>
         </main>
 
-        <!-- Navbar -->
         <nav class="fixed bottom-0 left-0 right-0 bg-white border-t px-10 py-6 flex justify-between items-center z-[82] rounded-t-[3.5rem] shadow-2xl">
             <i class="fa-solid fa-house theme-icon text-xl"></i>
             <div onclick="showAddModal()" class="w-14 h-14 theme-primary rounded-2xl flex items-center justify-center text-white shadow-lg -mt-14 border-4 border-white btn-press"><i class="fa-solid fa-plus text-xl"></i></div>
@@ -163,7 +161,7 @@
         </nav>
     </div>
 
-    <!-- Modals (EMI Edit, Salary, Transaction, Theme) -->
+    <!-- Modals -->
     <div id="emiEditModal" class="modal-overlay">
         <div class="bg-white w-full max-w-xs p-10 rounded-[3rem] shadow-2xl text-center">
             <h3 class="text-xl font-black theme-icon mb-2 italic">EMI மாற்றம்</h3>
