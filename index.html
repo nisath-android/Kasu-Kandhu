@@ -1,357 +1,283 @@
-<!DOCTYPE html>
-<html lang="ta">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>காசு-கந்து PRO v8.3.0 | User-Code Gold Sync</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
-        
-        :root {
-            --primary-color: #6366f1;
-            --bg-color: #fcfdfe;
-            --text-color: #1e293b;
-            --topbar-color: #ffffff;
+/**
+ * Main Engine v8.5.1 - Persistent Theme, Secure Logout & Hourly Trigger Gold Sync
+ * தீம் சேமிப்பு, பாதுகாப்பு லாக்அவுட் மற்றும் ஒரு மணி நேரத்திற்கு ஒருமுறை விலையைப் புதுப்பிக்கும் வசதி.
+ */
+var ss = SpreadsheetApp.getActiveSpreadsheet();
+
+function doGet(e) {
+  const params = e.parameter;
+  const action = params.action;
+  const callback = params.callback; 
+  const masterId = params.masterId;
+  
+  try {
+    const masterSS = SpreadsheetApp.openById(masterId);
+    const config = getConfig(masterSS, "Config");
+    
+    if (params.secret !== config.SECRET_KEY) return sendResponse({ status: "Unauthorized" }, callback);
+
+    // 1. Auth & Login (தீம் தகவலுடன்)
+    if (action === "login") {
+      const usersData = masterSS.getSheetByName("Users").getDataRange().getValues();
+      const user = usersData.find(row => row[2] === params.email);
+      if (!user) return sendResponse({ status: "Error", msg: "பயனர் இல்லை!" }, callback);
+      
+      if (String(user[3]) === params.pass) {
+        const userSS = SpreadsheetApp.openById(user[4]);
+        const userConf = getConfig(userSS, "Config");
+        const savedTheme = userConf.THEME_SETTING ? JSON.parse(userConf.THEME_SETTING) : null;
+        return sendResponse({ status: "Success", name: user[1], sheetId: user[4], theme: savedTheme }, callback);
+      }
+      return sendResponse({ status: "Error", msg: "தவறான கடவுச்சொல்!" }, callback);
+    }
+
+    // 2. தீம் வண்ணத்தைச் சேமித்தல்
+    if (action === "updateTheme") {
+      const userSS = SpreadsheetApp.openById(params.sheetId);
+      const confSheet = userSS.getSheetByName("Config");
+      const data = confSheet.getDataRange().getValues();
+      let found = false;
+      for (let i = 0; i < data.length; i++) {
+        if (data[i][0] === "THEME_SETTING") {
+          confSheet.getRange(i + 1, 2).setValue(params.themeData);
+          found = true; break;
         }
+      }
+      if (!found) confSheet.appendRow(["THEME_SETTING", params.themeData]);
+      return sendResponse({ status: "Success" }, callback);
+    }
 
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: var(--bg-color); 
-            color: var(--text-color);
-            transition: all 0.3s ease;
-            overflow-x: hidden;
+    // 3. ஆப் தரவுகள் (Cached Gold & Theme Sync)
+    if (action === "getAppData") {
+      const userSS = SpreadsheetApp.openById(params.sheetId);
+      const uConf = getConfig(userSS, "Config");
+      const salary = Number(uConf.BASE_SALARY) || 0;
+      const theme = uConf.THEME_SETTING ? JSON.parse(uConf.THEME_SETTING) : null;
+      
+      const targetMonth = (params.month !== undefined && params.month !== "") ? parseInt(params.month) : new Date().getMonth();
+      const targetYear = (params.year !== undefined && params.year !== "") ? parseInt(params.year) : new Date().getFullYear();
+      
+      const loans = getLoansWithStatus(userSS, targetMonth, targetYear);
+      const transactions = getRecentTransactions(userSS);
+      const masterCategories = getMasterCategoriesFromSheet(userSS);
+      
+      // v8.5.1: ட்ரிக்கர் மூலம் சேமிக்கப்பட்ட விலைகளை எடுத்து ஆப்பை வேகமாக இயக்குதல்
+      const metalRates = getCachedMetalRates(userSS); 
+      
+      const totalEMI = loans.reduce((s, l) => s + Number(l.amount), 0);
+      const deficit = salary - (totalEMI + 10650);
+      
+      return sendResponse({ 
+        status: "Success", salary, loans, transactions, deficit, theme,
+        masterCategories, metalRates,
+        advice: deficit < 0 ? "நிதி நெருக்கடி! செலவுகளைக் குறைக்கவும்." : "நிதி நிலை சீராக உள்ளது.",
+        holidays: calculateHolidays(targetMonth, targetYear) 
+      }, callback);
+    }
+
+    // --- இதர செயல்பாடுகள் ---
+    if (action === "register") {
+      const userSheet = masterSS.getSheetByName("Users");
+      if (userSheet.getDataRange().getValues().some(row => row[2] === params.email)) {
+        return sendResponse({ status: "Error", msg: "மின்னஞ்சல் ஏற்கனவே உள்ளது!" }, callback);
+      }
+      const newUserSS = SpreadsheetApp.create("K-K User - " + params.name);
+      setupUserSheet(newUserSS);
+      newUserSS.addEditor(params.email);
+      userSheet.appendRow([new Date(), params.name, params.email, params.pass, newUserSS.getId()]);
+      return sendResponse({ status: "Success" }, callback);
+    }
+
+    if (action === "updateEMIStatus") {
+      const userSS = SpreadsheetApp.openById(params.sheetId);
+      const statusSheet = userSS.getSheetByName("EMI_Status") || userSS.insertSheet("EMI_Status").appendRow(["Year", "Month", "LoanName", "Status"]);
+      const data = statusSheet.getDataRange().getValues();
+      let found = false;
+      for (let i = 1; i < data.length; i++) {
+        if (data[i][0] == params.year && data[i][1] == params.month && data[i][2] == params.loanName) {
+          statusSheet.getRange(i + 1, 4).setValue(params.status);
+          found = true; break;
         }
+      }
+      if (!found) statusSheet.appendRow([params.year, params.month, params.loanName, params.status]);
+      return sendResponse({ status: "Success" }, callback);
+    }
 
-        .theme-bg { background-color: var(--bg-color); }
-        .theme-primary { background-color: var(--primary-color); }
-        .theme-text { color: var(--text-color); }
-        .theme-topbar { background-color: var(--topbar-color); }
-        .theme-border { border-color: var(--primary-color); }
-        .theme-btn { background-color: var(--primary-color); color: white; }
-        .theme-icon { color: var(--primary-color); }
-
-        .split-view { display: flex; flex-direction: column; height: 100vh; width: 100vw; }
-        @media (min-width: 1024px) { .split-view { flex-direction: row; } }
-
-        .gateway-panel { background: #1e1b4b; flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem; position: relative; z-index: 10; }
-        .auth-panel { background: var(--bg-color); flex: 1.2; display: flex; align-items: center; justify-content: center; padding: 2rem; position: relative; transition: all 0.5s ease; }
-        
-        .auth-disabled { opacity: 0.3; pointer-events: none; filter: blur(6px); }
-        .auth-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.05); z-index: 20; color: #94a3b8; font-weight: 800; text-transform: uppercase; text-align: center; padding: 20px; }
-
-        .screen { display: none; width: 100%; max-width: 400px; animation: slideIn 0.5s ease; }
-        .screen.active { display: block; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-
-        #dashboard { display: none; position: fixed; inset: 0; background: var(--bg-color); z-index: 100; overflow-y: auto; }
-        #dashboard.active { display: block; }
-
-        /* Calendar Styling */
-        .cal-day-header { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; padding-bottom: 8px; }
-        .emi-pending { background: #fee2e2; color: #ef4444; border: 1.5px solid #fecaca; font-weight: 800; transform: scale(1.05); }
-        .emi-paid { background: #dcfce7; color: #16a34a; border: 1.5px solid #bbf7d0; font-weight: 800; transform: scale(1.05); }
-        .holiday { background: #f1f5f9; color: #94a3b8; }
-        .today-date { border: 2px solid var(--primary-color); color: var(--primary-color); font-weight: 800; }
-        
-        .btn-press:active { transform: scale(0.96); transition: 0.1s; }
-        
-        .spinner { border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top: 3px solid #fff; width: 18px; height: 18px; animation: spin 0.8s linear infinite; }
-        .cal-spinner { border: 3px solid rgba(99, 102, 241, 0.1); border-top: 3px solid var(--primary-color); width: 30px; height: 30px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
-        
-        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #e2e8f0; transition: .4s; border-radius: 20px; }
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: #10b981; }
-        input:checked + .slider:before { transform: translateX(20px); }
-
-        .m-card { background: white; border-radius: 24px; border: 1px solid #f1f5f9; box-shadow: 0 4px 20px -2px rgba(0,0,0,0.03); transition: all 0.3s ease; position: relative; }
-        #calLoader { position: absolute; inset: 0; background: rgba(255,255,255,0.7); display: none; align-items: center; justify-content: center; z-index: 10; border-radius: 24px; backdrop-filter: blur(2px); }
-
-        .rate-card { background: #fffbeb; border: 1px solid #fef3c7; color: #92400e; padding: 12px; border-radius: 18px; font-size: 10px; font-weight: 800; display: flex; align-items: center; gap: 8px; justify-content: space-around; }
-    </style>
-</head>
-<body>
-
-    <!-- 1. Gateway & Auth -->
-    <div id="init-view" class="split-view">
-        <div class="gateway-panel">
-            <div class="w-full max-w-sm bg-white/5 p-8 rounded-[3rem] border border-white/10 backdrop-blur-md text-center shadow-2xl">
-                <i class="fa-solid fa-link text-5xl text-indigo-400 mb-6"></i>
-                <h2 class="text-2xl font-extrabold text-white mb-2 italic">Gateway Setup</h2>
-                <input type="text" id="gUrlInput" placeholder="App Script URL" class="w-full p-4 bg-white/10 border-2 border-white/20 rounded-2xl mb-6 outline-none text-xs text-white">
-                <button id="btn-setup" onclick="saveGateway()" class="w-full bg-indigo-500 text-white py-4 rounded-2xl font-extrabold btn-press shadow-xl">இணைக்கவும்</button>
-                <p id="gw-status" class="mt-4 text-[10px] text-rose-500 font-black uppercase flex items-center justify-center gap-2"><span id="gw-status-icon" class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span><span id="gw-status-text">Disconnected</span></p>
-            </div>
-        </div>
-
-        <div id="auth-panel" class="auth-panel auth-disabled">
-            <div id="auth-overlay" class="auth-overlay">கேட்வே (Gateway) <br> முதலில் இணைக்கப்பட வேண்டும்</div>
-            <div id="auth-login" class="screen active text-center">
-                <h1 class="text-4xl font-black theme-icon mb-2 italic tracking-tighter">காசு-கந்து</h1>
-                <div class="space-y-4 mt-10">
-                    <input type="email" id="loginEmail" placeholder="மின்னஞ்சல்" class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:theme-border transition-all">
-                    <input type="password" id="loginPass" placeholder="கடவுச்சொல்" class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:theme-border transition-all">
-                    <button id="btn-login" onclick="loginUser()" class="w-full theme-btn py-4 rounded-2xl font-extrabold btn-press shadow-lg">உள்நுழைக</button>
-                </div>
-                <button onclick="toggleAuth('register')" class="mt-8 text-xs font-bold theme-icon uppercase underline">புதிய கணக்கு</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 2. Dashboard Screen -->
-    <div id="dashboard" class="pb-32">
-        <header class="p-6 theme-topbar border-b sticky top-0 z-50 shadow-sm transition-all flex justify-between items-center">
-            <div class="flex flex-col">
-                <h1 class="text-xl font-black italic theme-icon tracking-tighter">காசு-கந்து</h1>
-                <div class="flex flex-col text-[8px] font-black text-slate-400 uppercase mt-1"><span id="liveClock">--:--:-- --</span><span id="liveDate">--, --- --, ----</span></div>
-            </div>
-            <div class="flex items-center gap-2">
-                <button onclick="showThemeModal()" class="w-10 h-10 bg-slate-50 theme-icon rounded-full flex items-center justify-center text-sm border"><i class="fa-solid fa-palette"></i></button>
-                <button onclick="logout()" class="w-10 h-10 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center text-sm border"><i class="fa-solid fa-power-off"></i></button>
-            </div>
-        </header>
-
-        <main class="p-6 space-y-6 max-w-md mx-auto">
-            <!-- v8.3.0: Fixed Live Metal Rates Bar -->
-            <div class="rate-card shadow-sm">
-                <div class="flex items-center gap-1"><i class="fa-solid fa-coins text-amber-500"></i> <span>22K: ₹<span id="rate22k">...</span>/g</span></div>
-                <div class="flex items-center gap-1"><span>24K: ₹<span id="rate24k">...</span>/g</span></div>
-                <div class="flex items-center gap-1"><i class="fa-solid fa-circle text-slate-400"></i> <span>வெள்ளி: ₹<span id="rateSilver">...</span>/g</span></div>
-            </div>
-
-            <!-- Salary Card -->
-            <div onclick="showSalaryModal()" class="theme-primary p-8 rounded-[2.5rem] text-white shadow-xl relative overflow-hidden transition-all cursor-pointer">
-                <div class="flex justify-between items-start">
-                    <div><p class="text-[10px] font-bold uppercase opacity-70 tracking-widest">வருமானம் (எடிட்)</p><h2 id="dispSalary" class="text-4xl font-black my-1">₹0.00</h2></div>
-                    <div class="bg-white/20 p-2 rounded-xl text-sm"><i class="fa-solid fa-pen-to-square"></i></div>
-                </div>
-                <div id="deficitTag" class="mt-6 inline-block px-4 py-1.5 bg-emerald-500 text-[10px] font-extrabold rounded-full uppercase shadow-lg">Checking</div>
-            </div>
-
-            <!-- Smart Calendar -->
-            <div class="m-card p-6" id="calendarCard">
-                <div id="calLoader"><div class="spinner cal-spinner"></div></div>
-                <div class="flex justify-between items-center mb-6">
-                    <button onclick="changeMonth(-1)" class="w-8 h-8 flex items-center justify-center bg-slate-50 rounded-full theme-icon border"><i class="fa-solid fa-chevron-left"></i></button>
-                    <div class="flex flex-col items-center min-w-[100px]"><span id="calMonth" class="text-lg font-black theme-text italic">Month</span><span id="calYear" class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Year</span></div>
-                    <button onclick="changeMonth(1)" class="w-8 h-8 flex items-center justify-center bg-slate-50 rounded-full theme-icon border"><i class="fa-solid fa-chevron-right"></i></button>
-                </div>
-                <div class="grid grid-cols-7 gap-1 text-center mb-4"><div class="cal-day-header">ஞா</div><div class="cal-day-header">தி</div><div class="cal-day-header">செ</div><div class="cal-day-header">பு</div><div class="cal-day-header">வி</div><div class="cal-day-header">வெ</div><div class="cal-day-header">ச</div></div>
-                <div id="calGrid" class="grid grid-cols-7 gap-2 text-center text-[10px] font-extrabold"></div>
-            </div>
-
-            <!-- Recent Transactions -->
-            <div id="recentTransactions" class="space-y-4">
-                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">சமீபத்திய பரிவர்த்தனைகள்</h3>
-                <div id="transList" class="space-y-3"></div>
-            </div>
-
-            <!-- EMI Management -->
-            <div id="loanList" class="space-y-4 pb-10">
-                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 italic">EMI மேலாண்மை (எடிட்/நிலை)</h3>
-                <div id="loanItems" class="space-y-4"></div>
-            </div>
-        </main>
-
-        <nav class="fixed bottom-0 left-0 right-0 bg-white border-t px-10 py-6 flex justify-between items-center z-[82] rounded-t-[3.5rem] shadow-2xl">
-            <i class="fa-solid fa-house theme-icon text-xl"></i>
-            <div onclick="showAddModal()" class="w-14 h-14 theme-primary rounded-2xl flex items-center justify-center text-white shadow-lg -mt-14 border-4 border-white btn-press"><i class="fa-solid fa-plus text-xl"></i></div>
-            <i class="fa-solid fa-chart-pie text-slate-300 text-xl"></i>
-            <i class="fa-solid fa-gear text-slate-300 text-xl btn-press" onclick="initAppDB()"></i>
-        </nav>
-    </div>
-
-    <!-- EMI Edit Modal -->
-    <div id="emiEditModal" class="modal-overlay">
-        <div class="bg-white w-full max-w-xs p-10 rounded-[3rem] shadow-2xl text-center">
-            <h3 class="text-xl font-black theme-icon mb-2 italic">EMI மாற்றம்</h3>
-            <p id="editLoanTitle" class="text-[10px] text-slate-400 mb-8 font-bold uppercase">Loan Name</p>
-            <input type="number" id="editLoanAmt" placeholder="தொகை" class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-black text-xl mb-4 border-2 border-transparent focus:theme-border transition-all">
-            <input type="number" id="editLoanDate" placeholder="தேதி (1-31)" class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-bold mb-8 border-2 border-transparent focus:theme-border transition-all">
-            <button onclick="saveEMIChange()" class="w-full theme-btn py-4 rounded-2xl font-bold uppercase text-xs">சேமிக்க</button>
-            <button onclick="closeModals()" class="w-full py-4 text-slate-400 text-xs font-bold mt-2">ரத்து</button>
-        </div>
-    </div>
-
-    <!-- Salary Modal -->
-    <div id="salaryModal" class="modal-overlay">
-        <div class="bg-white w-full max-w-xs p-10 rounded-[3.5rem] shadow-2xl text-center">
-            <h3 class="text-xl font-black theme-icon mb-6 italic">சம்பளம் மாற்றம்</h3>
-            <input type="number" id="newSalaryInput" class="w-full p-6 bg-slate-50 rounded-3xl text-3xl font-extrabold outline-none mb-8 border-2 border-transparent focus:theme-border transition-all" placeholder="30000">
-            <button onclick="updateSalary()" class="w-full theme-btn py-4 rounded-2xl font-bold uppercase text-xs">சேமிக்க</button>
-            <button onclick="closeModals()" class="w-full py-4 text-slate-400 text-xs font-bold mt-2 uppercase">மூடுக</button>
-        </div>
-    </div>
-
-    <script>
-        let G_URL = localStorage.getItem('kk_g');
-        let session = { user: null, sheetId: null };
-        let calViewMonth = new Date().getMonth();
-        let calViewYear = new Date().getFullYear();
-        let currentMonthLoans = [];
-        let selectedLoanForEdit = null;
-
-        const defaultTheme = { primary: '#6366f1', bg: '#fcfdfe', topbar: '#ffffff', text: '#1e293b' };
-
-        window.onload = () => {
-            const st = JSON.parse(localStorage.getItem('kk_theme')) || defaultTheme;
-            applyTheme(st);
-            updateLiveTime();
-            setInterval(updateLiveTime, 1000);
-            if (G_URL) {
-                document.getElementById('gUrlInput').value = G_URL;
-                enableAuthPanel(true);
-                const saved = localStorage.getItem('kk_session');
-                if (saved) { session = JSON.parse(saved); enterDashboard(true); }
-            }
-        };
-
-        function applyTheme(t) {
-            const d = document.documentElement.style;
-            d.setProperty('--primary-color', t.primary); d.setProperty('--bg-color', t.bg);
-            d.setProperty('--topbar-color', t.topbar); d.setProperty('--text-color', t.text);
+    if (action === "updateLoan") {
+      const userSS = SpreadsheetApp.openById(params.sheetId);
+      const loanSheet = userSS.getSheetByName("Loan_Master");
+      const data = loanSheet.getDataRange().getValues();
+      let found = false;
+      for (let i = 1; i < data.length; i++) {
+        if (data[i][0] === params.loanName) {
+          loanSheet.getRange(i + 1, 2).setValue(params.amount);
+          loanSheet.getRange(i + 1, 3).setValue(params.dueDate);
+          found = true; break;
         }
+      }
+      if (!found) loanSheet.appendRow([params.loanName, params.amount, params.dueDate]);
+      return sendResponse({ status: "Success" }, callback);
+    }
 
-        function call(params, cb) {
-            if (!G_URL) return;
-            const n = 'cb' + Date.now();
-            window[n] = (res) => { cb(res); delete window[n]; document.getElementById(n)?.remove(); };
-            const s = document.createElement('script'); s.id = n;
-            s.src = `${G_URL}${G_URL.includes('?') ? '&' : '?'}callback=${n}&${new URLSearchParams(params).toString()}`;
-            s.onerror = () => { toggleCalLoader(false); alert("இணைப்பு பிழை!"); };
-            document.body.appendChild(s);
+    if (action === "updateSalary") {
+      const userSS = SpreadsheetApp.openById(params.sheetId);
+      const confSheet = userSS.getSheetByName("Config");
+      const data = confSheet.getDataRange().getValues();
+      let found = false;
+      for (let i = 0; i < data.length; i++) {
+        if (data[i][0] === "BASE_SALARY") { confSheet.getRange(i + 1, 2).setValue(params.amount); found = true; break; }
+      }
+      if (!found) confSheet.appendRow(["BASE_SALARY", params.amount]);
+      return sendResponse({ status: "Success" }, callback);
+    }
+
+    if (action === "addTransaction") {
+      const userSS = SpreadsheetApp.openById(params.sheetId);
+      userSS.getSheetByName("Transactions").appendRow([new Date(), params.category, params.amount, params.note, params.type]);
+      return sendResponse({ status: "Success" }, callback);
+    }
+
+    if (action === "initSetup") {
+      setupUserSheet(SpreadsheetApp.openById(params.sheetId));
+      return sendResponse({ status: "Setup Ready" }, callback);
+    }
+
+  } catch (err) { return sendResponse({ status: "Error", msg: err.toString() }, callback); }
+}
+
+// --- v8.5.1: Hourly Trigger & Cache Functions ---
+
+/**
+ * இந்த பங்க்ஷனை ஒரு மணி நேரத்திற்கு ஒருமுறை இயங்க ட்ரிக்கர் (Trigger) செட் செய்யவும்.
+ */
+function updateLiveRatesCache() {
+  const rates = getMetalRatesDirect();
+  const userSheets = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Users").getDataRange().getValues().slice(1);
+  
+  userSheets.forEach(row => {
+    try {
+      const userSS = SpreadsheetApp.openById(row[4]);
+      let cacheSheet = userSS.getSheetByName("Metal_Rates_Cache");
+      if (!cacheSheet) {
+        cacheSheet = userSS.insertSheet("Metal_Rates_Cache");
+        cacheSheet.appendRow(["Last Updated", "22K Gold", "24K Gold", "Silver"]);
+      }
+      cacheSheet.getRange("A2:D2").setValues([[new Date(), rates.gold22k, rates.gold24k, rates.silver]]);
+    } catch (e) { console.log("Cache update failed for a user: " + e.toString()); }
+  });
+}
+
+/**
+ * சேமிக்கப்பட்ட விலைகளை ஸ்பிரட்ஷீட்டில் இருந்து எடுக்கும் முறை.
+ */
+function getCachedMetalRates(userSS) {
+  try {
+    let cacheSheet = userSS.getSheetByName("Metal_Rates_Cache");
+    if (!cacheSheet) {
+      const initialRates = getMetalRatesDirect();
+      cacheSheet = userSS.insertSheet("Metal_Rates_Cache");
+      cacheSheet.appendRow(["Last Updated", "22K Gold", "24K Gold", "Silver"]);
+      cacheSheet.getRange("A2:D2").setValues([[new Date(), initialRates.gold22k, initialRates.gold24k, initialRates.silver]]);
+      return initialRates;
+    }
+    const data = cacheSheet.getRange("B2:D2").getValues()[0];
+    return { gold22k: data[0], gold24k: data[1], silver: data[2] };
+  } catch (e) {
+    return getMetalRatesDirect(); 
+  }
+}
+
+// --- துல்லியமான விலைத் திரட்டல் (User Provided Code) ---
+function getMetalRatesDirect() {
+  try {
+    const url = "https://www.livechennai.com/gold_silverrate.asp";
+    const response = UrlFetchApp.fetch(url, { headers: { "User-Agent": "Mozilla/5.0" }, muteHttpExceptions: true });
+    const content = response.getContentText();
+    const table1Match = content.match(/<table\s+class="[^"]*table-bordered today-gold-rate[^"]*">([\s\S]*?)<\/table>/i);
+    if (!table1Match) throw new Error("T1 Fail");
+    const html = table1Match[1];
+    const dateMatch = html.match(/\d{1,2}\/\w+\/\d{4}/);
+    const gold22Match = html.match(/<i class="fa fa-inr"><\/i>\s*([\d,]+)\s*\(/);
+    const silverMatch = html.match(/<i class="fa fa-inr"><\/i>\s*([\d.]+)\s*\(/);
+    
+    let gold24 = "16014"; 
+    const tables = content.split(/<\/table>/i);
+    const table2 = tables.find(t => t.includes('Pure Gold (24 k)')) + '</table>';
+    if (table2 && dateMatch) {
+      const escapedDate = dateMatch[0].replace(/\//g, '\\/');
+      const rowMatch = table2.match(new RegExp('<tr[^>]*>([\\s\\S]*?<td[^>]*>' + escapedDate + '<\\/td>[\\s\\S]*?)<\\/tr>', 'i'));
+      if (rowMatch) {
+        const tdMatches = rowMatch[1].match(/<td[^>]*>([\s\S]*?)<\/td>/gi);
+        if (tdMatches && tdMatches.length > 1) {
+          const val = tdMatches[1].match(/[\d,]+/);
+          if (val) gold24 = val[0].replace(/,/g, '');
         }
+      }
+    }
 
-        function saveGateway() {
-            const u = document.getElementById('gUrlInput').value.trim();
-            if (u.startsWith('https://script.google.com/') && u.includes('/exec')) {
-                localStorage.setItem('kk_g', u); G_URL = u; enableAuthPanel(true);
-            }
-        }
+    return {
+      date: dateMatch ? dateMatch[0] : "Today",
+      gold22k: gold22Match ? gold22Match[1].replace(/,/g, '') : "14680",
+      gold24k: gold24,
+      silver: silverMatch ? silverMatch[1] : "290.00"
+    };
+  } catch (e) { return { gold22k: "14680", gold24k: "16014", silver: "290.00" }; }
+}
 
-        function enableAuthPanel(isC) {
-            const p = document.getElementById('auth-panel'), o = document.getElementById('auth-overlay');
-            if (isC) {
-                p.classList.remove('auth-disabled'); o.style.display = 'none';
-                document.getElementById('gw-status-text').innerText = "Connected";
-                document.getElementById('gw-status').className = "mt-4 text-[10px] text-emerald-500 font-black uppercase flex items-center justify-center gap-2";
-                document.getElementById('gw-status-icon').className = "w-2 h-2 rounded-full bg-emerald-500";
-            }
-        }
+// --- இதர அடிப்படை செயல்பாடுகள் ---
+function sendResponse(obj, callback) {
+  return ContentService.createTextOutput(callback + "(" + JSON.stringify(obj) + ")").setMimeType(ContentService.MimeType.JAVASCRIPT);
+}
 
-        function loginUser() {
-            const e = document.getElementById('loginEmail').value, p = document.getElementById('loginPass').value;
-            call({ action: 'login', email: e, pass: p }, (res) => {
-                if(res.status === "Success") { session = { user: e, sheetId: res.sheetId }; enterDashboard(); }
-                else alert(res.msg);
-            });
-        }
+function getConfig(ss, name) {
+  const sheet = ss.getSheetByName(name);
+  if (!sheet) return {};
+  let conf = {};
+  sheet.getDataRange().getValues().forEach(row => { conf[row[0]] = String(row[1]); });
+  return conf;
+}
 
-        function enterDashboard(skip = false) {
-            if (!skip) localStorage.setItem('kk_session', JSON.stringify(session));
-            document.getElementById('init-view').style.display = 'none'; 
-            document.getElementById('dashboard').classList.add('active');
-            loadDashboard();
-        }
+function getLoansWithStatus(ss, month, year) {
+  const loanSheet = ss.getSheetByName("Loan_Master");
+  const statusSheet = ss.getSheetByName("EMI_Status");
+  if (!loanSheet) return [];
+  const loans = loanSheet.getDataRange().getValues().slice(1);
+  const statuses = statusSheet ? statusSheet.getDataRange().getValues().slice(1) : [];
+  return loans.map(r => {
+    const statusRow = statuses.find(s => s[0] == year && s[1] == month && s[2] == r[0]);
+    return { name: r[0], amount: r[1], date: r[2], status: statusRow ? statusRow[3] : "Pending" };
+  });
+}
 
-        function loadDashboard() {
-            if(!session.sheetId) return;
-            toggleCalLoader(true);
-            call({ action: 'getAppData', sheetId: session.sheetId, month: calViewMonth, year: calViewYear }, (data) => {
-                toggleCalLoader(false);
-                if(data.status !== "Success") return;
-                
-                currentMonthLoans = data.loans;
-                
-                // Live Rates Update from User-Specified Method (22K, 24K, Silver)
-                document.getElementById('rate22k').innerText = data.metalRates.gold22k;
-                document.getElementById('rate24k').innerText = data.metalRates.gold24k;
-                document.getElementById('rateSilver').innerText = data.metalRates.silver;
+function getRecentTransactions(ss) {
+  const sheet = ss.getSheetByName("Transactions");
+  if (!sheet || sheet.getLastRow() < 2) return [];
+  const data = sheet.getRange(Math.max(2, sheet.getLastRow() - 9), 1, Math.min(10, sheet.getLastRow() - 1), 5).getValues();
+  return data.reverse().map(r => ({ date: r[0], category: r[1], amount: r[2], note: r[3], type: r[4] }));
+}
 
-                document.getElementById('dispSalary').innerText = `₹${Number(data.salary).toLocaleString()}`;
-                const dTag = document.getElementById('deficitTag');
-                dTag.innerText = data.deficit < 0 ? `குறைவு: ₹${Math.abs(data.deficit).toLocaleString()}` : `மீதி: ₹${data.deficit.toLocaleString()}`;
-                dTag.className = `mt-6 inline-block px-4 py-1.5 text-[10px] font-extrabold rounded-full uppercase shadow-lg ${data.deficit < 0 ? 'bg-rose-500' : 'bg-emerald-500'}`;
-                
-                renderCalendar(data); renderLoans(data.loans);
-            });
-        }
+function getMasterCategoriesFromSheet(ss) {
+  let sheet = ss.getSheetByName("Category_Master");
+  if (!sheet) return { "EMI": [], "Expenses": [], "Savings": [] };
+  const data = sheet.getDataRange().getValues().slice(1);
+  const result = {};
+  data.forEach(row => { if (row[0]) { if (!result[row[0]]) result[row[0]] = []; if (row[1]) result[row[0]].push(row[1]); } });
+  return result;
+}
 
-        function renderCalendar(data) {
-            const grid = document.getElementById('calGrid'), mLabel = document.getElementById('calMonth'), yLabel = document.getElementById('calYear');
-            const monthNames = ["ஜனவரி", "பிப்ரவரி", "மார்ச்", "ஏப்ரல்", "மே", "ஜூன்", "ஜூலை", "ஆகஸ்ட்", "செப்டம்பர்", "அக்டோபர்", "நவம்பர்", "டிசம்பர்"];
-            mLabel.innerText = monthNames[calViewMonth]; yLabel.innerText = calViewYear; 
-            grid.innerHTML = "";
-            const now = new Date(), isCurrentMonth = now.getMonth() === calViewMonth && now.getFullYear() === calViewYear, today = now.getDate();
-            const fDay = new Date(calViewYear, calViewMonth, 1).getDay(), dInM = new Date(calViewYear, calViewMonth + 1, 0).getDate();
-            const holidays = data.holidays || [];
-            
-            for (let i = 0; i < fDay; i++) grid.innerHTML += `<div></div>`;
-            for (let i = 1; i <= dInM; i++) {
-                const loan = currentMonthLoans.find(l => Number(l.date) === i);
-                const isH = holidays.includes(i), isT = isCurrentMonth && i === today;
-                let cls = 'bg-slate-50 text-slate-400 p-3 rounded-2xl transition-all';
-                if (loan) cls = loan.status === 'Paid' ? 'emi-paid p-3 rounded-2xl' : 'emi-pending p-3 rounded-2xl';
-                else if (isH) cls = 'holiday p-3 rounded-2xl'; else if (isT) cls = 'today-date p-3 rounded-2xl';
-                grid.innerHTML += `<div class="${cls}">${i}</div>`;
-            }
-        }
+function setupUserSheet(ss) {
+  if (!ss.getSheetByName("Transactions")) ss.insertSheet("Transactions").appendRow(["Date", "Category", "Amount", "Note", "Type"]);
+  if (!ss.getSheetByName("Config")) ss.insertSheet("Config").appendRow(["Key", "Value"]);
+  if (!ss.getSheetByName("Loan_Master")) ss.insertSheet("Loan_Master").appendRow(["Loan Name", "Amount", "Due Date"]);
+  if (!ss.getSheetByName("EMI_Status")) ss.insertSheet("EMI_Status").appendRow(["Year", "Month", "LoanName", "Status"]);
+}
 
-        function renderLoans(loans) {
-            const list = document.getElementById('loanItems'); list.innerHTML = "";
-            if(!loans || loans.length === 0) return list.innerHTML = `<p class="text-center py-4 text-[10px] text-slate-300 font-black uppercase">தகவல்கள் இல்லை</p>`;
-            loans.forEach(loan => {
-                const isPaid = loan.status === 'Paid';
-                list.innerHTML += `
-                    <div class="m-card p-6 flex justify-between items-center transition-all">
-                        <div onclick="openEMIEdit('${loan.name}', ${loan.amount}, ${loan.date})" class="flex items-center gap-4 cursor-pointer flex-1">
-                            <div class="w-12 h-12 ${isPaid ? 'bg-emerald-50 text-emerald-500' : 'bg-rose-50 text-rose-500'} rounded-2xl flex items-center justify-center font-black text-lg">${loan.date}</div>
-                            <div><h4 class="font-black text-sm text-slate-800">${loan.name}</h4><p class="text-[10px] font-bold text-slate-400 uppercase">EMI: ₹${Number(loan.amount).toLocaleString()}</p></div>
-                        </div>
-                        <div class="flex flex-col items-center gap-1">
-                            <span class="text-[8px] font-black uppercase ${isPaid ? 'text-emerald-500' : 'text-slate-300'}">${loan.status}</span>
-                            <label class="switch"><input type="checkbox" ${isPaid ? 'checked' : ''} onchange="toggleEMIStatus('${loan.name}', this.checked)"><span class="slider"></span></label>
-                        </div>
-                    </div>`;
-            });
-        }
-
-        function toggleEMIStatus(loanName, isChecked) {
-            call({ action: 'updateEMIStatus', loanName: loanName, status: isChecked ? 'Paid' : 'Pending', month: calViewMonth, year: calViewYear, sheetId: session.sheetId }, (res) => { if(res.status === "Success") loadDashboard(); });
-        }
-
-        function openEMIEdit(n, a, d) {
-            selectedLoanForEdit = n; document.getElementById('editLoanTitle').innerText = n;
-            document.getElementById('editLoanAmt').value = a; document.getElementById('editLoanDate').value = d;
-            document.getElementById('emiEditModal').style.display = 'flex';
-        }
-
-        function saveEMIChange() {
-            const n = selectedLoanForEdit, a = document.getElementById('editLoanAmt').value, d = document.getElementById('editLoanDate').value;
-            call({ action: 'updateLoan', loanName: n, amount: a, dueDate: d, sheetId: session.sheetId }, (res) => { if (res.status === "Success") { closeModals(); loadDashboard(); } });
-        }
-
-        function updateSalary() {
-            const a = document.getElementById('newSalaryInput').value;
-            call({ action: 'updateSalary', amount: a, sheetId: session.sheetId }, (res) => { if(res.status === "Success") { closeModals(); loadDashboard(); } });
-        }
-
-        function changeMonth(offset) { calViewMonth += offset; if (calViewMonth > 11) { calViewMonth = 0; calViewYear++; } if (calViewMonth < 0) { calViewMonth = 11; calViewYear--; } loadDashboard(); }
-        function toggleCalLoader(show) { document.getElementById('calLoader').style.display = show ? 'flex' : 'none'; }
-        function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
-        function showSalaryModal() { document.getElementById('salaryModal').style.display = 'flex'; }
-        function logout() { localStorage.removeItem('kk_session'); location.reload(); }
-        function updateLiveTime() {
-            const now = new Date();
-            document.getElementById('liveClock').innerText = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            document.getElementById('liveDate').innerText = now.toLocaleDateString('en-IN', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
-        }
-    </script>
-</body>
-</html>
+function calculateHolidays(m, y) {
+  const d = new Date(), tm = (m !== null && !isNaN(m)) ? Number(m) : d.getMonth(), ty = (y !== null && !isNaN(y)) ? Number(y) : d.getFullYear(), h = [];
+  for (let i = 1; i <= 31; i++) {
+    const day = new Date(ty, tm, i);
+    if (day.getMonth() !== tm) break;
+    if (day.getDay() === 0 || (day.getDay() === 6 && [2, 4, 5].includes(Math.ceil(i / 7)))) h.push(i);
+  }
+  return h;
+}
