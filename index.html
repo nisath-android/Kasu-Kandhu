@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>காசு-கந்து PRO v8.2.8 | Live Rates & Tamil Fixed</title>
+    <title>காசு-கந்து PRO v8.3.0 | User-Code Gold Sync</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -95,8 +95,8 @@
             <div id="auth-login" class="screen active text-center">
                 <h1 class="text-4xl font-black theme-icon mb-2 italic tracking-tighter">காசு-கந்து</h1>
                 <div class="space-y-4 mt-10">
-                    <input type="email" id="loginEmail" placeholder="மின்னஞ்சல்" class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:theme-border">
-                    <input type="password" id="loginPass" placeholder="கடவுச்சொல்" class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:theme-border">
+                    <input type="email" id="loginEmail" placeholder="மின்னஞ்சல்" class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:theme-border transition-all">
+                    <input type="password" id="loginPass" placeholder="கடவுச்சொல்" class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:theme-border transition-all">
                     <button id="btn-login" onclick="loginUser()" class="w-full theme-btn py-4 rounded-2xl font-extrabold btn-press shadow-lg">உள்நுழைக</button>
                 </div>
                 <button onclick="toggleAuth('register')" class="mt-8 text-xs font-bold theme-icon uppercase underline">புதிய கணக்கு</button>
@@ -118,7 +118,7 @@
         </header>
 
         <main class="p-6 space-y-6 max-w-md mx-auto">
-            <!-- v8.2.8: Fixed Live Metal Rates -->
+            <!-- v8.3.0: Fixed Live Metal Rates Bar -->
             <div class="rate-card shadow-sm">
                 <div class="flex items-center gap-1"><i class="fa-solid fa-coins text-amber-500"></i> <span>22K: ₹<span id="rate22k">...</span>/g</span></div>
                 <div class="flex items-center gap-1"><span>24K: ₹<span id="rate24k">...</span>/g</span></div>
@@ -146,6 +146,12 @@
                 <div id="calGrid" class="grid grid-cols-7 gap-2 text-center text-[10px] font-extrabold"></div>
             </div>
 
+            <!-- Recent Transactions -->
+            <div id="recentTransactions" class="space-y-4">
+                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">சமீபத்திய பரிவர்த்தனைகள்</h3>
+                <div id="transList" class="space-y-3"></div>
+            </div>
+
             <!-- EMI Management -->
             <div id="loanList" class="space-y-4 pb-10">
                 <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 italic">EMI மேலாண்மை (எடிட்/நிலை)</h3>
@@ -166,8 +172,8 @@
         <div class="bg-white w-full max-w-xs p-10 rounded-[3rem] shadow-2xl text-center">
             <h3 class="text-xl font-black theme-icon mb-2 italic">EMI மாற்றம்</h3>
             <p id="editLoanTitle" class="text-[10px] text-slate-400 mb-8 font-bold uppercase">Loan Name</p>
-            <input type="number" id="editLoanAmt" placeholder="தொகை" class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-black text-xl mb-4 border-2 border-transparent focus:theme-border">
-            <input type="number" id="editLoanDate" placeholder="தேதி (1-31)" class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-bold mb-8 border-2 border-transparent focus:theme-border">
+            <input type="number" id="editLoanAmt" placeholder="தொகை" class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-black text-xl mb-4 border-2 border-transparent focus:theme-border transition-all">
+            <input type="number" id="editLoanDate" placeholder="தேதி (1-31)" class="w-full p-4 bg-slate-50 rounded-2xl outline-none font-bold mb-8 border-2 border-transparent focus:theme-border transition-all">
             <button onclick="saveEMIChange()" class="w-full theme-btn py-4 rounded-2xl font-bold uppercase text-xs">சேமிக்க</button>
             <button onclick="closeModals()" class="w-full py-4 text-slate-400 text-xs font-bold mt-2">ரத்து</button>
         </div>
@@ -177,7 +183,7 @@
     <div id="salaryModal" class="modal-overlay">
         <div class="bg-white w-full max-w-xs p-10 rounded-[3.5rem] shadow-2xl text-center">
             <h3 class="text-xl font-black theme-icon mb-6 italic">சம்பளம் மாற்றம்</h3>
-            <input type="number" id="newSalaryInput" class="w-full p-6 bg-slate-50 rounded-3xl text-3xl font-extrabold outline-none mb-8 border-2 border-transparent focus:theme-border" placeholder="30000">
+            <input type="number" id="newSalaryInput" class="w-full p-6 bg-slate-50 rounded-3xl text-3xl font-extrabold outline-none mb-8 border-2 border-transparent focus:theme-border transition-all" placeholder="30000">
             <button onclick="updateSalary()" class="w-full theme-btn py-4 rounded-2xl font-bold uppercase text-xs">சேமிக்க</button>
             <button onclick="closeModals()" class="w-full py-4 text-slate-400 text-xs font-bold mt-2 uppercase">மூடுக</button>
         </div>
@@ -263,7 +269,7 @@
                 
                 currentMonthLoans = data.loans;
                 
-                // Live Rates Update
+                // Live Rates Update from User-Specified Method (22K, 24K, Silver)
                 document.getElementById('rate22k').innerText = data.metalRates.gold22k;
                 document.getElementById('rate24k').innerText = data.metalRates.gold24k;
                 document.getElementById('rateSilver').innerText = data.metalRates.silver;
