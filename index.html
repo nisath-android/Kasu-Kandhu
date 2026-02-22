@@ -280,7 +280,19 @@
         </div>
     </div>
 
-    <!-- Rest of the Modals (Profile, Theme, Salary, EMI) -->
+    <!-- Salary Modal -->
+    <div id="salaryModal" class="modal-overlay">
+        <div class="bg-white w-full max-w-md p-10 rounded-[4rem] shadow-2xl">
+            <h3 class="text-2xl font-black theme-icon italic mb-8 tracking-tighter text-center">சம்பளம் மாற்ற</h3>
+            <div class="space-y-8">
+                <div class="relative"><span class="absolute left-6 top-1/2 -translate-y-1/2 font-black theme-icon text-2xl">₹</span><input type="number" id="newSalaryInput" placeholder="0.00" class="w-full p-6 pl-14 bg-slate-50 rounded-3xl outline-none text-3xl font-black tracking-tighter shadow-inner"></div>
+                <button id="btn-save-salary" onclick="updateSalary()" class="w-full theme-btn py-6 font-black shadow-2xl uppercase text-[11px] tracking-widest">சேமி</button>
+                <button onclick="closeModals()" class="w-full py-3 text-slate-300 text-[10px] font-black uppercase underline">மூடுக</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
     <div id="profileModal" class="modal-overlay">
         <div class="bg-white w-full max-w-md p-10 rounded-[4rem] shadow-2xl text-center">
             <h3 class="text-2xl font-black theme-icon italic mb-10 tracking-tighter">சுயவிவரம்</h3>
@@ -297,6 +309,7 @@
         </div>
     </div>
 
+    <!-- Theme Modal - FIXED VERSION -->
     <div id="themeModal" class="modal-overlay">
         <div class="bg-white w-full max-w-md p-10 rounded-[4rem] shadow-2xl max-h-[90vh] overflow-y-auto hide-scrollbar">
             <h3 class="text-2xl font-black theme-icon italic mb-10 tracking-tighter text-center leading-tight">தீம் மேலாண்மை</h3>
@@ -304,20 +317,20 @@
                 <div class="space-y-5">
                     <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2 border-b pb-1">வண்ணங்கள்</p>
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="flex flex-col gap-2"><label class="text-[9px] font-bold text-slate-600 uppercase ml-1">முதன்மை</label><input type="color" id="theme-primary-color" oninput="applyLivePreview()" class="w-full h-11 rounded-xl cursor-pointer"></div>
-                        <div class="flex flex-col gap-2"><label class="text-[9px] font-bold text-slate-600 uppercase ml-1">பின்னணி</label><input type="color" id="theme-bg-color" oninput="applyLivePreview()" class="w-full h-11 rounded-xl cursor-pointer"></div>
-                        <div class="flex flex-col gap-2"><label class="text-[9px] font-bold text-slate-600 uppercase ml-1">Header</label><input type="color" id="theme-topbar-color" oninput="applyLivePreview()" class="w-full h-11 rounded-xl cursor-pointer"></div>
-                        <div class="flex flex-col gap-2"><label class="text-[9px] font-bold text-slate-600 uppercase ml-1">Footer</label><input type="color" id="theme-bottombar-color" oninput="applyLivePreview()" class="w-full h-11 rounded-xl cursor-pointer"></div>
-                        <div class="flex flex-col gap-2"><label class="text-[9px] font-bold text-slate-600 uppercase ml-1">எழுத்து</label><input type="color" id="theme-text-color" oninput="applyLivePreview()" class="w-full h-11 rounded-xl cursor-pointer"></div>
-                        <div class="flex flex-col gap-2"><label class="text-[9px] font-bold text-slate-600 uppercase ml-1">Icons</label><input type="color" id="theme-icon-color" oninput="applyLivePreview()" class="w-full h-11 rounded-xl cursor-pointer"></div>
+                        <div class="flex flex-col gap-2"><label class="text-[9px] font-bold text-slate-600 uppercase ml-1">முதன்மை</label><input type="color" id="theme-primary-color" oninput="applyLivePreview()" value="#6366f1" class="w-full h-11 rounded-xl cursor-pointer"></div>
+                        <div class="flex flex-col gap-2"><label class="text-[9px] font-bold text-slate-600 uppercase ml-1">பின்னணி</label><input type="color" id="theme-bg-color" oninput="applyLivePreview()" value="#fcfdfe" class="w-full h-11 rounded-xl cursor-pointer"></div>
+                        <div class="flex flex-col gap-2"><label class="text-[9px] font-bold text-slate-600 uppercase ml-1">Header</label><input type="color" id="theme-topbar-color" oninput="applyLivePreview()" value="#ffffff" class="w-full h-11 rounded-xl cursor-pointer"></div>
+                        <div class="flex flex-col gap-2"><label class="text-[9px] font-bold text-slate-600 uppercase ml-1">Footer</label><input type="color" id="theme-bottombar-color" oninput="applyLivePreview()" value="#ffffff" class="w-full h-11 rounded-xl cursor-pointer"></div>
+                        <div class="flex flex-col gap-2"><label class="text-[9px] font-bold text-slate-600 uppercase ml-1">எழுத்து</label><input type="color" id="theme-text-color" oninput="applyLivePreview()" value="#1e293b" class="w-full h-11 rounded-xl cursor-pointer"></div>
+                        <div class="flex flex-col gap-2"><label class="text-[9px] font-bold text-slate-600 uppercase ml-1">Icons</label><input type="color" id="theme-icon-color" oninput="applyLivePreview()" value="#6366f1" class="w-full h-11 rounded-xl cursor-pointer"></div>
                     </div>
                 </div>
                 <div class="space-y-4">
                     <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b pb-1">வடிவம் & அளவு</p>
                     <div class="flex justify-between items-center px-2 mb-2"><span class="text-[10px] font-black text-slate-600">வளைவுகள்</span><span id="radius-val" class="text-[10px] font-black theme-icon">28px</span></div>
-                    <input type="range" id="theme-radius" min="0" max="60" oninput="applyLivePreview()" class="w-full accent-indigo-500 h-2 bg-slate-100 rounded-lg">
+                    <input type="range" id="theme-radius" min="0" max="60" oninput="applyLivePreview(); document.getElementById('radius-val').innerText = this.value + 'px';" value="28" class="w-full accent-indigo-500 h-2 bg-slate-100 rounded-lg">
                     <div class="flex justify-between items-center px-2 mt-4 mb-2"><span class="text-[10px] font-black text-slate-600">எழுத்து அளவு</span><span id="text-size-val" class="text-[10px] font-black theme-icon">14px</span></div>
-                    <input type="range" id="theme-text-size" min="10" max="22" oninput="applyLivePreview()" class="w-full accent-indigo-500 h-2 bg-slate-100 rounded-lg">
+                    <input type="range" id="theme-text-size" min="10" max="22" oninput="applyLivePreview(); document.getElementById('text-size-val').innerText = this.value + 'px';" value="14" class="w-full accent-indigo-500 h-2 bg-slate-100 rounded-lg">
                 </div>
             </div>
             <div class="flex flex-col gap-4 mt-12">
@@ -328,16 +341,61 @@
         </div>
     </div>
 
+    <!-- Add Master Category Modal -->
+    <div id="addMasterCatModal" class="modal-overlay">
+        <div class="bg-white w-full max-w-sm p-8 rounded-[3rem] shadow-2xl">
+            <h3 class="text-xl font-black theme-icon mb-6 tracking-tighter text-center">புதிய முதன்மை வகை</h3>
+            <input type="text" id="newMasterCatInput" placeholder="வகை பெயர்" class="w-full p-5 bg-slate-50 rounded-2xl outline-none text-sm font-bold mb-8">
+            <button id="btn-save-mastercat" onclick="saveNewCategory('master')" class="w-full theme-btn py-5 font-black uppercase text-xs mb-3">சேமி</button>
+            <button onclick="closeSmallModals()" class="w-full py-3 text-slate-300 text-[10px] font-black uppercase underline">ரத்து</button>
+        </div>
+    </div>
+
+    <!-- Add Sub Category Modal -->
+    <div id="addSubCatModal" class="modal-overlay">
+        <div class="bg-white w-full max-w-sm p-8 rounded-[3rem] shadow-2xl">
+            <h3 class="text-xl font-black theme-icon mb-2 tracking-tighter text-center">துணை வகை</h3>
+            <p id="currentMasterDisplay" class="text-center text-[10px] font-black text-slate-400 mb-6 uppercase">வகை: </p>
+            <input type="text" id="newSubCatInput" placeholder="துணை வகை பெயர்" class="w-full p-5 bg-slate-50 rounded-2xl outline-none text-sm font-bold mb-8">
+            <button id="btn-save-subcat" onclick="saveNewCategory('sub')" class="w-full theme-btn py-5 font-black uppercase text-xs mb-3">சேமி</button>
+            <button onclick="closeSmallModals()" class="w-full py-3 text-slate-300 text-[10px] font-black uppercase underline">ரத்து</button>
+        </div>
+    </div>
+
+    <!-- EMI Edit Modal -->
+    <div id="emiEditModal" class="modal-overlay">
+        <div class="bg-white w-full max-w-md p-10 rounded-[4rem] shadow-2xl">
+            <h3 class="text-2xl font-black theme-icon italic mb-8 tracking-tighter text-center">EMI மாற்ற</h3>
+            <div class="space-y-6 mb-8">
+                <div class="relative"><span class="absolute left-6 top-1/2 -translate-y-1/2 font-black theme-icon text-2xl">₹</span><input type="number" id="editLoanAmt" placeholder="0.00" class="w-full p-6 pl-14 bg-slate-50 rounded-3xl outline-none text-3xl font-black tracking-tighter shadow-inner"></div>
+                <input type="number" id="editLoanDate" placeholder="தேதி (1-31)" min="1" max="31" class="w-full p-6 bg-slate-50 rounded-3xl outline-none text-xl font-black text-center shadow-inner">
+            </div>
+            <button id="btn-save-emi" onclick="saveEMIChange()" class="w-full theme-btn py-6 font-black shadow-2xl uppercase text-[11px] tracking-widest mb-3">சேமி</button>
+            <button onclick="closeModals()" class="w-full py-3 text-slate-300 text-[10px] font-black uppercase underline">மூடுக</button>
+        </div>
+    </div>
+
     <script>
         let G_URL = localStorage.getItem('kk_g'), session = { user: null, name: "", sheetId: null, photo: null };
         let transType = 'Expense', currentMasterCat = '', masterSubCategories = {}, calViewMonth = new Date().getMonth(), calViewYear = new Date().getFullYear();
         let currentMonthLoans = [], autoLogoutInterval = null, logoutTimeRemaining = 600, otpCountdown = 60, otpTimerInterval = null;
+        let selectedLoanForEdit = '';
+        
         const defaultTheme = { primary: '#6366f1', bg: '#fcfdfe', topbar: '#ffffff', bottombar: '#ffffff', text: '#1e293b', icon: '#6366f1', radius: 28, textSize: 14, font: 'Plus Jakarta Sans' };
 
         window.onload = () => { 
             const savedTheme = JSON.parse(localStorage.getItem('kk_theme')) || defaultTheme;
             applyTheme(savedTheme); 
             updateLiveTime(); setInterval(updateLiveTime, 1000); 
+            
+            // Range slider listeners
+            document.getElementById('theme-radius').addEventListener('input', function() {
+                document.getElementById('radius-val').innerText = this.value + 'px';
+            });
+            document.getElementById('theme-text-size').addEventListener('input', function() {
+                document.getElementById('text-size-val').innerText = this.value + 'px';
+            });
+            
             setTimeout(() => { if(document.getElementById('splash')) hideSplash(); }, 15000);
 
             if (G_URL) { 
@@ -355,7 +413,7 @@
         function hideSplash() { const s = document.getElementById('splash'); if(s) { s.style.opacity = '0'; setTimeout(() => s.remove(), 400); } }
         function updateProgress(perc, msg) { const fill = document.getElementById('progress-fill'); const text = document.getElementById('progress-text'); if(fill) fill.style.width = perc + '%'; if(text) text.innerText = (msg || "தரவுகள் சேகரிக்கப்படுகின்றன...") + " " + perc + "%"; }
 
-        // --- Core Logics (v9.5.5 Fixes) ---
+        // --- Core Logics ---
         async function call(params, cb) {
             if (!G_URL) return;
             if (['updateProfile', 'updateTheme', 'register'].includes(params.action)) {
@@ -366,7 +424,7 @@
             s.onerror = () => { toggleCalLoader(false); alert("பிழை!"); }; document.body.appendChild(s);
         }
 
-        // --- Auth Fix (v9.5.5) ---
+        // --- Auth Functions ---
         function requestOTP() { 
             const e = document.getElementById('loginEmail').value; 
             if(!e) return alert("Email தேவை!"); 
@@ -375,7 +433,7 @@
                 toggleLoading('btn-otp-req', false); 
                 if(res.status === "Sent") { 
                     session.user = e; 
-                    localStorage.setItem('kk_pending_email', e); // Explicit email storage
+                    localStorage.setItem('kk_pending_email', e);
                     toggleAuth('otp'); 
                     startOtpTimer(); 
                 } 
@@ -398,42 +456,277 @@
             }); 
         }
 
+        function loginUser() { 
+            const e = document.getElementById('loginEmail').value, p = document.getElementById('loginPass').value; 
+            if(!e || !p) return alert("விவரங்கள் தேவை!"); 
+            toggleLoading('btn-login', true); 
+            call({ action: 'login', email: e, pass: p }, (res) => { 
+                toggleLoading('btn-login', false); 
+                if(res.status === "Success") { 
+                    session = { user: e, name: res.name, sheetId: res.sheetId, photo: res.photo }; 
+                    if(res.theme) applyTheme(res.theme); 
+                    enterDashboard(); 
+                } else alert(res.msg); 
+            }); 
+        }
+
+        function registerAccount() {
+            const n = document.getElementById('regName').value;
+            const e = document.getElementById('regEmail').value;
+            const p = document.getElementById('regPass').value;
+            if(!n || !e || !p) return alert("அனைத்து விவரங்களும் தேவை!");
+            toggleLoading('btn-reg', true);
+            call({ action: 'register', name: n, email: e, pass: p }, (res) => {
+                toggleLoading('btn-reg', false);
+                if(res.status === "Success") {
+                    alert("பதிவு வெற்றி! இப்போது உள்நுழைக");
+                    toggleAuth('login');
+                } else alert(res.msg);
+            });
+        }
+
+        function saveGateway() { 
+            const u = document.getElementById('gUrlInput').value.trim(); 
+            if (u.startsWith('https://script.google.com/') && u.includes('/exec')) { 
+                localStorage.setItem('kk_g', u); 
+                G_URL = u; 
+                enableAuthPanel(true); 
+            } else alert("Invalid URL!"); 
+        }
+        
+        function enableAuthPanel(isC) { 
+            const icon = document.getElementById('gw-status-icon'), text = document.getElementById('gw-status-text'); 
+            if (isC) { 
+                document.getElementById('auth-panel').classList.remove('auth-disabled'); 
+                document.getElementById('auth-overlay').style.display = 'none'; 
+                text.innerText = "இணைக்கப்பட்டது"; 
+                icon.className = "gw-indicator gw-connected"; 
+            } 
+        }
+
+        function saveAndLogout() { 
+            const currentTheme = JSON.parse(localStorage.getItem('kk_theme')) || defaultTheme; 
+            if(session.sheetId) { 
+                call({ action: 'updateTheme', themeData: JSON.stringify(currentTheme), sheetId: session.sheetId }, () => { 
+                    logout(); 
+                }); 
+            } else logout(); 
+        }
+        
+        function logout() { 
+            localStorage.clear(); 
+            window.location.reload(); 
+        }
+        
+        function closeModals() { 
+            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); 
+        }
+
+        function closeSmallModals() {
+            document.getElementById('addMasterCatModal').style.display = 'none';
+            document.getElementById('addSubCatModal').style.display = 'none';
+        }
+
+        // --- Profile Functions ---
+        function showProfileModal() { 
+            if(!session.user) return; 
+            document.getElementById('profileNameInput').value = session.name || ""; 
+            document.getElementById('profileLargeAvatar').src = session.photo || `https://ui-avatars.com/api/?name=${session.name || 'U'}&background=6366f1&color=fff`; 
+            document.getElementById('profileModal').style.display = 'flex'; 
+        }
+
+        function saveProfile() { 
+            toggleLoading('btn-save-profile', true); 
+            call({ action: 'updateProfile', sheetId: session.sheetId, newName: document.getElementById('profileNameInput').value, newPass: document.getElementById('profilePassInput').value, photoData: session.photo }, (res) => { 
+                toggleLoading('btn-save-profile', false); 
+                if(res.status === "Success") { 
+                    session.name = document.getElementById('profileNameInput').value; 
+                    alert("Saved!"); 
+                    updateAvatarUI(); 
+                    closeModals(); 
+                } 
+            }); 
+        }
+
+        function handleProfilePhoto(e) { 
+            const file = e.target.files[0]; 
+            if(!file) return; 
+            const r = new FileReader(); 
+            r.onload = (ev) => { 
+                const img = new Image(); 
+                img.src = ev.target.result; 
+                img.onload = () => { 
+                    const c = document.createElement('canvas'), ctx = c.getContext('2d'), size = 150; 
+                    c.width = size; c.height = size; 
+                    ctx.drawImage(img, 0, 0, size, size); 
+                    const b64 = c.toDataURL('image/jpeg', 0.5); 
+                    document.getElementById('profileLargeAvatar').src = b64; 
+                    session.photo = b64; 
+                }; 
+            }; 
+            r.readAsDataURL(file); 
+        }
+
+        function updateAvatarUI() { 
+            const av = document.getElementById('userAvatar'); 
+            av.src = session.photo || `https://ui-avatars.com/api/?name=${session.name || 'U'}&background=6366f1&color=fff`; 
+            document.getElementById('userNameUI').innerText = session.name || "பயனர்"; 
+        }
+
+        // --- Theme Functions (FIXED) ---
+        function applyTheme(t) {
+            if(!t) return; 
+            const r = document.documentElement.style; 
+            r.setProperty('--primary-color', t.primary || defaultTheme.primary); 
+            r.setProperty('--bg-color', t.bg || defaultTheme.bg); 
+            r.setProperty('--topbar-color', t.topbar || defaultTheme.topbar); 
+            r.setProperty('--bottombar-color', t.bottombar || defaultTheme.bottombar); 
+            r.setProperty('--text-color', t.text || defaultTheme.text); 
+            r.setProperty('--icon-color', t.icon || defaultTheme.icon); 
+            r.setProperty('--card-radius', (t.radius || 28) + 'px'); 
+            r.setProperty('--btn-radius', ((t.radius || 28) * 0.6) + 'px'); 
+            r.setProperty('--text-base-size', (t.textSize || 14) + 'px'); 
+            
+            // Color picker values set
+            const primary = document.getElementById('theme-primary-color');
+            const bg = document.getElementById('theme-bg-color');
+            const topbar = document.getElementById('theme-topbar-color');
+            const bottombar = document.getElementById('theme-bottombar-color');
+            const text = document.getElementById('theme-text-color');
+            const icon = document.getElementById('theme-icon-color');
+            
+            if(primary) primary.value = t.primary || defaultTheme.primary;
+            if(bg) bg.value = t.bg || defaultTheme.bg;
+            if(topbar) topbar.value = t.topbar || defaultTheme.topbar;
+            if(bottombar) bottombar.value = t.bottombar || defaultTheme.bottombar;
+            if(text) text.value = t.text || defaultTheme.text;
+            if(icon) icon.value = t.icon || defaultTheme.icon;
+            
+            // Range sliders set
+            const radius = document.getElementById('theme-radius');
+            const textSize = document.getElementById('theme-text-size');
+            const radiusVal = document.getElementById('radius-val');
+            const textSizeVal = document.getElementById('text-size-val');
+            
+            if(radius) {
+                radius.value = t.radius || 28;
+                if(radiusVal) radiusVal.innerText = (t.radius || 28) + 'px';
+            }
+            if(textSize) {
+                textSize.value = t.textSize || 14;
+                if(textSizeVal) textSizeVal.innerText = (t.textSize || 14) + 'px';
+            }
+        }
+
+        function applyLivePreview() { 
+            const nt = { 
+                primary: document.getElementById('theme-primary-color').value, 
+                bg: document.getElementById('theme-bg-color').value, 
+                topbar: document.getElementById('theme-topbar-color').value, 
+                bottombar: document.getElementById('theme-bottombar-color').value, 
+                text: document.getElementById('theme-text-color').value, 
+                icon: document.getElementById('theme-icon-color').value, 
+                radius: document.getElementById('theme-radius').value, 
+                textSize: document.getElementById('theme-text-size').value, 
+                font: defaultTheme.font 
+            }; 
+            applyTheme(nt); 
+        }
+
+        function showThemeModal() { 
+            const currentTheme = JSON.parse(localStorage.getItem('kk_theme')) || defaultTheme;
+            applyTheme(currentTheme);
+            document.getElementById('themeModal').style.display = 'flex'; 
+        }
+
+        function saveThemeToCloud() { 
+            const nt = { 
+                primary: document.getElementById('theme-primary-color').value, 
+                bg: document.getElementById('theme-bg-color').value, 
+                topbar: document.getElementById('theme-topbar-color').value, 
+                bottombar: document.getElementById('theme-bottombar-color').value, 
+                text: document.getElementById('theme-text-color').value, 
+                icon: document.getElementById('theme-icon-color').value, 
+                radius: document.getElementById('theme-radius').value, 
+                textSize: document.getElementById('theme-text-size').value, 
+                font: defaultTheme.font 
+            }; 
+            toggleLoading('btn-save-theme', true); 
+            call({ action: 'updateTheme', themeData: JSON.stringify(nt), sheetId: session.sheetId }, (res) => { 
+                toggleLoading('btn-save-theme', false); 
+                if(res.status === "Success") { 
+                    localStorage.setItem('kk_theme', JSON.stringify(nt)); 
+                    alert("Saved!"); 
+                    closeModals(); 
+                } 
+            }); 
+        }
+
+        function resetTheme() { 
+            if(confirm("Reset?")) { 
+                localStorage.setItem('kk_theme', JSON.stringify(defaultTheme)); 
+                applyTheme(defaultTheme); 
+                
+                if(session.sheetId) {
+                    call({ action: 'updateTheme', themeData: JSON.stringify(defaultTheme), sheetId: session.sheetId }, (res) => {
+                        if(res.status === "Success") {
+                            closeModals();
+                        }
+                    });
+                } else {
+                    closeModals();
+                }
+            } 
+        }
+
+        // --- Dashboard Loading ---
         function loadDashboard() {
             if(!session.sheetId) { hideSplash(); return; } 
             updateProgress(40, "நிதியியல் தரவுகள் பெறப்படுகின்றன...");
             call({ action: 'getAppData', sheetId: session.sheetId, month: calViewMonth, year: calViewYear }, (data) => {
                 updateProgress(90, "UI தயார் செய்யப்படுகிறது...");
                 if(data.status !== "Success") { hideSplash(); return; }
-                masterSubCategories = data.masterCategories; currentMonthLoans = data.loans;
+                masterSubCategories = data.masterCategories || {"செலவு":["உணவு"],"வருமானம்":["சம்பளம்"]}; 
+                currentMonthLoans = data.loans || [];
                 
-                const rates = data.metalRates;
+                const rates = data.metalRates || { gold22k: "7100", gold24k: "7650", silver: "96", isOffline: true };
                 const gStat = document.getElementById('goldLiveStatus');
                 const tsUi = document.getElementById('metalTimestamp');
                 if (rates.isOffline) { gStat.innerText = "● ஆஃப்லைன்"; gStat.className = "status-badge status-offline"; } 
                 else { gStat.innerText = "● நேரலை"; gStat.className = "status-badge status-live pulse-text"; }
                 if(rates.time && rates.day) tsUi.innerText = `${rates.day}, ${rates.time}`;
                 
-                document.getElementById('rate22k').innerText = rates.gold22k; 
-                document.getElementById('rate24k').innerText = rates.gold24k; 
-                document.getElementById('rateSilver').innerText = rates.silver; 
-                document.getElementById('dispSalary').innerText = `₹${Number(data.salary).toLocaleString()}`;
+                document.getElementById('rate22k').innerText = rates.gold22k || "..."; 
+                document.getElementById('rate24k').innerText = rates.gold24k || "..."; 
+                document.getElementById('rateSilver').innerText = rates.silver || "..."; 
+                document.getElementById('dispSalary').innerText = `₹${Number(data.salary || 0).toLocaleString()}`;
                 
                 const dTag = document.getElementById('deficitTag'); 
-                dTag.innerText = data.deficit < 0 ? `குறைவு: ₹${Math.abs(data.deficit).toLocaleString()}` : `மீதி: ₹${data.deficit.toLocaleString()}`;
+                dTag.innerText = data.deficit < 0 ? `குறைவு: ₹${Math.abs(data.deficit).toLocaleString()}` : `மீதி: ₹${(data.deficit || 0).toLocaleString()}`;
                 dTag.className = `mt-8 inline-block px-5 py-2 text-[10px] font-extrabold rounded-full uppercase shadow-xl tracking-widest ${data.deficit < 0 ? 'bg-rose-500' : 'bg-emerald-500'}`;
                 
                 if(data.photo) { session.photo = data.photo; updateAvatarUI(); } 
-                renderCalendar(data); renderLoans(data.loans); renderTransactions(data.transactions);
+                renderCalendar(data); renderLoans(data.loans || []); renderTransactions(data.transactions || []);
                 updateProgress(100, "முடிந்தது!");
                 setTimeout(hideSplash, 600);
             });
         }
 
-        // --- UI Rendering Restoration ---
+        function enterDashboard(skip = false) { 
+            if (!skip) localStorage.setItem('kk_session', JSON.stringify(session)); 
+            document.getElementById('init-view').style.display = 'none'; 
+            document.getElementById('dashboard').classList.add('visible'); 
+            updateAvatarUI(); 
+            loadDashboard(); 
+        }
+
+        // --- UI Rendering Functions ---
         function renderCalendar(data) {
-            const grid = document.getElementById('calGrid'), names = ["ஜனவரி", "பிப்ரவரி", "மார்ச்", "ஏப்ரல்", "மே", "ஜூன்", "ஜூலை", "ஆகஸ்ட்", "செப்டம்பர்", "அக்டோபர்", "நவம்பர்", "டிசம்பர்"];
-            document.getElementById('calMonth').innerText = names[calViewMonth]; document.getElementById('calYear').innerText = calViewYear;
-            grid.innerHTML = ""; const fDay = new Date(calViewYear, calViewMonth, 1).getDay(), dInM = new Date(calViewYear, calViewMonth+1, 0).getDate();
+            const grid = document.getElementById('calGrid'), names = ["ஜன", "பிப்", "மார்", "ஏப்", "மே", "ஜூன்", "ஜூலை", "ஆக", "செப்", "அக்", "நவ", "டிச"];
+            document.getElementById('calMonth').innerText = names[calViewMonth] || "Month"; 
+            document.getElementById('calYear').innerText = calViewYear;
+            grid.innerHTML = ""; 
+            const fDay = new Date(calViewYear, calViewMonth, 1).getDay(), dInM = new Date(calViewYear, calViewMonth + 1, 0).getDate();
             for (let i = 0; i < fDay; i++) grid.innerHTML += `<div></div>`;
             for (let i = 1; i <= dInM; i++) {
                 const loan = currentMonthLoans.find(l => Number(l.date) === i);
@@ -448,7 +741,7 @@
             if(!loans || loans.length === 0) return list.innerHTML = "<p class='text-center text-slate-300 py-4 font-black uppercase text-[10px]'>EMI தகவல்கள் இல்லை</p>";
             loans.forEach(loan => {
                 const isP = loan.status === 'Paid';
-                list.innerHTML += `<div class="theme-card p-4 border-none flex justify-between items-center transition-all hover:scale-[1.02] ${isP ? 'emi-card-gradient-paid' : 'emi-card-gradient-pending'}"><div class="flex items-center gap-4 flex-1 cursor-pointer"><div class="w-12 h-12 ${isP ? 'emi-indicator-paid' : 'emi-indicator-pending'} rounded-2xl flex items-center justify-center font-black text-lg shadow-sm">${loan.date}</div><div><h4 class="font-black text-sm theme-text leading-tight">${loan.name}</h4><p class="text-[10px] font-black text-slate-400 uppercase mt-1">₹${Number(loan.amount).toLocaleString()}</p></div></div><div class="flex items-center gap-4"><button onclick="openEMIEdit('${loan.name}', ${loan.amount}, ${loan.date})" class="w-9 h-9 flex items-center justify-center theme-light-bg theme-icon rounded-xl shadow-sm transition-all hover:scale-110"><i class="fa-solid fa-pen-to-square text-[12px]"></i></button><div class="flex flex-col items-center gap-1.5"><span class="text-[7px] font-black uppercase ${isP ? 'text-emerald-500' : 'text-slate-300'} tracking-tighter">${loan.status}</span><label class="switch"><input type="checkbox" ${isP ? 'checked' : ''} onchange="toggleEMIStatus('${loan.name}', this.checked)"><span class="slider"></span></label></div></div></div>`;
+                list.innerHTML += `<div class="theme-card p-4 border-none flex justify-between items-center transition-all hover:scale-[1.02] ${isP ? 'emi-card-gradient-paid' : 'emi-card-gradient-pending'}"><div class="flex items-center gap-4 flex-1 cursor-pointer"><div class="w-12 h-12 ${isP ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'} rounded-2xl flex items-center justify-center font-black text-lg shadow-sm">${loan.date}</div><div><h4 class="font-black text-sm theme-text leading-tight">${loan.name}</h4><p class="text-[10px] font-black text-slate-400 uppercase mt-1">₹${Number(loan.amount).toLocaleString()}</p></div></div><div class="flex items-center gap-4"><button onclick="openEMIEdit('${loan.name}', ${loan.amount}, ${loan.date})" class="w-9 h-9 flex items-center justify-center theme-light-bg theme-icon rounded-xl shadow-sm transition-all hover:scale-110"><i class="fa-solid fa-pen-to-square text-[12px]"></i></button><div class="flex flex-col items-center gap-1.5"><span class="text-[7px] font-black uppercase ${isP ? 'text-emerald-500' : 'text-slate-300'} tracking-tighter">${loan.status}</span><label class="switch"><input type="checkbox" ${isP ? 'checked' : ''} onchange="toggleEMIStatus('${loan.name}', this.checked)"><span class="slider"></span></label></div></div></div>`;
             });
         }
 
@@ -463,45 +756,223 @@
             }); 
         }
 
-        // Shared Standard Handlers
-        function saveGateway() { const u = document.getElementById('gUrlInput').value.trim(); if (u.startsWith('https://script.google.com/') && u.includes('/exec')) { localStorage.setItem('kk_g', u); G_URL = u; enableAuthPanel(true); } else alert("Invalid URL!"); }
-        function enableAuthPanel(isC) { const icon = document.getElementById('gw-status-icon'), text = document.getElementById('gw-status-text'); if (isC) { document.getElementById('auth-panel').classList.remove('auth-disabled'); document.getElementById('auth-overlay').style.display = 'none'; text.innerText = "இணைக்கப்பட்டது"; icon.className = "gw-indicator gw-connected"; } }
-        function loginUser() { const e = document.getElementById('loginEmail').value, p = document.getElementById('loginPass').value; if(!e || !p) return alert("விவரங்கள் தேவை!"); toggleLoading('btn-login', true); call({ action: 'login', email: e, pass: p }, (res) => { toggleLoading('btn-login', false); if(res.status === "Success") { session = { user: e, name: res.name, sheetId: res.sheetId, photo: res.photo }; if(res.theme) applyTheme(res.theme); enterDashboard(); } else alert(res.msg); }); }
-        function saveAndLogout() { const currentTheme = JSON.parse(localStorage.getItem('kk_theme')) || defaultTheme; if(session.sheetId) { call({ action: 'updateTheme', themeData: JSON.stringify(currentTheme), sheetId: session.sheetId }, () => { logout(); }); } else logout(); }
-        function logout() { localStorage.clear(); window.location.reload(); }
-        function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
-        function showProfileModal() { if(!session.user) return; document.getElementById('profileNameInput').value = session.name || ""; document.getElementById('profileLargeAvatar').src = session.photo || `https://ui-avatars.com/api/?name=${session.name || 'U'}&background=6366f1&color=fff`; document.getElementById('profileModal').style.display = 'flex'; }
-        function saveProfile() { toggleLoading('btn-save-profile', true); call({ action: 'updateProfile', sheetId: session.sheetId, newName: document.getElementById('profileNameInput').value, newPass: document.getElementById('profilePassInput').value, photoData: session.photo }, (res) => { toggleLoading('btn-save-profile', false); if(res.status === "Success") { session.name = document.getElementById('profileNameInput').value; alert("Saved!"); updateAvatarUI(); closeModals(); } }); }
-        function applyTheme(t) { if(!t) return; const r = document.documentElement.style; r.setProperty('--primary-color', t.primary || defaultTheme.primary); r.setProperty('--bg-color', t.bg || defaultTheme.bg); r.setProperty('--topbar-color', t.topbar || defaultTheme.topbar); r.setProperty('--bottombar-color', t.bottombar || defaultTheme.bottombar); r.setProperty('--text-color', t.text || defaultTheme.text); r.setProperty('--icon-color', t.icon || defaultTheme.icon); r.setProperty('--card-radius', (t.radius || 28) + 'px'); r.setProperty('--btn-radius', ((t.radius || 28) * 0.6) + 'px'); r.setProperty('--text-base-size', (t.textSize || 14) + 'px'); }
-        function applyLivePreview() { const nt = { primary: document.getElementById('theme-primary-color').value, bg: document.getElementById('theme-bg-color').value, topbar: document.getElementById('theme-topbar-color').value, bottombar: document.getElementById('theme-bottombar-color').value, text: document.getElementById('theme-text-color').value, icon: document.getElementById('theme-icon-color').value, radius: document.getElementById('theme-radius').value, textSize: document.getElementById('theme-text-size').value, font: defaultTheme.font }; applyTheme(nt); }
-        function saveThemeToCloud() { const nt = { primary: document.getElementById('theme-primary-color').value, bg: document.getElementById('theme-bg-color').value, topbar: document.getElementById('theme-topbar-color').value, bottombar: document.getElementById('theme-bottombar-color').value, text: document.getElementById('theme-text-color').value, icon: document.getElementById('theme-icon-color').value, radius: document.getElementById('theme-radius').value, textSize: document.getElementById('theme-text-size').value, font: defaultTheme.font }; toggleLoading('btn-save-theme', true); call({ action: 'updateTheme', themeData: JSON.stringify(nt), sheetId: session.sheetId }, (res) => { toggleLoading('btn-save-theme', false); if(res.status === "Success") { localStorage.setItem('kk_theme', JSON.stringify(nt)); alert("Saved!"); closeModals(); } }); }
-        function resetTheme() { if(confirm("Reset?")) { localStorage.setItem('kk_theme', JSON.stringify(defaultTheme)); applyTheme(defaultTheme); saveThemeToCloud(); } }
-        function updateLiveTime() { const now = new Date(); document.getElementById('liveClock').innerText = now.toLocaleTimeString('ta-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }); document.getElementById('liveDate').innerText = now.toLocaleDateString('ta-IN', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' }); }
-        function changeMonth(o) { calViewMonth += o; if (calViewMonth > 11) { calViewMonth = 0; calViewYear++; } if (calViewMonth < 0) { calViewMonth = 11; calViewYear--; } loadDashboard(); }
-        function enterDashboard(skip = false) { if (!skip) localStorage.setItem('kk_session', JSON.stringify(session)); document.getElementById('init-view').style.display = 'none'; document.getElementById('dashboard').classList.add('visible'); updateAvatarUI(); loadDashboard(); }
-        function showSalaryModal() { document.getElementById('salaryModal').style.display = 'flex'; }
-        function showThemeModal() { document.getElementById('themeModal').style.display = 'flex'; }
-        function toggleLoading(id, isL) { const b = document.getElementById(id); if(!b) return; if(isL) { b.dataset.old = b.innerHTML; b.innerHTML = '<div class="spinner-container"><div class="spinner border-white border-t-transparent w-5 h-5"></div></div>'; b.disabled = true; } else { b.innerHTML = b.dataset.old || "சேமி"; b.disabled = false; } }
-        function startOtpTimer() { otpCountdown = 60; const ui = document.getElementById('otp-timer-display'); clearInterval(otpTimerInterval); otpTimerInterval = setInterval(() => { otpCountdown--; ui.innerText = `Expires: ${otpCountdown}s`; if(otpCountdown <= 0) { clearInterval(otpTimerInterval); document.getElementById('resend-otp-btn').disabled = false; } }, 1000); }
-        function handleOtpPaste(e) { const d = e.clipboardData.getData('text').trim().slice(0, 6); if (!/^\d+$/.test(d)) return; const ins = document.querySelectorAll('#auth-otp .otp-box'); d.split('').forEach((c, i) => { if (ins[i]) ins[i].value = c; }); ins[Math.min(d.length - 1, 5)].focus(); e.preventDefault(); }
-        function moveNext(el, idx, e) { if(e.key === "Backspace" && el.value.length === 0 && idx > 0) document.querySelectorAll('#auth-otp .otp-box')[idx-1].focus(); else if(el.value.length === 1 && idx < 5) document.querySelectorAll('#auth-otp .otp-box')[idx+1].focus(); }
-        function toggleAuth(s) { document.querySelectorAll('.auth-panel .screen').forEach(sc => sc.classList.remove('active')); document.getElementById('auth-' + s).classList.add('active'); }
-        function showAddModal() { currentMasterCat = ''; document.getElementById('transModal').style.display = 'flex'; renderMasterCategories(); }
-        function renderMasterCategories() { const grid = document.getElementById('masterCatGrid'); grid.innerHTML = ''; Object.keys(masterSubCategories).forEach(cat => { const b = document.createElement('button'); b.className = `sub-pill ${currentMasterCat === cat ? 'active' : ''}`; b.innerText = cat; b.onclick = () => { currentMasterCat = cat; renderMasterCategories(); }; grid.appendChild(b); }); renderSubCategories(); }
-        function renderSubCategories() { const grid = document.getElementById('subCatGrid'); grid.innerHTML = ''; if (!currentMasterCat) return; (masterSubCategories[currentMasterCat] || []).forEach(item => { const b = document.createElement('button'); b.className = 'sub-pill'; b.innerText = item; b.onclick = () => { document.querySelectorAll('#subCatGrid .sub-pill').forEach(s => s.classList.remove('active')); b.classList.add('active'); document.getElementById('transCat').value = item; }; grid.appendChild(b); }); }
-        function showAddMasterCat() { document.getElementById('addMasterCatModal').style.display = 'flex'; }
-        function showAddSubCat() { if(!currentMasterCat) return alert("முதலில் வகைப்பாட்டைத் தேர்ந்தெடுக்கவும்!"); document.getElementById('currentMasterDisplay').innerText = `வகை: ${currentMasterCat}`; document.getElementById('addSubCatModal').style.display = 'flex'; }
-        function closeSmallModals() { document.getElementById('addMasterCatModal').style.display = 'none'; document.getElementById('addSubCatModal').style.display = 'none'; }
-        function saveNewCategory(mode) { const val = mode==='master'?document.getElementById('newMasterCatInput').value:document.getElementById('newSubCatInput').value; if(!val) return; toggleLoading(mode==='master'?'btn-save-mastercat':'btn-save-subcat', true); call({ action: 'addNewCategory', masterCat: mode==='master'?val:currentMasterCat, subCat: mode==='master'?"":val, sheetId: session.sheetId }, (res) => { toggleLoading(mode==='master'?'btn-save-mastercat':'btn-save-subcat', false); if(res.status === "Success") { if(mode==='master') { masterSubCategories[val] = []; currentMasterCat = val; } else masterSubCategories[currentMasterCat].push(val); closeSmallModals(); renderMasterCategories(); } }); }
-        function saveTransaction() { const a = document.getElementById('transAmt').value, c = document.getElementById('transCat').value; if(!a || !c) return alert("விவரங்கள் தேவை!"); toggleLoading('btn-save-trans', true); call({ action: 'addTransaction', amount: a, category: c, note: "", type: transType, sheetId: session.sheetId }, (res) => { toggleLoading('btn-save-trans', false); if(res.status === "Success") { closeModals(); loadDashboard(); } }); }
-        function setTransType(t) { transType = t; document.getElementById('typeInc').className = t==='Income' ? "flex-1 py-4 rounded-2xl font-black text-[11px] bg-white text-emerald-500 shadow-sm uppercase tracking-widest" : "flex-1 py-4 rounded-2xl font-black text-[11px] text-slate-300 uppercase tracking-widest"; document.getElementById('typeExp').className = t==='Expense' ? "flex-1 py-4 rounded-2xl font-black text-[11px] bg-white text-rose-500 shadow-sm uppercase tracking-widest" : "flex-1 py-4 rounded-2xl font-black text-[11px] text-slate-300 uppercase tracking-widest"; document.getElementById('typeSav').className = t==='Savings' ? "flex-1 py-4 rounded-2xl font-black text-[11px] bg-white text-indigo-500 shadow-sm uppercase tracking-widest" : "flex-1 py-4 rounded-2xl font-black text-[11px] text-slate-300 uppercase tracking-widest"; }
-        function toggleEMIStatus(n, c) { call({ action: 'updateEMIStatus', loanName: n, status: c ? 'Paid' : 'Pending', month: calViewMonth, year: calViewYear, sheetId: session.sheetId }, (res) => { if(res.status === "Success") loadDashboard(); }); }
-        function saveEMIChange() { const n = selectedLoanForEdit, a = document.getElementById('editLoanAmt').value, d = document.getElementById('editLoanDate').value; if(!a || !d) return alert("விவரங்கள் தேவை!"); toggleLoading('btn-save-emi', true); call({ action: 'updateLoan', loanName: n, amount: a, dueDate: d, sheetId: session.sheetId }, (res) => { toggleLoading('btn-save-emi', false); if (res.status === "Success") { closeModals(); loadDashboard(); } }); }
-        function updateSalary() { const a = document.getElementById('newSalaryInput').value; if(!a) return; toggleLoading('btn-save-salary', true); call({ action: 'updateSalary', amount: a, sheetId: session.sheetId }, (res) => { toggleLoading('btn-save-salary', false); if(res.status === "Success") { closeModals(); loadDashboard(); } }); }
-        function toggleCalLoader(s) { document.getElementById('calLoader').classList.toggle('hidden', !s); }
-        function updateAvatarUI() { const av = document.getElementById('userAvatar'); av.src = session.photo || `https://ui-avatars.com/api/?name=${session.name || 'U'}&background=6366f1&color=fff`; document.getElementById('userNameUI').innerText = session.name || "பயனர்"; }
-        function handleProfilePhoto(e) { const file = e.target.files[0]; if(!file) return; const r = new FileReader(); r.onload = (ev) => { const img = new Image(); img.src = ev.target.result; img.onload = () => { const c = document.createElement('canvas'), ctx = c.getContext('2d'), size = 150; c.width = size; c.height = size; ctx.drawImage(img, 0, 0, size, size); const b64 = c.toDataURL('image/jpeg', 0.5); document.getElementById('profileLargeAvatar').src = b64; session.photo = b64; }; }; r.readAsDataURL(file); }
-        function initAppDB() { const b = event.currentTarget; b.innerHTML = '<div class="spinner-container"><div class="spinner border-indigo-500 w-5 h-5"></div></div>'; call({ action: 'initSetup', sheetId: session.sheetId }, (res) => { b.innerHTML = '<i class="fa-solid fa-gear"></i>'; alert(res.msg); loadDashboard(); }); }
+        // --- Transaction Functions ---
+        function showAddModal() { 
+            currentMasterCat = ''; 
+            document.getElementById('transModal').style.display = 'flex'; 
+            renderMasterCategories(); 
+        }
+
+        function renderMasterCategories() { 
+            const grid = document.getElementById('masterCatGrid'); 
+            grid.innerHTML = ''; 
+            Object.keys(masterSubCategories || {}).forEach(cat => { 
+                const b = document.createElement('button'); 
+                b.className = `sub-pill ${currentMasterCat === cat ? 'active' : ''}`; 
+                b.innerText = cat; 
+                b.onclick = () => { 
+                    currentMasterCat = cat; 
+                    renderMasterCategories(); 
+                }; 
+                grid.appendChild(b); 
+            }); 
+            renderSubCategories(); 
+        }
+
+        function renderSubCategories() { 
+            const grid = document.getElementById('subCatGrid'); 
+            grid.innerHTML = ''; 
+            if (!currentMasterCat) return; 
+            (masterSubCategories[currentMasterCat] || []).forEach(item => { 
+                const b = document.createElement('button'); 
+                b.className = 'sub-pill'; 
+                b.innerText = item; 
+                b.onclick = () => { 
+                    document.querySelectorAll('#subCatGrid .sub-pill').forEach(s => s.classList.remove('active')); 
+                    b.classList.add('active'); 
+                    document.getElementById('transCat').value = item; 
+                }; 
+                grid.appendChild(b); 
+            }); 
+        }
+
+        function setTransType(t) { 
+            transType = t; 
+            document.getElementById('typeInc').className = t==='Income' ? "flex-1 py-4 rounded-2xl font-black text-[11px] bg-white text-emerald-500 shadow-sm uppercase tracking-widest" : "flex-1 py-4 rounded-2xl font-black text-[11px] text-slate-300 uppercase tracking-widest"; 
+            document.getElementById('typeExp').className = t==='Expense' ? "flex-1 py-4 rounded-2xl font-black text-[11px] bg-white text-rose-500 shadow-sm uppercase tracking-widest" : "flex-1 py-4 rounded-2xl font-black text-[11px] text-slate-300 uppercase tracking-widest"; 
+            document.getElementById('typeSav').className = t==='Savings' ? "flex-1 py-4 rounded-2xl font-black text-[11px] bg-white text-indigo-500 shadow-sm uppercase tracking-widest" : "flex-1 py-4 rounded-2xl font-black text-[11px] text-slate-300 uppercase tracking-widest"; 
+        }
+
+        function saveTransaction() { 
+            const a = document.getElementById('transAmt').value, c = document.getElementById('transCat').value; 
+            if(!a || !c) return alert("விவரங்கள் தேவை!"); 
+            toggleLoading('btn-save-trans', true); 
+            call({ action: 'addTransaction', amount: a, category: c, note: "", type: transType, sheetId: session.sheetId }, (res) => { 
+                toggleLoading('btn-save-trans', false); 
+                if(res.status === "Success") { 
+                    closeModals(); 
+                    loadDashboard(); 
+                } 
+            }); 
+        }
+
+        // --- Category Functions ---
+        function showAddMasterCat() { 
+            document.getElementById('addMasterCatModal').style.display = 'flex'; 
+        }
+
+        function showAddSubCat() { 
+            if(!currentMasterCat) return alert("முதலில் வகைப்பாட்டைத் தேர்ந்தெடுக்கவும்!"); 
+            document.getElementById('currentMasterDisplay').innerText = `வகை: ${currentMasterCat}`; 
+            document.getElementById('addSubCatModal').style.display = 'flex'; 
+        }
+
+        function saveNewCategory(mode) { 
+            const val = mode==='master'?document.getElementById('newMasterCatInput').value:document.getElementById('newSubCatInput').value; 
+            if(!val) return; 
+            toggleLoading(mode==='master'?'btn-save-mastercat':'btn-save-subcat', true); 
+            call({ action: 'addNewCategory', masterCat: mode==='master'?val:currentMasterCat, subCat: mode==='master'?"":val, sheetId: session.sheetId }, (res) => { 
+                toggleLoading(mode==='master'?'btn-save-mastercat':'btn-save-subcat', false); 
+                if(res.status === "Success") { 
+                    if(mode==='master') { 
+                        if(!masterSubCategories) masterSubCategories = {};
+                        masterSubCategories[val] = []; 
+                        currentMasterCat = val; 
+                    } else {
+                        if(!masterSubCategories) masterSubCategories = {};
+                        if(!masterSubCategories[currentMasterCat]) masterSubCategories[currentMasterCat] = [];
+                        masterSubCategories[currentMasterCat].push(val); 
+                    }
+                    closeSmallModals(); 
+                    renderMasterCategories(); 
+                } 
+            }); 
+        }
+
+        // --- EMI Functions ---
+        function openEMIEdit(name, amount, date) {
+            selectedLoanForEdit = name;
+            document.getElementById('editLoanAmt').value = amount;
+            document.getElementById('editLoanDate').value = date;
+            document.getElementById('emiEditModal').style.display = 'flex';
+        }
+
+        function toggleEMIStatus(n, c) { 
+            call({ action: 'updateEMIStatus', loanName: n, status: c ? 'Paid' : 'Pending', month: calViewMonth, year: calViewYear, sheetId: session.sheetId }, (res) => { 
+                if(res.status === "Success") loadDashboard(); 
+            }); 
+        }
+
+        function saveEMIChange() { 
+            const n = selectedLoanForEdit, a = document.getElementById('editLoanAmt').value, d = document.getElementById('editLoanDate').value; 
+            if(!a || !d) return alert("விவரங்கள் தேவை!"); 
+            toggleLoading('btn-save-emi', true); 
+            call({ action: 'updateLoan', loanName: n, amount: a, dueDate: d, sheetId: session.sheetId }, (res) => { 
+                toggleLoading('btn-save-emi', false); 
+                if (res.status === "Success") { 
+                    closeModals(); 
+                    loadDashboard(); 
+                } 
+            }); 
+        }
+
+        // --- Salary Functions ---
+        function showSalaryModal() { 
+            document.getElementById('salaryModal').style.display = 'flex'; 
+            document.getElementById('newSalaryInput').value = document.getElementById('dispSalary').innerText.replace('₹', '').replace(',', '');
+        }
+
+        function updateSalary() { 
+            const a = document.getElementById('newSalaryInput').value; 
+            if(!a) return; 
+            toggleLoading('btn-save-salary', true); 
+            call({ action: 'updateSalary', amount: a, sheetId: session.sheetId }, (res) => { 
+                toggleLoading('btn-save-salary', false); 
+                if(res.status === "Success") { 
+                    closeModals(); 
+                    loadDashboard(); 
+                } 
+            }); 
+        }
+
+        // --- Utility Functions ---
+        function updateLiveTime() { 
+            const now = new Date(); 
+            document.getElementById('liveClock').innerText = now.toLocaleTimeString('ta-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }); 
+            document.getElementById('liveDate').innerText = now.toLocaleDateString('ta-IN', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' }); 
+        }
+
+        function changeMonth(o) { 
+            calViewMonth += o; 
+            if (calViewMonth > 11) { calViewMonth = 0; calViewYear++; } 
+            if (calViewMonth < 0) { calViewMonth = 11; calViewYear--; } 
+            loadDashboard(); 
+        }
+
+        function toggleLoading(id, isL) { 
+            const b = document.getElementById(id); 
+            if(!b) return; 
+            if(isL) { 
+                b.dataset.old = b.innerHTML; 
+                b.innerHTML = '<div class="flex justify-center"><div class="spinner border-white border-t-transparent w-5 h-5"></div></div>'; 
+                b.disabled = true; 
+            } else { 
+                b.innerHTML = b.dataset.old || "சேமி"; 
+                b.disabled = false; 
+            } 
+        }
+
+        function startOtpTimer() { 
+            otpCountdown = 60; 
+            const ui = document.getElementById('otp-timer-display'); 
+            clearInterval(otpTimerInterval); 
+            otpTimerInterval = setInterval(() => { 
+                otpCountdown--; 
+                ui.innerText = `நேரம்: ${otpCountdown}s`; 
+                if(otpCountdown <= 0) { 
+                    clearInterval(otpTimerInterval); 
+                    document.getElementById('resend-otp-btn').disabled = false; 
+                } 
+            }, 1000); 
+        }
+
+        function handleOtpPaste(e) { 
+            const d = e.clipboardData.getData('text').trim().slice(0, 6); 
+            if (!/^\d+$/.test(d)) return; 
+            const ins = document.querySelectorAll('#auth-otp .otp-box'); 
+            d.split('').forEach((c, i) => { if (ins[i]) ins[i].value = c; }); 
+            ins[Math.min(d.length - 1, 5)].focus(); 
+            e.preventDefault(); 
+        }
+
+        function moveNext(el, idx, e) { 
+            if(e.key === "Backspace" && el.value.length === 0 && idx > 0) document.querySelectorAll('#auth-otp .otp-box')[idx-1].focus(); 
+            else if(el.value.length === 1 && idx < 5) document.querySelectorAll('#auth-otp .otp-box')[idx+1].focus(); 
+        }
+
+        function toggleAuth(s) { 
+            document.querySelectorAll('#auth-panel .screen').forEach(sc => sc.classList.remove('active')); 
+            document.getElementById('auth-' + s).classList.add('active'); 
+        }
+
+        function toggleCalLoader(s) { 
+            document.getElementById('calLoader').classList.toggle('hidden', !s); 
+        }
+
+        function handleLogoutToggle() {
+            // Auto logout functionality placeholder
+            console.log('Auto logout toggle:', document.getElementById('autoLogoutToggle').checked);
+        }
+
+        function initAppDB() { 
+            const b = event.currentTarget; 
+            b.innerHTML = '<div class="flex justify-center"><div class="spinner border-indigo-500 w-5 h-5"></div></div>'; 
+            call({ action: 'initSetup', sheetId: session.sheetId }, (res) => { 
+                b.innerHTML = '<i class="fa-solid fa-gear"></i>'; 
+                alert(res.msg); 
+                loadDashboard(); 
+            }); 
+        }
     </script>
 </body>
 </html>
