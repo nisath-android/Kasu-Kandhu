@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>காசு-கந்து PRO v9.3.9 | Redirection & UX Fix</title>
+    <title>காசு-கந்து PRO v9.4.1 | Redirection & Transaction Fix</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style id="dynamic-theme-style">
@@ -61,7 +61,7 @@
         header { min-height: 80px; display: flex; align-items: center; }
         footer { height: 85px; }
 
-        /* Splash & Progress v9.3.9 */
+        /* Splash & Progress v9.4.1 */
         #splash { position: fixed; inset: 0; background: white; z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.5s; }
         .splash-logo { font-size: 3rem; font-weight: 900; background: linear-gradient(to right, #6366f1, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-style: italic; }
         .progress-container { width: 220px; height: 6px; background-color: #f1f5f9; border-radius: 10px; margin-top: 30px; overflow: hidden; position: relative; }
@@ -99,11 +99,9 @@
         .screen.active { display: block; }
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        /* OTP Fix v9.3.9 */
         .otp-box { background: #f8fafc; border: 2px solid #e2e8f0; width: 46px; height: 60px; text-align: center; font-size: 1.6rem; font-weight: 800; border-radius: 14px; outline: none; transition: 0.2s; }
         .otp-box:focus { border-color: var(--primary-color); background: white; box-shadow: 0 0 15px rgba(99, 102, 241, 0.1); }
         
-        /* Unified Switches */
         .switch { position: relative; display: inline-block; width: 36px; height: 20px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; inset: 0; background-color: #cbd5e1; transition: .4s; border-radius: 20px; }
@@ -259,6 +257,12 @@
                 <div id="calGrid" class="grid grid-cols-7 gap-3 transition-all"></div>
             </div>
 
+            <!-- Transaction List (v9.4.1 Fix) -->
+            <div id="recentTransactions" class="space-y-4">
+                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4">பரிவர்த்தனை பட்டியல்</h3>
+                <div id="transList" class="space-y-3"></div>
+            </div>
+
             <div id="loanList" class="space-y-4 pb-12"><h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 italic leading-tight">EMI மேலாண்மை (Edit/Status)</h3><div id="loanItems" class="space-y-4"></div></div>
         </main>
 
@@ -305,7 +309,7 @@
         </div>
     </div>
 
-    <!-- Simplified EMI/Add/Salary Modals (v9.3.9) -->
+    <!-- Modals (EMI Edit, Salary, Register Cat) -->
     <div id="transModal" class="modal-overlay">
         <div class="bg-white w-full max-w-md p-10 rounded-[4.5rem] shadow-2xl max-h-[95vh] overflow-y-auto hide-scrollbar">
             <h3 class="text-2xl font-black theme-icon italic text-center mb-8 tracking-tighter">புதிய பதிவு</h3>
@@ -330,7 +334,7 @@
         </div>
     </div>
 
-    <!-- Rest of the modals remains standard but logic updated for v9.3.9 -->
+    <!-- Simplified EMI/Add/Salary Modals (v9.4.1) -->
     <div id="emiEditModal" class="modal-overlay"><div class="bg-white w-full max-w-xs p-10 rounded-[3.5rem] shadow-2xl text-center"><h3 class="text-2xl font-black theme-icon mb-2 italic">EMI மாற்றம்</h3><p id="editLoanTitle" class="text-[11px] text-slate-400 mb-10 font-black uppercase tracking-widest"></p><div class="space-y-6 mb-10"><input type="number" id="editLoanAmt" placeholder="தொகை" class="w-full p-7 bg-slate-50 rounded-2xl outline-none font-black text-2xl text-center border-2 border-transparent focus:theme-border shadow-inner"><input type="number" id="editLoanDate" placeholder="தேதி" class="w-full p-7 bg-slate-50 rounded-2xl outline-none font-black text-2xl text-center border-2 border-transparent focus:theme-border shadow-inner"></div><button id="btn-save-emi" onclick="saveEMIChange()" class="w-full theme-btn py-5 uppercase text-xs shadow-xl tracking-widest">சேமிக்கவும்</button><button onclick="closeModals()" class="w-full py-4 text-slate-300 text-[10px] font-black mt-2 uppercase underline">ரத்து</button></div></div>
     <div id="salaryModal" class="modal-overlay"><div class="bg-white w-full max-w-xs p-10 rounded-[4rem] shadow-2xl text-center"><h3 class="text-2xl font-black theme-icon mb-10 italic">சம்பளம் மாற்றம்</h3><input type="number" id="newSalaryInput" class="w-full p-10 bg-slate-50 rounded-[2.5rem] text-5xl font-black outline-none mb-10 text-center tracking-tighter shadow-inner transition-all focus:theme-border" placeholder="30000"><button id="btn-save-salary" onclick="updateSalary()" class="w-full theme-btn py-6 uppercase text-xs shadow-xl tracking-widest transition-all">சேமிக்க</button><button onclick="closeModals()" class="w-full py-5 text-slate-300 text-[10px] font-black mt-4 uppercase underline tracking-widest">மூடுக</button></div></div>
     <div id="profileModal" class="modal-overlay">
@@ -361,7 +365,7 @@
             const savedTheme = JSON.parse(localStorage.getItem('kk_theme')) || defaultTheme;
             applyTheme(savedTheme); 
             updateLiveTime(); setInterval(updateLiveTime, 1000); 
-            setTimeout(() => { if(document.getElementById('splash')) hideSplash(); }, 12000); // 12s safety
+            setTimeout(() => { if(document.getElementById('splash')) hideSplash(); }, 12000);
 
             if (G_URL) { 
                 document.getElementById('gUrlInput').value = G_URL; 
@@ -378,7 +382,7 @@
         function hideSplash() { const s = document.getElementById('splash'); if(s) { s.style.opacity = '0'; setTimeout(() => s.remove(), 400); } }
         function updateProgress(perc, msg) { const fill = document.getElementById('progress-fill'); const text = document.getElementById('progress-text'); if(fill) fill.style.width = perc + '%'; if(text) text.innerText = (msg || "தரவுகள் சேகரிக்கப்படுகின்றன...") + " " + perc + "%"; }
 
-        // --- Theme Engine v9.3.9 ---
+        // --- Theme Engine ---
         function applyTheme(t) {
             if(!t) return;
             const root = document.documentElement.style;
@@ -410,32 +414,29 @@
         function saveThemeToCloud() { const nt = { primary: document.getElementById('theme-primary-color').value, bg: document.getElementById('theme-bg-color').value, topbar: document.getElementById('theme-topbar-color').value, bottombar: document.getElementById('theme-bottombar-color').value, text: document.getElementById('theme-text-color').value, icon: document.getElementById('theme-icon-color').value, radius: document.getElementById('theme-radius').value, textSize: document.getElementById('theme-text-size').value, font: localStorage.getItem('kk_font_choice') || defaultTheme.font }; toggleLoading('btn-save-theme', true); call({ action: 'updateTheme', themeData: JSON.stringify(nt), sheetId: session.sheetId }, (res) => { toggleLoading('btn-save-theme', false); if(res.status === "Success") { localStorage.setItem('kk_theme', JSON.stringify(nt)); alert("விருப்பங்கள் சேமிக்கப்பட்டன!"); closeModals(); } }); }
         function resetTheme() { if(confirm("Reset Theme?")) { localStorage.setItem('kk_theme', JSON.stringify(defaultTheme)); applyTheme(defaultTheme); saveThemeToCloud(); } }
 
-        // --- Logic (Logout & Redirection) ---
+        // --- Logout & Redirection ---
         function saveAndLogout() { 
             const currentTheme = JSON.parse(localStorage.getItem('kk_theme')) || defaultTheme;
             if(session.sheetId) {
                 call({ action: 'updateTheme', themeData: JSON.stringify(currentTheme), sheetId: session.sheetId }, () => { logout(); });
             } else logout();
         }
-        function logout() { 
-            localStorage.clear(); 
-            window.location.reload(); 
-        }
+        function logout() { localStorage.clear(); window.location.reload(); }
 
         async function call(params, cb) {
             if (!G_URL) return;
             if (['updateProfile', 'updateTheme', 'register'].includes(params.action)) {
-                try { const res = await fetch(G_URL, { method: 'POST', body: JSON.stringify(params) }); cb(await res.json()); } catch (e) { toggleLoading('btn-save-profile', false); hideSplash(); alert("பிழை!"); } return;
+                try { const res = await fetch(G_URL, { method: 'POST', body: JSON.stringify(params) }); cb(await res.json()); } catch (e) { toggleLoading('btn-save-profile', false); hideSplash(); alert("இணைப்பு பிழை!"); } return;
             }
             const n = 'cb' + Date.now(); window[n] = (res) => { cb(res); delete window[n]; document.getElementById(n)?.remove(); };
             const s = document.createElement('script'); s.id = n; s.src = `${G_URL}${G_URL.includes('?') ? '&' : '?'}callback=${n}&${new URLSearchParams(params).toString()}`;
-            s.onerror = () => { toggleCalLoader(false); hideSplash(); alert("இணைப்பு பிழை!"); }; document.body.appendChild(s);
+            s.onerror = () => { toggleCalLoader(false); hideSplash(); alert("பிழை!"); }; document.body.appendChild(s);
         }
 
-        // --- Render Functions v9.3.9 ---
+        // --- Render v9.4.1 ---
         function loadDashboard() {
             if(!session.sheetId) { hideSplash(); return; } 
-            updateProgress(60, "நிதி தரவுகள் பெறப்படுகின்றன...");
+            updateProgress(60, "நிதியியல் தரவுகள் பெறப்படுகின்றன...");
             call({ action: 'getAppData', sheetId: session.sheetId, month: calViewMonth, year: calViewYear }, (data) => {
                 updateProgress(90, "UI தயார் செய்யப்படுகிறது...");
                 if(data.status !== "Success") { hideSplash(); return; }
@@ -480,21 +481,20 @@
 
         function renderTransactions(trans) { 
             const list = document.getElementById('transList'); list.innerHTML = ""; 
-            if(!trans || trans.length === 0) return;
+            if(!trans || trans.length === 0) return list.innerHTML = "<p class='text-center text-slate-300 py-6 font-black uppercase text-[10px]'>பதிவுகள் இல்லை</p>";
             trans.forEach(t => { 
                 const isE = t.type === 'Expense'; 
-                list.innerHTML += `<div class="theme-card p-4 flex justify-between items-center border-none shadow-none"><div class="flex items-center gap-4"><div class="w-11 h-11 rounded-2xl flex items-center justify-center text-base ${isE ? 'bg-rose-50 text-rose-500' : 'bg-emerald-50 text-emerald-500'}"><i class="fa-solid ${isE ? 'fa-arrow-up' : 'fa-arrow-down'}"></i></div><div><h4 class="text-sm font-black theme-text leading-none transition-all">${t.category}</h4><p class="text-[8px] font-bold text-slate-400 mt-1 uppercase">${new Date(t.date).toLocaleDateString('ta-IN')}</p></div></div><p class="text-sm font-black ${isE ? 'text-rose-500' : 'text-emerald-500'}">${isE ? '-' : '+'}₹${Number(t.amount).toLocaleString()}</p></div>`; 
+                list.innerHTML += `<div class="theme-card p-4 flex justify-between items-center border-none shadow-none"><div class="flex items-center gap-4"><div class="w-11 h-11 rounded-2xl flex items-center justify-center text-base ${isE ? 'bg-rose-50 text-rose-500' : 'bg-emerald-50 text-emerald-500'}"><i class="fa-solid ${isE ? 'fa-arrow-up' : 'fa-arrow-down'}"></i></div><div><h4 class="text-sm font-black theme-text leading-none transition-all">${t.category}</h4><p class="text-[8px] font-bold text-slate-400 mt-1 uppercase">${t.date}</p></div></div><p class="text-sm font-black ${isE ? 'text-rose-500' : 'text-emerald-500'}">${isE ? '-' : '+'}₹${Number(t.amount).toLocaleString()}</p></div>`; 
             }); 
         }
 
-        // --- Core Utility Logic ---
+        // --- Standard Utility ---
         function loginUser() { const e = document.getElementById('loginEmail').value, p = document.getElementById('loginPass').value; if(!e || !p) return alert("விவரங்கள் தேவை!"); toggleLoading('btn-login', true); call({ action: 'login', email: e, pass: p }, (res) => { toggleLoading('btn-login', false); if(res.status === "Success") { session = { user: e, name: res.name, sheetId: res.sheetId, photo: res.photo }; if(res.theme) applyTheme(res.theme); enterDashboard(); } else alert(res.msg); }); }
         function registerAccount() { const n = document.getElementById('regName').value, e = document.getElementById('regEmail').value, p = document.getElementById('regPass').value; if(!n || !e || !p) return alert("விவரங்கள் தேவை!"); toggleLoading('btn-reg', true); call({ action: 'register', name: n, email: e, pass: p }, (res) => { toggleLoading('btn-reg', false); if(res.status === "Success") { alert("பதிவு முடிந்தது!"); toggleAuth('login'); } else alert(res.msg); }); }
         function requestOTP() { const e = document.getElementById('loginEmail').value; if(!e) return alert("Email தேவை!"); toggleLoading('btn-otp-req', true); call({ action: 'sendOTP', email: e }, (res) => { toggleLoading('btn-otp-req', false); if(res.status === "Sent") { session.user = e; toggleAuth('otp'); startOtpTimer(); } }); }
-        function startOtpTimer() { otpCountdown = 60; const ui = document.getElementById('otp-timer-display'); clearInterval(otpTimerInterval); otpTimerInterval = setInterval(() => { otpCountdown--; ui.innerText = `நேரம்: ${otpCountdown}s`; if(otpCountdown <= 0) { clearInterval(otpTimerInterval); document.getElementById('resend-otp-btn').disabled = false; } }, 1000); }
+        function startOtpTimer() { otpCountdown = 60; const ui = document.getElementById('otp-timer-display'); clearInterval(otpTimerInterval); otpTimerInterval = setInterval(() => { otpCountdown--; ui.innerText = `Expires: ${otpCountdown}s`; if(otpCountdown <= 0) { clearInterval(otpTimerInterval); document.getElementById('resend-otp-btn').disabled = false; } }, 1000); }
         function verifyOTP() { const inputs = document.querySelectorAll('#auth-otp .otp-box'); let otp = ""; inputs.forEach(i => otp += i.value); if(otp.length < 6) return alert("6 இலக்க OTP தேவை!"); toggleLoading('btn-verify', true); call({ action: 'login', email: session.user, otp, isOtp: "true" }, (res) => { toggleLoading('btn-verify', false); if(res.status === "Success") { session = { user: session.user, name: res.name, sheetId: res.sheetId, photo: res.photo }; if(res.theme) applyTheme(res.theme); enterDashboard(); } else alert(res.msg); }); }
-        
-        function saveGateway() { const u = document.getElementById('gUrlInput').value.trim(); if (u.startsWith('https://script.google.com/') && u.includes('/exec')) { localStorage.setItem('kk_g', u); G_URL = u; enableAuthPanel(true); } else alert("Invalid URL!"); }
+        function saveGateway() { const u = document.getElementById('gUrlInput').value.trim(); if (u.startsWith('https://script.google.com/') && u.includes('/exec')) { localStorage.setItem('kk_g', u); G_URL = u; enableAuthPanel(true); } else alert("URL Error!"); }
         function enableAuthPanel(isC) { const icon = document.getElementById('gw-status-icon'), text = document.getElementById('gw-status-text'); if (isC) { document.getElementById('auth-panel').classList.remove('auth-disabled'); document.getElementById('auth-overlay').style.display = 'none'; text.innerText = "இணைக்கப்பட்டது"; text.className = "text-[10px] text-emerald-400 font-black uppercase tracking-widest"; icon.className = "gw-indicator gw-connected"; } }
         function handleOtpPaste(e) { const d = e.clipboardData.getData('text').trim().slice(0, 6); if (!/^\d+$/.test(d)) return; const ins = document.querySelectorAll('#auth-otp .otp-box'); d.split('').forEach((c, i) => { if (ins[i]) ins[i].value = c; }); ins[Math.min(d.length - 1, 5)].focus(); e.preventDefault(); }
         function moveNext(el, idx, e) { if(e.key === "Backspace" && el.value.length === 0 && idx > 0) document.querySelectorAll('#auth-otp .otp-box')[idx-1].focus(); else if(el.value.length === 1 && idx < 5) document.querySelectorAll('#auth-otp .otp-box')[idx+1].focus(); }
