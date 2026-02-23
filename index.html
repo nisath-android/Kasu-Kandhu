@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>காசு-கந்து PRO v9.8.2</title>
+    <title>காசு-கந்து PRO v9.8.3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style id="dynamic-theme">
@@ -35,10 +35,9 @@
         .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: #10b981; }
         input:checked + .slider:before { transform: translateX(14px); }
-        .otp-box { width: 42px; height: 52px; border-radius: 10px; background: #f8fafc; border: 2px solid #e2e8f0; text-align: center; font-size: 20px; font-weight: 800; outline: none; transition: 0.2s; }
-        .otp-box:focus { border-color: var(--primary-color); background: white; }
+        .otp-box { width: 42px; height: 52px; border-radius: 10px; background: #f8fafc; border: 2px solid #e2e8f0; text-align: center; font-size: 20px; font-weight: 800; outline: none; }
         .sub-pill { padding: 8px 16px; border-radius: 12px; font-size: 10px; font-weight: 700; background: #f8fafc; border: 1px solid #f1f5f9; cursor: pointer; transition: 0.2s; }
-        .sub-pill.active { background: var(--primary-color) !important; color: white !important; border-color: var(--primary-color) !important; }
+        .sub-pill.active { background: var(--primary-color) !important; color: white !important; }
         .gw-indicator { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; }
         .connected { background: #10b981; box-shadow: 0 0 8px #10b981; }
         .disconnected { background: #f43f5e; box-shadow: 0 0 8px #f43f5e; animation: pulse-err 1s infinite; }
@@ -99,12 +98,12 @@
                     <input type="text" id="regName" placeholder="பெயர்" class="w-full p-5 bg-slate-50 rounded-2xl mb-4 outline-none font-bold text-center shadow-inner">
                     <input type="email" id="regEmail" placeholder="மின்னஞ்சல்" class="w-full p-5 bg-slate-50 rounded-2xl mb-4 outline-none font-bold text-center shadow-inner">
                     <input type="password" id="regPass" placeholder="கடவுச்சொல்" class="w-full p-5 bg-slate-50 rounded-2xl mb-6 outline-none font-bold text-center shadow-inner">
-                    <button onclick="registerAccount()" id="btn-reg" class="w-full theme-primary text-white py-5 rounded-2xl font-black uppercase shadow-lg theme-btn">பதிவு செய்</button>
+                    <button onclick="registerAccount()" id="btn-reg" class="w-full py-5 rounded-2xl font-black uppercase shadow-lg theme-btn">பதிவு செய்</button>
                     <button onclick="toggleAuth('login')" class="mt-8 text-[10px] font-bold text-slate-400 uppercase underline block mx-auto">லாகின் செய்ய</button>
                 </div>
             </div>
         </div>
-        <div class="p-6 bg-white border-t">
+        <div class="p-6 bg-white border-t shadow-inner">
             <div class="flex items-center justify-between mb-2 px-1">
                 <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Gateway Setup</span>
                 <span id="gw-status-text" class="text-[8px] font-bold uppercase text-rose-500"><span id="gw-dot" class="gw-indicator disconnected"></span>இணைக்கப்படவில்லை</span>
@@ -173,7 +172,7 @@
                         <button onclick="changeYear(1)" class="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 text-[10px]"><i class="fa-solid fa-angles-right"></i></button>
                     </div>
                 </div>
-                <div id="calGrid" class="grid grid-cols-7 gap-2"></div>
+                <div id="calGrid" class="grid grid-cols-7 gap-2 transition-opacity"></div>
             </div>
 
             <div id="loanList" class="space-y-4">
@@ -189,7 +188,6 @@
 
         <footer class="fixed bottom-0 left-0 right-0 border-t p-8 rounded-t-[3.5rem] flex justify-between items-center shadow-2xl z-[100] bg-white transition-all">
             <i class="fa-solid fa-house text-2xl text-indigo-500"></i>
-            <!-- (+) Button to Open Transaction Modal -->
             <div onclick="showAddModal()" id="btn-main-add" class="w-16 h-16 theme-primary text-white rounded-3xl -mt-16 border-8 border-white flex items-center justify-center shadow-xl cursor-pointer active:scale-90 transition-transform"><i class="fa-solid fa-plus text-2xl"></i></div>
             <div class="flex gap-6">
                 <i class="fa-solid fa-palette text-2xl text-slate-300 cursor-pointer hover:text-indigo-500" onclick="showThemeModal()"></i>
@@ -239,7 +237,7 @@
         </div>
     </div>
 
-    <!-- Theme Modal -->
+    <!-- Additional Modals -->
     <div id="themeModal" class="modal-overlay">
         <div class="bg-white w-full max-w-sm p-10 rounded-[4rem] shadow-2xl overflow-y-auto max-h-[90vh] hide-scrollbar">
             <h3 class="text-xl font-black mb-8 italic text-center">தீம் அமைப்புகள்</h3>
@@ -260,20 +258,6 @@
         </div>
     </div>
 
-    <!-- Profile Modal -->
-    <div id="profileModal" class="modal-overlay">
-        <div class="bg-white w-full max-w-sm p-10 rounded-[4rem] shadow-2xl text-center">
-            <div class="relative inline-block mb-6">
-                <img id="profImg" src="" class="w-24 h-24 rounded-[2rem] object-cover border-4 border-slate-50 shadow-md">
-                <label for="pUpload" class="absolute -bottom-1 -right-1 w-8 h-8 theme-primary text-white rounded-xl border-4 border-white flex items-center justify-center cursor-pointer shadow-sm"><i class="fa-solid fa-camera text-[10px]"></i><input type="file" id="pUpload" class="hidden" onchange="handlePhoto(event)"></label>
-            </div>
-            <input type="text" id="profNameInp" class="w-full p-5 bg-slate-50 rounded-2xl mb-4 font-bold text-center shadow-inner outline-none">
-            <input type="password" id="profPassInp" class="w-full p-5 bg-slate-50 rounded-2xl mb-6 font-bold text-center shadow-inner outline-none" placeholder="புதிய கடவுச்சொல்">
-            <button onclick="saveProfile()" id="btn-save-prof" class="w-full theme-primary text-white py-5 rounded-2xl font-black uppercase shadow-lg theme-btn">மாற்றங்களைச் சேமி</button>
-            <button onclick="closeModals()" class="w-full py-2 mt-4 text-[10px] font-bold text-slate-300 uppercase underline block mx-auto">மூடுக</button>
-        </div>
-    </div>
-
     <div id="emiModal" class="modal-overlay">
         <div class="bg-white w-full max-w-sm p-10 rounded-[4rem] shadow-2xl">
             <h3 class="text-xl font-black mb-8 italic text-center">EMI திருத்த</h3>
@@ -284,6 +268,19 @@
                 <button onclick="updateEMI()" id="btn-save-emi" class="w-full theme-primary text-white py-5 rounded-2xl font-black uppercase tracking-widest shadow-lg theme-btn">சேமி</button>
                 <button onclick="closeModals()" class="w-full py-2 text-[10px] font-bold text-slate-300 uppercase underline block mx-auto">ரத்து</button>
             </div>
+        </div>
+    </div>
+
+    <div id="profileModal" class="modal-overlay">
+        <div class="bg-white w-full max-w-sm p-10 rounded-[4rem] shadow-2xl text-center">
+            <div class="relative inline-block mb-6">
+                <img id="profImg" src="" class="w-24 h-24 rounded-[2rem] object-cover border-4 border-slate-50 shadow-md">
+                <label for="pUpload" class="absolute -bottom-1 -right-1 w-8 h-8 theme-primary text-white rounded-xl border-4 border-white flex items-center justify-center cursor-pointer shadow-sm"><i class="fa-solid fa-camera text-[10px]"></i><input type="file" id="pUpload" class="hidden" onchange="handlePhoto(event)"></label>
+            </div>
+            <input type="text" id="profNameInp" class="w-full p-5 bg-slate-50 rounded-2xl mb-4 font-bold text-center shadow-inner outline-none">
+            <input type="password" id="profPassInp" class="w-full p-5 bg-slate-50 rounded-2xl mb-6 font-bold text-center shadow-inner outline-none" placeholder="புதிய கடவுச்சொல்">
+            <button onclick="saveProfile()" id="btn-save-prof" class="w-full theme-primary text-white py-5 rounded-2xl font-black uppercase shadow-lg theme-btn">மாற்றங்களைச் சேமி</button>
+            <button onclick="closeModals()" class="w-full py-2 mt-4 text-[10px] font-bold text-slate-300 uppercase underline block mx-auto">மூடுக</button>
         </div>
     </div>
 
@@ -313,7 +310,7 @@
                 updateGatewayStatusUI(true);
                 const saved = localStorage.getItem('kk_session');
                 if(saved && saved !== "undefined" && saved !== "null") {
-                    try { session = JSON.parse(saved); } catch(e) { console.error("Session Error"); }
+                    try { session = JSON.parse(saved); } catch(e) { console.error("Session parse error"); }
                 }
             }
         };
@@ -325,6 +322,8 @@
                 if(p >= 95) { p = 95; clearInterval(progressInterval); }
                 if(fill) fill.style.width = p + '%';
                 if(txt) txt.innerText = `தயார் செய்யப்படுகிறது... ${p}%`;
+                
+                // If session exists, try to enter dashboard at 80%
                 if(session && session.sheetId && p >= 80) {
                     clearInterval(progressInterval);
                     enterDashboard();
@@ -443,7 +442,7 @@
             });
         }
 
-        // --- RENDERING HELPERS ---
+        // --- RENDERERS ---
         function renderCalendar(data) {
             const grid = document.getElementById('calGrid'); if(!grid) return; grid.innerHTML = "";
             const names = ["ஜன", "பிப்", "மார்", "ஏப்", "மே", "ஜூன்", "ஜூலை", "ஆக", "செப்", "அக்", "நவ", "டிச"];
@@ -539,12 +538,12 @@
 
         function handleLogoutToggle() { autoLogoutEnabled = document.getElementById('autoLogoutToggle').checked; document.getElementById('autoLogoutTimerDisplay').innerText = autoLogoutEnabled ? "10m ON" : "OFF"; if(session) { session.autoLogout = String(autoLogoutEnabled); localStorage.setItem('kk_session', JSON.stringify(session)); call({ action: 'updateConfig', key: 'AUTO_LOGOUT', value: String(autoLogoutEnabled), sheetId: session.sheetId }); } }
 
-        // --- ACTION LOGICS ---
+        // --- ACTIONS ---
         function showAddModal() { currentMasterCat = ''; document.getElementById('transModal').style.display = 'flex'; renderMasterCategories(); }
         function saveTransaction() {
             const a = document.getElementById('transAmt').value, c = document.getElementById('transCat').value, n = document.getElementById('transNote').value;
             if(!a || !c) return alert("தேவை!");
-            call({ action: 'addTransaction', amount: a, category: c, note: n, type: transType, sheetId: session.sheetId }, () => { closeModals(); loadData(); });
+            call({ action: 'addTransaction', amount: a, category: c, note: n, type: transType, sheetId: session.sheetId }, (res) => { if(res && res.status === "Success") { closeModals(); loadData(); } });
         }
         function updateEMI() { const n = document.getElementById('emiName').value, a = document.getElementById('emiAmt').value, d = document.getElementById('emiDate').value; call({ action: 'updateLoan', loanName: n, amount: a, dueDate: d, sheetId: session.sheetId }, () => { closeModals(); loadData(); }); }
         function saveProfile() { const n = document.getElementById('profNameInp').value, p = document.getElementById('profPassInp').value; call({ action: 'updateProfile', sheetId: session.sheetId, newName: n, newPass: p, photoData: session.photo }, () => { if(n) session.name = n; updateAvatarUI(); closeModals(); }); }
@@ -563,15 +562,15 @@
         }
         function applyThemePreview() { const th = { primary: document.getElementById('themePrimaryInp').value, topbar: document.getElementById('themeTopInp').value, bottombar: document.getElementById('themeBottomInp').value, text: document.getElementById('themeTextInp').value, radius: document.getElementById('themeRadiusInp').value, textSize: document.getElementById('themeSizeInp').value }; applyTheme(th); }
         function saveThemeToCloud() { const th = { primary: document.getElementById('themePrimaryInp').value, topbar: document.getElementById('themeTopInp').value, bottombar: document.getElementById('themeBottomInp').value, text: document.getElementById('themeTextInp').value, radius: document.getElementById('themeRadiusInp').value, textSize: document.getElementById('themeSizeInp').value }; call({ action: 'updateTheme', themeData: JSON.stringify(th), sheetId: session.sheetId }, () => { session.theme = th; localStorage.setItem('kk_session', JSON.stringify(session)); closeModals(); }); }
-        
+        function saveNewCategoryLogic() { const val = document.getElementById('newCatInput').value; if(!val) return; const m = catAddMode === 'master' ? val : currentMasterCat, s = catAddMode === 'sub' ? val : ""; call({ action: 'addNewCategory', masterCat: m, subCat: s, sheetId: session.sheetId }, () => { if(catAddMode === 'master') masterSubCategories[val] = []; else masterSubCategories[currentMasterCat].push(val); document.getElementById('newCatInput').value = ""; document.getElementById('categoryModal').style.display = 'none'; renderMasterCategories(); }); }
+
         // --- HELPERS ---
         function toggleBtn(id, l) { const b = document.getElementById(id); if(!b) return; b.disabled = l; b.innerHTML = l ? '<div class="spinner w-4 h-4 border-2 border-white"></div>' : (b.dataset.label || b.innerText); if(l) b.dataset.label = b.innerText; }
         function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display='none'); }
         function showAddMasterCat() { catAddMode = 'master'; document.getElementById('catModalTitle').innerText = "புதிய முதன்மை வகை"; document.getElementById('categoryModal').style.display = 'flex'; }
         function showAddSubCat() { if(!currentMasterCat) return alert("வகை தேர்ந்தெடு!"); catAddMode = 'sub'; document.getElementById('catModalTitle').innerText = "துணை வகை: " + currentMasterCat; document.getElementById('categoryModal').style.display = 'flex'; }
-        function saveNewCategoryLogic() { const val = document.getElementById('newCatInput').value; if(!val) return; const m = catAddMode === 'master' ? val : currentMasterCat, s = catAddMode === 'sub' ? val : ""; call({ action: 'addNewCategory', masterCat: m, subCat: s, sheetId: session.sheetId }, () => { if(catAddMode === 'master') masterSubCategories[val] = []; else masterSubCategories[currentMasterCat].push(val); document.getElementById('newCatInput').value = ""; document.getElementById('categoryModal').style.display = 'none'; renderMasterCategories(); }); }
         function setTransType(t) { transType = t; setT(t); }
-        function setT(t) { document.getElementById('tE').className = t==='Expense'?'flex-1 py-3 rounded-xl font-bold text-[10px] bg-white text-rose-500 shadow-sm uppercase':'flex-1 py-3 rounded-xl font-bold text-[10px] text-slate-400 uppercase'; document.getElementById('tI').className = t==='Income'?'flex-1 py-3 rounded-xl font-bold text-[10px] bg-white text-emerald-500 shadow-sm uppercase':'flex-1 py-3 rounded-xl font-bold text-[10px] text-slate-400 uppercase'; document.getElementById('tS').className = t==='Savings'?'flex-1 py-3 rounded-xl font-bold text-[10px] bg-white text-indigo-500 shadow-sm uppercase':'flex-1 py-3 rounded-xl font-bold text-[10px] text-slate-400 uppercase'; }
+        function setT(t) { document.getElementById('typeExp').className = t==='Expense'?'flex-1 py-4 rounded-2xl font-black text-[11px] bg-white text-rose-500 shadow-sm uppercase tracking-widest transition-all':'flex-1 py-4 rounded-2xl font-black text-[11px] text-slate-400 uppercase tracking-widest transition-all'; document.getElementById('typeInc').className = t==='Income'?'flex-1 py-4 rounded-2xl font-black text-[11px] bg-white text-emerald-500 shadow-sm uppercase tracking-widest transition-all':'flex-1 py-4 rounded-2xl font-black text-[11px] text-slate-400 uppercase tracking-widest transition-all'; document.getElementById('typeSav').className = t==='Savings'?'flex-1 py-4 rounded-2xl font-black text-[11px] bg-white text-indigo-500 shadow-sm uppercase tracking-widest transition-all':'flex-1 py-4 rounded-2xl font-black text-[11px] text-slate-400 uppercase tracking-widest transition-all'; }
         function updateLiveTime() { const n = new Date(); if(document.getElementById('liveClock')) document.getElementById('liveClock').innerText = n.toLocaleTimeString('ta-IN'); }
         function changeMonth(o) { if(document.getElementById('calLoader')) document.getElementById('calLoader').classList.remove('hidden'); calMonth += o; if(calMonth>11){calMonth=0;calYear++;} if(calMonth<0){calMonth=11;calYear--;} loadData(); }
         function changeYear(o) { if(document.getElementById('calLoader')) document.getElementById('calLoader').classList.remove('hidden'); calYear += o; loadData(); }
