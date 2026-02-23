@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>காசு-கந்து PRO v9.7.8</title>
+    <title>காசு-கந்து PRO v9.8.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style id="dynamic-theme">
@@ -14,7 +14,7 @@
             --card-radius: 28px; --btn-radius: 14px; --text-base-size: 14px;
             --font-main: 'Plus Jakarta Sans', sans-serif;
         }
-        body { font-family: var(--font-main); background-color: var(--bg-color); color: var(--text-color); font-size: var(--text-base-size); transition: all 0.3s ease; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+        body { font-family: var(--font-main); background-color: var(--bg-color); color: var(--text-color); font-size: var(--text-base-size); transition: all 0.3s; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
         .theme-primary { background: linear-gradient(135deg, var(--primary-color) 0%, #4f46e5 100%); }
         .theme-topbar { background-color: var(--topbar-color); }
         .theme-bottombar { background-color: var(--bottombar-color); }
@@ -35,36 +35,40 @@
         .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: #10b981; }
         input:checked + .slider:before { transform: translateX(14px); }
-        .otp-box { width: 42px; height: 52px; border-radius: 10px; background: #f8fafc; border: 2px solid #e2e8f0; text-align: center; font-size: 20px; font-weight: 800; outline: none; transition: 0.2s; }
-        .otp-box:focus { border-color: var(--primary-color); background: white; box-shadow: 0 0 10px rgba(99,102,241,0.1); }
+        .otp-box { width: 42px; height: 52px; border-radius: 10px; background: #f8fafc; border: 2px solid #e2e8f0; text-align: center; font-size: 20px; font-weight: 800; outline: none; }
         .sub-pill { padding: 8px 16px; border-radius: 12px; font-size: 10px; font-weight: 700; background: #f8fafc; border: 1px solid #f1f5f9; cursor: pointer; }
-        .sub-pill.active { background: var(--primary-color) !important; color: white !important; border-color: var(--primary-color) !important; }
+        .sub-pill.active { background: var(--primary-color) !important; color: white !important; }
         .gw-indicator { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; }
         .connected { background: #10b981; box-shadow: 0 0 8px #10b981; }
         .disconnected { background: #f43f5e; box-shadow: 0 0 8px #f43f5e; animation: pulse-err 1s infinite; }
-        .theme-btn { border-radius: var(--btn-radius); font-weight: 800; transition: 0.2s; background-color: var(--primary-color); color: white; }
+        .theme-btn { border-radius: var(--btn-radius); font-weight: 800; transition: 0.2s; background-color: var(--primary-color); color: white; display: flex; align-items: center; justify-content: center; }
         .theme-btn:active { transform: scale(0.96); }
+        
         .spinner { border: 3px solid rgba(0,0,0,0.05); border-radius: 50%; border-top: 3px solid var(--primary-color); width: 24px; height: 24px; animation: spin 0.8s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        #globalLoader { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.7); backdrop-filter: blur(4px); z-index: 6000; align-items: center; justify-content: center; flex-direction: column; }
+        #globalLoader { display: none; position: fixed; inset: 0; background: rgba(255,255,255,0.8); backdrop-filter: blur(5px); z-index: 6000; align-items: center; justify-content: center; flex-direction: column; }
     </style>
 </head>
 <body class="antialiased hide-scrollbar" onclick="resetInactivityTimer()" onkeypress="resetInactivityTimer()">
 
+    <!-- Global Progress UI -->
     <div id="globalLoader">
         <div class="spinner w-12 h-12 border-[5px] border-t-indigo-500"></div>
         <p class="mt-4 text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em]">தரவுகள் புதுப்பிக்கப்படுகின்றன...</p>
     </div>
 
+    <!-- Splash Screen -->
     <div id="splash">
         <h1 class="text-4xl font-black italic" style="color:var(--primary-color)">காசு-கந்து</h1>
         <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
         <p id="progress-text" class="mt-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">தயார் செய்யப்படுகிறது... 0%</p>
     </div>
 
+    <!-- Init View -->
     <div id="init-view" class="h-screen flex flex-col bg-slate-50 overflow-y-auto">
         <div class="flex-1 flex items-center justify-center p-6">
             <div id="auth-panel" class="w-full max-w-sm bg-white p-10 rounded-[3rem] shadow-xl text-center">
+                
                 <div id="auth-login" class="screen active">
                     <h2 class="text-3xl font-black mb-10 italic">உள்நுழைக</h2>
                     <input type="email" id="loginEmail" placeholder="மின்னஞ்சல்" class="w-full p-5 bg-slate-50 rounded-2xl mb-4 outline-none font-bold text-center">
@@ -80,7 +84,7 @@
                 </div>
 
                 <div id="auth-otp" class="screen">
-                    <h2 class="text-2xl font-black mb-2 italic text-center">சரிபார்ப்பு</h2>
+                    <h2 class="text-2xl font-black mb-2 italic">சரிபார்ப்பு</h2>
                     <div class="flex justify-between gap-1 mb-8">
                         <input type="text" maxlength="1" onpaste="handleOtpPaste(event)" onkeyup="moveNextOTP(this, event)" class="otp-box">
                         <input type="text" maxlength="1" onkeyup="moveNextOTP(this, event)" class="otp-box">
@@ -89,24 +93,24 @@
                         <input type="text" maxlength="1" onkeyup="moveNextOTP(this, event)" class="otp-box">
                         <input type="text" maxlength="1" onkeyup="moveNextOTP(this, event)" class="otp-box">
                     </div>
-                    <p id="otpTimer" class="text-[10px] font-black text-rose-500 mb-6 uppercase text-center">நேரம்: 60s</p>
-                    <button onclick="verifyOTP()" id="btn-verify" class="w-full py-5 rounded-2xl font-black uppercase shadow-lg theme-btn">உறுதி செய்க</button>
+                    <p id="otpTimer" class="text-[10px] font-black text-rose-500 mb-6 uppercase">நேரம்: 60s</p>
+                    <button onclick="verifyOTP()" id="btn-verify" class="w-full py-5 rounded-2xl font-black uppercase tracking-widest shadow-lg theme-btn">உறுதி செய்க</button>
                     <button onclick="toggleAuth('login')" class="mt-6 text-[10px] font-bold text-slate-300 uppercase underline block mx-auto">திரும்பச் செல்</button>
                 </div>
 
                 <div id="auth-register" class="screen">
-                    <h2 class="text-3xl font-black mb-8 italic text-center">பதிவு செய்க</h2>
+                    <h2 class="text-3xl font-black mb-8 italic">பதிவு செய்க</h2>
                     <input type="text" id="regName" placeholder="பெயர்" class="w-full p-5 bg-slate-50 rounded-2xl mb-4 outline-none font-bold text-center">
                     <input type="email" id="regEmail" placeholder="மின்னஞ்சல்" class="w-full p-5 bg-slate-50 rounded-2xl mb-4 outline-none font-bold text-center">
                     <input type="password" id="regPass" placeholder="கடவுச்சொல்" class="w-full p-5 bg-slate-50 rounded-2xl mb-6 outline-none font-bold text-center">
-                    <button onclick="registerAccount()" id="btn-reg" class="w-full py-5 rounded-2xl font-black uppercase shadow-lg theme-btn">பதிவு செய்</button>
+                    <button onclick="registerAccount()" id="btn-reg" class="w-full theme-primary text-white py-5 rounded-2xl font-black uppercase shadow-lg theme-btn">பதிவு செய்</button>
                     <button onclick="toggleAuth('login')" class="mt-8 text-[10px] font-bold text-slate-400 uppercase underline block mx-auto">லாகின் செய்ய</button>
                 </div>
             </div>
         </div>
         <div class="p-6 bg-white border-t">
-            <div class="flex items-center justify-between mb-2 px-1">
-                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Gateway Setup</span>
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-[9px] font-black text-slate-400 uppercase">Gateway Setup</span>
                 <span id="gw-status-text" class="text-[8px] font-bold uppercase text-rose-500"><span id="gw-dot" class="gw-indicator disconnected"></span>இணைக்கப்படவில்லை</span>
             </div>
             <input type="text" id="gUrlInput" placeholder="Gateway URL..." class="w-full p-4 text-[10px] border-none rounded-xl bg-slate-100 mb-2 outline-none shadow-inner">
@@ -142,6 +146,7 @@
         </header>
 
         <main class="p-5 space-y-6 max-w-md mx-auto">
+            <!-- Rate Card -->
             <div class="theme-card p-6 border-none">
                 <div class="grid grid-cols-3 gap-2 text-center">
                     <div><p class="text-[8px] font-black text-slate-400 uppercase mb-2">22K தங்கம்</p><p class="text-sm font-black text-emerald-600">₹<span id="rate22k">0</span></p></div>
@@ -156,13 +161,13 @@
 
             <div onclick="showSalaryModal()" class="theme-primary p-10 rounded-[3.5rem] text-white shadow-2xl relative cursor-pointer active:scale-[0.98] transition-all overflow-hidden text-center">
                 <p class="text-[10px] font-black uppercase opacity-70 tracking-widest leading-none">சம்பளம்</p>
-                <h2 id="dispSalary" class="text-5xl font-black my-2 tracking-tighter">₹0</h2>
+                <h2 id="dispSalary" class="text-5xl font-black my-2 tracking-tighter leading-tight">₹0</h2>
                 <div id="deficitTag" class="mt-8 inline-block px-5 py-2 text-[9px] font-black rounded-full uppercase bg-white/20">...</div>
             </div>
 
             <div class="theme-card p-6 relative" id="calendarCard">
                 <div id="calLoader" class="hidden absolute inset-0 bg-white/60 z-10 flex items-center justify-center rounded-[30px] backdrop-blur-sm"><div class="spinner"></div></div>
-                <div class="flex justify-between items-center mb-6 px-1">
+                <div class="flex justify-between items-center mb-6">
                     <div class="flex gap-1">
                         <button onclick="changeYear(-1)" class="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 text-[10px]"><i class="fa-solid fa-angles-left"></i></button>
                         <button onclick="changeMonth(-1)" class="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 text-[10px]"><i class="fa-solid fa-chevron-left"></i></button>
@@ -182,12 +187,12 @@
             </div>
 
             <div id="transSection" class="space-y-4 pb-12">
-                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 italic">சமீபத்திய வரவு செலவு</h3>
+                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 italic">வரவு செலவு பட்டியல்</h3>
                 <div id="transList" class="space-y-3"></div>
             </div>
         </main>
 
-        <footer class="fixed bottom-0 left-0 right-0 border-t p-8 rounded-t-[3.5rem] flex justify-between items-center shadow-2xl z-[100] bg-white">
+        <footer class="theme-bottombar fixed bottom-0 left-0 right-0 border-t p-8 rounded-t-[3.5rem] flex justify-between items-center shadow-2xl z-[100] transition-colors">
             <i class="fa-solid fa-house text-2xl text-indigo-500"></i>
             <div onclick="showAddModal()" class="w-16 h-16 theme-primary text-white rounded-3xl -mt-16 border-8 border-white flex items-center justify-center shadow-xl cursor-pointer active:scale-90 transition-transform"><i class="fa-solid fa-plus text-2xl"></i></div>
             <div class="flex gap-6">
@@ -197,7 +202,7 @@
         </footer>
     </div>
 
-    <!-- Modals -->
+    <!-- New Entry Modal -->
     <div id="transModal" class="modal-overlay">
         <div class="bg-white w-full max-w-md p-10 rounded-[4.5rem] shadow-2xl max-h-[95vh] overflow-y-auto hide-scrollbar">
             <h3 class="text-2xl font-black italic text-center mb-8 tracking-tighter" style="color:var(--primary-color)">புதிய பதிவு</h3>
@@ -223,12 +228,12 @@
                     <input type="text" id="transCat" placeholder="தேர்வு அல்லது தட்டச்சு செய்க" class="w-full p-5 bg-slate-50 rounded-2xl outline-none text-sm font-bold border-2 border-transparent focus:border-indigo-400 transition-all shadow-inner">
                 </div>
                 <div class="space-y-3">
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2">இந்த பரிவர்த்தனை பற்றி...</p>
-                    <textarea id="transNote" placeholder="குறிப்பு ஏதேனும் இருப்பின்..." class="w-full p-5 bg-slate-50 rounded-2xl outline-none text-sm font-bold border-2 border-transparent focus:border-indigo-400 transition-all shadow-inner h-24 resize-none"></textarea>
+                    <p class="text-[10px] font-black text-slate-400 uppercase px-2 tracking-widest">இந்த பரிவர்த்தனை பற்றி...</p>
+                    <textarea id="transNote" placeholder="குறிப்பு ஏதேனும் இருப்பின்..." class="w-full p-5 bg-slate-50 rounded-2xl outline-none text-sm font-bold shadow-inner h-24 resize-none"></textarea>
                 </div>
             </div>
-            <div class="space-y-6 mb-10">
-                <div class="relative text-center">
+            <div class="space-y-6 mb-10 text-center">
+                <div class="relative">
                     <span class="absolute left-6 top-1/2 -translate-y-1/2 font-black theme-icon text-2xl tracking-tighter">₹</span>
                     <input type="number" id="transAmt" placeholder="0.00" class="w-full p-8 pl-14 bg-slate-50 rounded-3xl outline-none text-4xl font-black tracking-tighter shadow-inner text-center">
                 </div>
@@ -244,17 +249,31 @@
             <h3 class="text-xl font-black mb-8 italic text-center">தீம் அமைப்புகள்</h3>
             <div class="space-y-6 text-left">
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="flex flex-col gap-2"><label class="text-[9px] font-bold text-slate-400 uppercase">Primary</label><input type="color" id="themePrimaryInp" oninput="applyThemePreview()" class="w-full h-10 rounded-xl cursor-pointer shadow-sm"></div>
-                    <div class="flex flex-col gap-2"><label class="text-[9px] font-bold text-slate-400 uppercase">Top Bar</label><input type="color" id="themeTopInp" oninput="applyThemePreview()" class="w-full h-10 rounded-xl cursor-pointer shadow-sm"></div>
-                    <div class="flex flex-col gap-2"><label class="text-[9px] font-bold text-slate-400 uppercase">Bottom Bar</label><input type="color" id="themeBottomInp" oninput="applyThemePreview()" class="w-full h-10 rounded-xl cursor-pointer shadow-sm"></div>
-                    <div class="flex flex-col gap-2"><label class="text-[9px] font-bold text-slate-400 uppercase">Text Color</label><input type="color" id="themeTextInp" oninput="applyThemePreview()" class="w-full h-10 rounded-xl cursor-pointer shadow-sm"></div>
+                    <div class="flex flex-col gap-2"><label class="text-[9px] font-bold text-slate-400 uppercase">Primary Color</label><input type="color" id="themePrimaryInp" oninput="applyThemePreview()" class="w-full h-10 rounded-xl cursor-pointer"></div>
+                    <div class="flex flex-col gap-2"><label class="text-[9px] font-bold text-slate-400 uppercase">Top Bar</label><input type="color" id="themeTopInp" oninput="applyThemePreview()" class="w-full h-10 rounded-xl cursor-pointer"></div>
+                    <div class="flex flex-col gap-2"><label class="text-[9px] font-bold text-slate-400 uppercase">Bottom Bar</label><input type="color" id="themeBottomInp" oninput="applyThemePreview()" class="w-full h-10 rounded-xl cursor-pointer"></div>
+                    <div class="flex flex-col gap-2"><label class="text-[9px] font-bold text-slate-400 uppercase">Font Color</label><input type="color" id="themeTextInp" oninput="applyThemePreview()" class="w-full h-10 rounded-xl cursor-pointer"></div>
                 </div>
                 <div class="space-y-4">
-                    <div class="flex flex-col gap-2"><label class="text-[9px] font-bold text-slate-400 uppercase flex justify-between">Radius <span id="radVal">28px</span></label><input type="range" id="themeRadiusInp" min="0" max="60" oninput="applyThemePreview()" class="w-full accent-indigo-500"></div>
-                    <div class="flex flex-col gap-2"><label class="text-[9px] font-bold text-slate-400 uppercase flex justify-between">Text Size <span id="sizeVal">14px</span></label><input type="range" id="themeSizeInp" min="10" max="22" oninput="applyThemePreview()" class="w-full accent-indigo-500"></div>
+                    <div class="flex flex-col gap-2"><label class="text-[9px] font-bold text-slate-400 uppercase flex justify-between">Corners <span id="radVal">28px</span></label><input type="range" id="themeRadiusInp" min="0" max="60" oninput="applyThemePreview()" class="w-full accent-indigo-500"></div>
+                    <div class="flex flex-col gap-2"><label class="text-[9px] font-bold text-slate-400 uppercase flex justify-between">Font Size <span id="sizeVal">14px</span></label><input type="range" id="themeSizeInp" min="10" max="22" oninput="applyThemePreview()" class="w-full accent-indigo-500"></div>
                 </div>
                 <button onclick="saveThemeToCloud()" id="btn-theme-save" class="w-full theme-btn py-5 rounded-2xl font-black uppercase shadow-lg">விருப்பத்தைச் சேமி</button>
                 <button onclick="closeModals()" class="w-full py-2 text-[10px] font-bold text-slate-300 uppercase underline block mx-auto mt-2">மூடுக</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EMI Modal -->
+    <div id="emiModal" class="modal-overlay">
+        <div class="bg-white w-full max-w-sm p-10 rounded-[4rem] shadow-2xl">
+            <h3 class="text-xl font-black mb-8 italic text-center">EMI திருத்த</h3>
+            <div class="space-y-6">
+                <input type="text" id="emiName" readonly class="w-full p-4 bg-slate-50 rounded-xl font-bold text-slate-400 text-center shadow-inner">
+                <input type="number" id="emiAmt" placeholder="தொகை ₹" class="w-full p-5 bg-slate-50 rounded-2xl text-3xl font-black text-center shadow-inner outline-none">
+                <input type="number" id="emiDate" placeholder="தேதி (1-31)" min="1" max="31" class="w-full p-5 bg-slate-50 rounded-2xl font-bold text-center shadow-inner outline-none">
+                <button onclick="updateEMI()" id="btn-save-emi" class="w-full theme-primary text-white py-5 rounded-2xl font-black uppercase shadow-lg theme-btn">சேமி</button>
+                <button onclick="closeModals()" class="w-full py-2 text-[10px] font-bold text-slate-300 uppercase underline block mx-auto">ரத்து</button>
             </div>
         </div>
     </div>
@@ -273,19 +292,7 @@
         </div>
     </div>
 
-    <div id="emiModal" class="modal-overlay">
-        <div class="bg-white w-full max-w-sm p-10 rounded-[4rem] shadow-2xl">
-            <h3 class="text-xl font-black mb-8 italic text-center">EMI திருத்த</h3>
-            <div class="space-y-6">
-                <input type="text" id="emiName" readonly class="w-full p-4 bg-slate-50 rounded-xl font-bold text-slate-400 text-center shadow-inner">
-                <input type="number" id="emiAmt" placeholder="தொகை ₹" class="w-full p-5 bg-slate-50 rounded-2xl text-3xl font-black text-center shadow-inner outline-none">
-                <input type="number" id="emiDate" placeholder="தேதி (1-31)" min="1" max="31" class="w-full p-5 bg-slate-50 rounded-2xl font-bold text-center shadow-inner outline-none">
-                <button onclick="updateEMI()" id="btn-save-emi" class="w-full theme-primary text-white py-5 rounded-2xl font-black uppercase tracking-widest shadow-lg theme-btn">சேமி</button>
-                <button onclick="closeModals()" class="w-full py-2 text-[10px] font-bold text-slate-300 uppercase underline block mx-auto">ரத்து</button>
-            </div>
-        </div>
-    </div>
-
+    <!-- Category Modal -->
     <div id="categoryModal" class="modal-overlay">
         <div class="bg-white w-full max-w-sm p-10 rounded-[3rem] shadow-2xl">
             <h3 id="catModalTitle" class="text-xl font-black mb-6 italic text-center">புதிய வகை</h3>
@@ -314,7 +321,7 @@
                 if(saved && saved !== "undefined" && saved !== "null") {
                     try {
                         session = JSON.parse(saved);
-                    } catch(e) { console.error("Session parse error"); }
+                    } catch(e) { console.error("Session Error"); }
                 }
             }
         };
@@ -351,8 +358,8 @@
 
         async function call(p, cb) {
             if(!G_URL) return;
-            const skipGlobal = ['ping', 'updateConfig'];
-            if(!skipGlobal.includes(p.action)) toggleGlobalLoader(true);
+            const skipLoader = ['ping', 'updateConfig'];
+            if(!skipLoader.includes(p.action)) toggleGlobalLoader(true);
             
             const POST_ACTIONS = ['updateProfile', 'register', 'updateLoan', 'updateConfig', 'updateSalary', 'updateTheme', 'addTransaction', 'updateEMIStatus', 'addNewCategory'];
             if(POST_ACTIONS.includes(p.action)) {
@@ -368,8 +375,7 @@
             window[n] = (res) => { 
                 toggleGlobalLoader(false);
                 if(cb) cb(res); 
-                delete window[n]; 
-                const s = document.getElementById(n); if(s) s.remove(); 
+                delete window[n]; const s = document.getElementById(n); if(s) s.remove(); 
             };
             const s = document.createElement('script'); s.id = n;
             s.src = `${G_URL}${G_URL.includes('?')?'&':'?'}callback=${n}&${new URLSearchParams(p).toString()}`;
@@ -377,27 +383,80 @@
             document.body.appendChild(s);
         }
 
-        // --- Auth Section ---
+        // --- Core UI Functions ---
+        function updateAvatarUI() {
+            if(!session) return;
+            const theme = session.theme || {};
+            const primary = (theme.primary || "#6366f1").replace('#','');
+            const url = session.photo || `https://ui-avatars.com/api/?name=${session.name || 'U'}&background=${primary}&color=fff`;
+            document.getElementById('userAvatar').src = url;
+            document.getElementById('profImg').src = url;
+            document.getElementById('userNameUI').innerText = session.name || "பயனர்";
+            document.getElementById('profNameInp').value = session.name || "";
+            document.getElementById('autoLogoutToggle').checked = session.autoLogout === "true";
+            autoLogoutEnabled = session.autoLogout === "true";
+            document.getElementById('autoLogoutTimerDisplay').innerText = autoLogoutEnabled ? "10m ON" : "OFF";
+        }
+
+        function checkGatewayConnectivity() {
+            if(!G_URL) return;
+            call({ action: 'ping' }, (res) => {
+                const status = res && res.status === "Success";
+                updateGatewayStatusUI(status);
+                if(!status && document.getElementById('dashboard').style.display === 'block') logout();
+            });
+        }
+
+        function updateGatewayStatusUI(isConnected) {
+            const dot = document.getElementById('gw-dot'); const txt = document.getElementById('gw-status-text');
+            if(isConnected) {
+                if(dot) dot.className = "gw-indicator connected";
+                if(txt) { txt.innerText = "இணைக்கப்பட்டது"; txt.className = "text-[8px] font-bold uppercase text-emerald-500"; }
+            } else {
+                if(dot) dot.className = "gw-indicator disconnected";
+                if(txt) { txt.innerText = "இணைக்கப்படவில்லை"; txt.className = "text-[8px] font-bold uppercase text-rose-500"; }
+            }
+        }
+
+        function resetInactivityTimer() { lastActivity = Date.now(); }
+        function checkInactivity() {
+            if(!autoLogoutEnabled || !session) { const el = document.getElementById('logoutCountdown'); if(el) el.innerText = "--:--"; return; }
+            const diff = (Date.now() - lastActivity);
+            const remaining = Math.max(0, (10 * 60 * 1000) - diff);
+            const mins = Math.floor(remaining / 60000), secs = Math.floor((remaining % 60000) / 1000);
+            if(document.getElementById('logoutCountdown')) document.getElementById('logoutCountdown').innerText = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+            if(remaining <= 0) logout();
+        }
+
+        function handleLogoutToggle() {
+            autoLogoutEnabled = document.getElementById('autoLogoutToggle').checked;
+            document.getElementById('autoLogoutTimerDisplay').innerText = autoLogoutEnabled ? "10m ON" : "OFF";
+            if(session) {
+                session.autoLogout = String(autoLogoutEnabled);
+                localStorage.setItem('kk_session', JSON.stringify(session));
+                call({ action: 'updateConfig', key: 'AUTO_LOGOUT', value: String(autoLogoutEnabled), sheetId: session.sheetId }, () => {});
+            }
+        }
+
+        // --- Auth Actions ---
         function loginUser() {
             const e = document.getElementById('loginEmail').value, p = document.getElementById('loginPass').value;
             if(!e || !p) return alert("விவரங்கள் தேவை!");
             toggleBtn('btn-login', true);
             call({ action: 'login', email: e, pass: p }, (res) => {
                 toggleBtn('btn-login', false);
-                if(res && res.status === "Success") { 
-                    session = res; 
-                    localStorage.setItem('kk_session', JSON.stringify(res)); 
-                    enterDashboard(); 
-                } else alert(res ? res.msg : "பிழை!");
+                if(res && res.status === "Success") { session = res; localStorage.setItem('kk_session', JSON.stringify(res)); enterDashboard(); }
+                else alert(res ? res.msg : "பிழை!");
             });
         }
 
         function requestOTP() {
-            const e = document.getElementById('loginEmail').value; if(!e) return alert("Email?");
+            const e = document.getElementById('loginEmail').value; if(!e) return alert("மின்னஞ்சல்?");
             document.getElementById('otpLoading').classList.remove('hidden');
             call({ action: 'sendOTP', email: e }, (res) => { 
                 document.getElementById('otpLoading').classList.add('hidden');
                 if(res && res.status === "Sent") { toggleAuth('otp'); startOtpCountdown(); } 
+                else alert("OTP அனுப்ப முடியவில்லை!");
             });
         }
 
@@ -408,11 +467,19 @@
             toggleBtn('btn-verify', true);
             call({ action: 'login', email: document.getElementById('loginEmail').value, otp: otp, isOtp: "true" }, (res) => {
                 toggleBtn('btn-verify', false);
-                if(res && res.status === "Success") { 
-                    session = res; 
-                    localStorage.setItem('kk_session', JSON.stringify(res)); 
-                    enterDashboard(); 
-                } else alert(res ? res.msg : "பிழை!");
+                if(res && res.status === "Success") { session = res; localStorage.setItem('kk_session', JSON.stringify(res)); enterDashboard(); }
+                else alert(res ? res.msg : "பிழை!");
+            });
+        }
+
+        function registerAccount() {
+            const n = document.getElementById('regName').value, e = document.getElementById('regEmail').value, p = document.getElementById('regPass').value;
+            if(!n || !e || !p) return alert("அனைத்தும் தேவை!");
+            toggleBtn('btn-reg', true);
+            call({ action: 'register', name: n, email: e, pass: p }, (res) => {
+                toggleBtn('btn-reg', false);
+                if(res && res.status === "Success") { alert("பதிவு வெற்றி!"); toggleAuth('login'); }
+                else alert(res ? res.msg : "பிழை!");
             });
         }
 
@@ -429,7 +496,7 @@
         function loadData() {
             if(!session) return;
             call({ action: 'getAppData', sheetId: session.sheetId, month: calMonth, year: calYear }, (data) => {
-                const calL = document.getElementById('calLoader'); if(calL) calL.classList.add('hidden');
+                if(document.getElementById('calLoader')) document.getElementById('calLoader').classList.add('hidden');
                 if(!data || data.status !== "Success") return finishLoading();
                 
                 masterSubCategories = data.masterCategories || {};
@@ -449,22 +516,9 @@
             });
         }
 
-        function updateAvatarUI() {
-            if(!session) return;
-            const primary = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim().replace('#','');
-            const url = session.photo || `https://ui-avatars.com/api/?name=${session.name || 'U'}&background=${primary}&color=fff`;
-            document.getElementById('userAvatar').src = url;
-            document.getElementById('profImg').src = url;
-            document.getElementById('userNameUI').innerText = session.name || "பயனர்";
-            document.getElementById('profNameInp').value = session.name || "";
-            document.getElementById('autoLogoutToggle').checked = session.autoLogout === "true";
-            autoLogoutEnabled = session.autoLogout === "true";
-            document.getElementById('autoLogoutTimerDisplay').innerText = autoLogoutEnabled ? "10m ON" : "OFF";
-        }
-
-        // --- Render Helpers ---
+        // --- Rendering ---
         function renderCalendar(data) {
-            const grid = document.getElementById('calGrid'); if(!grid) return; grid.innerHTML = "";
+            const grid = document.getElementById('calGrid'); grid.innerHTML = "";
             const names = ["ஜன", "பிப்", "மார்", "ஏப்", "மே", "ஜூன்", "ஜூலை", "ஆக", "செப்", "அக்", "நவ", "டிச"];
             document.getElementById('calMonth').innerText = names[calMonth];
             document.getElementById('calYear').innerText = calYear;
@@ -492,11 +546,12 @@
 
         function renderTransactions(t) {
             const list = document.getElementById('transList'); if(!list) return; list.innerHTML = "";
+            if(!t.length) list.innerHTML = "<p class='text-center text-slate-200 py-6 font-bold text-[10px] uppercase'>பதிவுகள் இல்லை</p>";
             t.forEach(item => {
                 const isE = item.type === 'Expense', isS = item.type === 'Savings';
                 let cls = isE ? 'text-rose-500' : (isS ? 'text-indigo-500' : 'text-emerald-500');
                 list.innerHTML += `<div class="theme-card p-4 flex justify-between items-center border-none bg-slate-50/50">
-                    <div><h4 class="text-sm font-black leading-tight">${item.category}</h4><p class="text-[8px] font-bold text-slate-300 uppercase leading-none mt-1">${item.date}</p></div>
+                    <div><h4 class="text-sm font-black leading-tight">${item.category}</h4><p class="text-[8px] font-bold text-slate-300 uppercase mt-1 leading-none">${item.date}</p></div>
                     <p class="text-sm font-black ${cls}">${isE || isS ? '-' : '+'}₹${Number(item.amount).toLocaleString()}</p>
                 </div>`;
             });
@@ -528,22 +583,16 @@
             });
         }
 
-        // --- Logic Actions ---
+        // --- Action Logics ---
         function saveTransaction() {
             const a = document.getElementById('transAmt').value, c = document.getElementById('transCat').value, n = document.getElementById('transNote').value;
             if(!a || !c) return alert("தேவை!");
-            call({ action: 'addTransaction', amount: a, category: c, note: n, type: transType, sheetId: session.sheetId }, () => { closeModals(); loadData(); });
-        }
-        function registerAccount() {
-            const n = document.getElementById('regName').value, e = document.getElementById('regEmail').value, p = document.getElementById('regPass').value;
-            if(!n || !e || !p) return alert("அனைத்தும் தேவை!");
-            toggleBtn('btn-reg', true);
-            call({ action: 'register', name: n, email: e, pass: p }, (res) => { toggleBtn('btn-reg', false); if(res && res.status === "Success") toggleAuth('login'); else alert(res ? res.msg : "பிழை!"); });
+            call({ action: 'addTransaction', amount: a, category: c, note: n, type: transType, sheetId: session.sheetId }, (res) => { if(res && res.status === "Success") { closeModals(); loadData(); } });
         }
         function updateEMI() { const n = document.getElementById('emiName').value, a = document.getElementById('emiAmt').value, d = document.getElementById('emiDate').value; call({ action: 'updateLoan', loanName: n, amount: a, dueDate: d, sheetId: session.sheetId }, () => { closeModals(); loadData(); }); }
         function saveProfile() { const n = document.getElementById('profNameInp').value, p = document.getElementById('profPassInp').value; call({ action: 'updateProfile', sheetId: session.sheetId, newName: n, newPass: p, photoData: session.photo }, () => { if(n) session.name = n; updateAvatarUI(); closeModals(); }); }
         
-        // --- Theme ---
+        // --- Theme Logic ---
         function applyTheme(t) {
             if(!t) return; const r = document.documentElement.style;
             r.setProperty('--primary-color', t.primary || "#6366f1"); r.setProperty('--topbar-color', t.topbar || "#ffffff"); r.setProperty('--bottombar-color', t.bottombar || "#ffffff");
@@ -556,16 +605,13 @@
         }
         function applyThemePreview() { const th = { primary: document.getElementById('themePrimaryInp').value, topbar: document.getElementById('themeTopInp').value, bottombar: document.getElementById('themeBottomInp').value, text: document.getElementById('themeTextInp').value, radius: document.getElementById('themeRadiusInp').value, textSize: document.getElementById('themeSizeInp').value }; applyTheme(th); }
         function saveThemeToCloud() { const th = { primary: document.getElementById('themePrimaryInp').value, topbar: document.getElementById('themeTopInp').value, bottombar: document.getElementById('themeBottomInp').value, text: document.getElementById('themeTextInp').value, radius: document.getElementById('themeRadiusInp').value, textSize: document.getElementById('themeSizeInp').value }; call({ action: 'updateTheme', themeData: JSON.stringify(th), sheetId: session.sheetId }, () => { session.theme = th; localStorage.setItem('kk_session', JSON.stringify(session)); closeModals(); }); }
-        
-        // --- General ---
-        function checkGatewayConnectivity() { if(!G_URL) return; call({ action: 'ping' }, (res) => { const s = res && res.status === "Success"; updateGatewayStatusUI(s); if(!s && document.getElementById('dashboard').style.display === 'block') logout(); }); }
-        function updateGatewayStatusUI(c) { const d = document.getElementById('gw-dot'), t = document.getElementById('gw-status-text'); if(c) { if(d) d.className = "gw-indicator connected"; if(t) { t.innerText = "இணைக்கப்பட்டது"; t.className = "text-[8px] font-bold uppercase text-emerald-500"; } } else { if(d) d.className = "gw-indicator disconnected"; if(t) { t.innerText = "இணைக்கப்படவில்லை"; t.className = "text-[8px] font-bold uppercase text-rose-500"; } } }
-        function checkInactivity() { if(!autoLogoutEnabled || !session) { const el = document.getElementById('logoutCountdown'); if(el) el.innerText = "--:--"; return; } const diff = (Date.now() - lastActivity); const r = Math.max(0, (10 * 60 * 1000) - diff); const m = Math.floor(r/60000), s = Math.floor((r%60000)/1000); if(document.getElementById('logoutCountdown')) document.getElementById('logoutCountdown').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; if(r <= 0) logout(); }
+
+        // --- Helpers ---
         function toggleBtn(id, l) { const b = document.getElementById(id); if(!b) return; b.disabled = l; b.innerHTML = l ? '<div class="spinner w-4 h-4 border-2 border-white"></div>' : (b.dataset.label || b.innerText); if(l) b.dataset.label = b.innerText; }
         function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display='none'); }
         function showAddModal() { currentMasterCat = ''; document.getElementById('transModal').style.display = 'flex'; renderMasterCategories(); }
         function showAddMasterCat() { catAddMode = 'master'; document.getElementById('categoryModal').style.display = 'flex'; }
-        function showAddSubCat() { if(!currentMasterCat) return alert("வகை தேர்ந்தெடு!"); catAddMode = 'sub'; document.getElementById('categoryModal').style.display = 'flex'; }
+        function showAddSubCat() { if(!currentMasterCat) return alert("முதலில் வகை தேர்ந்தெடுக்கவும்"); catAddMode = 'sub'; document.getElementById('categoryModal').style.display = 'flex'; }
         function saveNewCategoryLogic() { const v = document.getElementById('newCatInput').value; if(!v) return; const m = catAddMode === 'master' ? v : currentMasterCat, s = catAddMode === 'sub' ? v : ""; call({ action: 'addNewCategory', masterCat: m, subCat: s, sheetId: session.sheetId }, () => { if(catAddMode === 'master') masterSubCategories[v] = []; else masterSubCategories[currentMasterCat].push(v); document.getElementById('newCatInput').value = ""; document.getElementById('categoryModal').style.display = 'none'; renderMasterCategories(); }); }
         function setTransType(t) { transType = t; setT(t); }
         function setT(t) { document.getElementById('tE').className = t==='Expense'?'flex-1 py-3 rounded-xl font-bold text-[10px] bg-white text-rose-500 shadow-sm uppercase':'flex-1 py-3 rounded-xl font-bold text-[10px] text-slate-400 uppercase'; document.getElementById('tI').className = t==='Income'?'flex-1 py-3 rounded-xl font-bold text-[10px] bg-white text-emerald-500 shadow-sm uppercase':'flex-1 py-3 rounded-xl font-bold text-[10px] text-slate-400 uppercase'; document.getElementById('tS').className = t==='Savings'?'flex-1 py-3 rounded-xl font-bold text-[10px] bg-white text-indigo-500 shadow-sm uppercase':'flex-1 py-3 rounded-xl font-bold text-[10px] text-slate-400 uppercase'; }
