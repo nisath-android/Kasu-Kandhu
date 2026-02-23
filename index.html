@@ -35,9 +35,10 @@
         .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: #10b981; }
         input:checked + .slider:before { transform: translateX(14px); }
-        .otp-box { width: 42px; height: 52px; border-radius: 10px; background: #f8fafc; border: 2px solid #e2e8f0; text-align: center; font-size: 20px; font-weight: 800; outline: none; }
+        .otp-box { width: 42px; height: 52px; border-radius: 10px; background: #f8fafc; border: 2px solid #e2e8f0; text-align: center; font-size: 20px; font-weight: 800; outline: none; transition: 0.2s; }
+        .otp-box:focus { border-color: var(--primary-color); background: white; }
         .sub-pill { padding: 8px 16px; border-radius: 12px; font-size: 10px; font-weight: 700; background: #f8fafc; border: 1px solid #f1f5f9; cursor: pointer; transition: 0.2s; }
-        .sub-pill.active { background: var(--primary-color) !important; color: white !important; }
+        .sub-pill.active { background: var(--primary-color) !important; color: white !important; border-color: var(--primary-color) !important; }
         .gw-indicator { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; }
         .connected { background: #10b981; box-shadow: 0 0 8px #10b981; }
         .disconnected { background: #f43f5e; box-shadow: 0 0 8px #f43f5e; animation: pulse-err 1s infinite; }
@@ -103,7 +104,7 @@
                 </div>
             </div>
         </div>
-        <div class="p-6 bg-white border-t shadow-inner">
+        <div class="p-6 bg-white border-t">
             <div class="flex items-center justify-between mb-2 px-1">
                 <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Gateway Setup</span>
                 <span id="gw-status-text" class="text-[8px] font-bold uppercase text-rose-500"><span id="gw-dot" class="gw-indicator disconnected"></span>இணைக்கப்படவில்லை</span>
@@ -115,7 +116,7 @@
 
     <!-- Dashboard -->
     <div id="dashboard" class="pb-32">
-        <header class="theme-topbar border-b sticky top-0 z-[100] p-6 flex justify-between items-center shadow-sm transition-all">
+        <header class="theme-topbar border-b sticky top-0 z-[100] p-6 flex justify-between items-center shadow-sm">
             <div class="flex items-center gap-3">
                 <div class="w-12 h-12 rounded-2xl overflow-hidden border-2 border-white shadow-md bg-slate-100" onclick="showProfileModal()">
                     <img id="userAvatar" src="" class="w-full h-full object-cover">
@@ -141,7 +142,6 @@
         </header>
 
         <main class="p-5 space-y-6 max-w-md mx-auto">
-            <!-- Rate Card -->
             <div class="theme-card p-6 border-none">
                 <div class="grid grid-cols-3 gap-2 text-center">
                     <div><p class="text-[8px] font-black text-slate-400 uppercase mb-2">22K தங்கம்</p><p class="text-sm font-black text-emerald-600">₹<span id="rate22k">0</span></p></div>
@@ -154,14 +154,12 @@
                 </div>
             </div>
 
-            <!-- Balance Section -->
             <div onclick="showSalaryModal()" class="theme-primary p-10 rounded-[3.5rem] text-white shadow-2xl relative cursor-pointer active:scale-[0.98] transition-all overflow-hidden text-center">
                 <p class="text-[10px] font-black uppercase opacity-70 tracking-widest leading-none">சம்பளம்</p>
-                <h2 id="dispSalary" class="text-5xl font-black my-2 tracking-tighter leading-tight">₹0</h2>
+                <h2 id="dispSalary" class="text-5xl font-black my-2 tracking-tighter">₹0</h2>
                 <div id="deficitTag" class="mt-8 inline-block px-5 py-2 text-[9px] font-black rounded-full uppercase bg-white/20">...</div>
             </div>
 
-            <!-- Calendar -->
             <div class="theme-card p-6 relative" id="calendarCard">
                 <div id="calLoader" class="hidden absolute inset-0 bg-white/60 z-10 flex items-center justify-center rounded-[30px] backdrop-blur-sm"><div class="spinner"></div></div>
                 <div class="flex justify-between items-center mb-6 px-1">
@@ -175,7 +173,7 @@
                         <button onclick="changeYear(1)" class="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 text-[10px]"><i class="fa-solid fa-angles-right"></i></button>
                     </div>
                 </div>
-                <div id="calGrid" class="grid grid-cols-7 gap-2 transition-opacity"></div>
+                <div id="calGrid" class="grid grid-cols-7 gap-2"></div>
             </div>
 
             <div id="loanList" class="space-y-4">
@@ -191,7 +189,8 @@
 
         <footer class="fixed bottom-0 left-0 right-0 border-t p-8 rounded-t-[3.5rem] flex justify-between items-center shadow-2xl z-[100] bg-white transition-all">
             <i class="fa-solid fa-house text-2xl text-indigo-500"></i>
-            <div onclick="showAddModal()" class="w-16 h-16 theme-primary text-white rounded-3xl -mt-16 border-8 border-white flex items-center justify-center shadow-xl cursor-pointer active:scale-90 transition-transform"><i class="fa-solid fa-plus text-2xl"></i></div>
+            <!-- (+) Button to Open Transaction Modal -->
+            <div onclick="showAddModal()" id="btn-main-add" class="w-16 h-16 theme-primary text-white rounded-3xl -mt-16 border-8 border-white flex items-center justify-center shadow-xl cursor-pointer active:scale-90 transition-transform"><i class="fa-solid fa-plus text-2xl"></i></div>
             <div class="flex gap-6">
                 <i class="fa-solid fa-palette text-2xl text-slate-300 cursor-pointer hover:text-indigo-500" onclick="showThemeModal()"></i>
                 <i class="fa-solid fa-gear text-2xl text-slate-300 cursor-pointer hover:text-indigo-500" onclick="initAppDB()"></i>
@@ -199,7 +198,7 @@
         </footer>
     </div>
 
-    <!-- puthiya pathivu Modal -->
+    <!-- TRANSACTION MODAL -->
     <div id="transModal" class="modal-overlay">
         <div class="bg-white w-full max-w-md p-10 rounded-[4.5rem] shadow-2xl max-h-[95vh] overflow-y-auto hide-scrollbar">
             <h3 class="text-2xl font-black italic text-center mb-8 tracking-tighter" style="color:var(--primary-color)">புதிய பதிவு</h3>
@@ -226,7 +225,7 @@
                 </div>
                 <div class="space-y-3">
                     <p class="text-[10px] font-black text-slate-400 uppercase px-2 tracking-widest">இந்த பரிவர்த்தனை பற்றி...</p>
-                    <textarea id="transNote" placeholder="குறிப்பு ஏதேனும் இருப்பின்..." class="w-full p-5 bg-slate-50 rounded-2xl outline-none text-sm font-bold border-2 border-transparent focus:border-indigo-400 transition-all shadow-inner h-24 resize-none"></textarea>
+                    <textarea id="transNote" placeholder="குறிப்பு ஏதேனும் இருப்பின்..." class="w-full p-5 bg-slate-50 rounded-2xl outline-none text-sm font-bold shadow-inner h-24 resize-none"></textarea>
                 </div>
             </div>
             <div class="space-y-6 mb-10 text-center">
@@ -240,7 +239,7 @@
         </div>
     </div>
 
-    <!-- Additional Modals -->
+    <!-- Theme Modal -->
     <div id="themeModal" class="modal-overlay">
         <div class="bg-white w-full max-w-sm p-10 rounded-[4rem] shadow-2xl overflow-y-auto max-h-[90vh] hide-scrollbar">
             <h3 class="text-xl font-black mb-8 italic text-center">தீம் அமைப்புகள்</h3>
@@ -261,19 +260,7 @@
         </div>
     </div>
 
-    <div id="emiModal" class="modal-overlay">
-        <div class="bg-white w-full max-w-sm p-10 rounded-[4rem] shadow-2xl">
-            <h3 class="text-xl font-black mb-8 italic text-center">EMI திருத்த</h3>
-            <div class="space-y-6">
-                <input type="text" id="emiName" readonly class="w-full p-4 bg-slate-50 rounded-xl font-bold text-slate-400 text-center shadow-inner">
-                <input type="number" id="emiAmt" placeholder="தொகை ₹" class="w-full p-5 bg-slate-50 rounded-2xl text-3xl font-black text-center shadow-inner outline-none">
-                <input type="number" id="emiDate" placeholder="தேதி (1-31)" min="1" max="31" class="w-full p-5 bg-slate-50 rounded-2xl font-bold text-center shadow-inner outline-none">
-                <button onclick="updateEMI()" id="btn-save-emi" class="w-full theme-primary text-white py-5 rounded-2xl font-black uppercase tracking-widest shadow-lg theme-btn">சேமி</button>
-                <button onclick="closeModals()" class="w-full py-2 text-[10px] font-bold text-slate-300 uppercase underline block mx-auto">ரத்து</button>
-            </div>
-        </div>
-    </div>
-
+    <!-- Profile Modal -->
     <div id="profileModal" class="modal-overlay">
         <div class="bg-white w-full max-w-sm p-10 rounded-[4rem] shadow-2xl text-center">
             <div class="relative inline-block mb-6">
@@ -284,6 +271,19 @@
             <input type="password" id="profPassInp" class="w-full p-5 bg-slate-50 rounded-2xl mb-6 font-bold text-center shadow-inner outline-none" placeholder="புதிய கடவுச்சொல்">
             <button onclick="saveProfile()" id="btn-save-prof" class="w-full theme-primary text-white py-5 rounded-2xl font-black uppercase shadow-lg theme-btn">மாற்றங்களைச் சேமி</button>
             <button onclick="closeModals()" class="w-full py-2 mt-4 text-[10px] font-bold text-slate-300 uppercase underline block mx-auto">மூடுக</button>
+        </div>
+    </div>
+
+    <div id="emiModal" class="modal-overlay">
+        <div class="bg-white w-full max-w-sm p-10 rounded-[4rem] shadow-2xl">
+            <h3 class="text-xl font-black mb-8 italic text-center">EMI திருத்த</h3>
+            <div class="space-y-6">
+                <input type="text" id="emiName" readonly class="w-full p-4 bg-slate-50 rounded-xl font-bold text-slate-400 text-center shadow-inner">
+                <input type="number" id="emiAmt" placeholder="தொகை ₹" class="w-full p-5 bg-slate-50 rounded-2xl text-3xl font-black text-center shadow-inner outline-none">
+                <input type="number" id="emiDate" placeholder="தேதி (1-31)" min="1" max="31" class="w-full p-5 bg-slate-50 rounded-2xl font-bold text-center shadow-inner outline-none">
+                <button onclick="updateEMI()" id="btn-save-emi" class="w-full theme-primary text-white py-5 rounded-2xl font-black uppercase tracking-widest shadow-lg theme-btn">சேமி</button>
+                <button onclick="closeModals()" class="w-full py-2 text-[10px] font-bold text-slate-300 uppercase underline block mx-auto">ரத்து</button>
+            </div>
         </div>
     </div>
 
@@ -356,9 +356,7 @@
             const n = 'cb'+Date.now();
             window[n] = (res) => { 
                 toggleGlobalLoader(false);
-                if(res) {
-                    if(cb) cb(res); 
-                }
+                if(res) { if(cb) cb(res); }
                 delete window[n]; const s = document.getElementById(n); if(s) s.remove(); 
             };
 
@@ -378,7 +376,7 @@
             document.body.appendChild(s);
         }
 
-        // --- Auth Section ---
+        // --- AUTH ---
         function loginUser() {
             const e = document.getElementById('loginEmail').value, p = document.getElementById('loginPass').value;
             if(!e || !p) return alert("விவரங்கள் தேவை!");
@@ -414,7 +412,7 @@
             });
         }
 
-        // --- Dashboard & Data ---
+        // --- DASHBOARD ---
         function enterDashboard() {
             document.getElementById('init-view').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
@@ -429,14 +427,12 @@
             call({ action: 'getAppData', sheetId: session.sheetId, month: calMonth, year: calYear }, (data) => {
                 if(document.getElementById('calLoader')) document.getElementById('calLoader').classList.add('hidden');
                 if(!data || data.status !== "Success") return finishLoading();
-                
                 masterSubCategories = data.masterCategories || {};
                 document.getElementById('rate22k').innerText = data.metalRates.gold22k;
                 document.getElementById('rate24k').innerText = data.metalRates.gold24k;
                 document.getElementById('rateSilver').innerText = data.metalRates.silver;
                 document.getElementById('metalTs').innerText = `${data.metalRates.day}, ${data.metalRates.time}`;
                 document.getElementById('dispSalary').innerText = `₹${Number(data.salary || 0).toLocaleString()}`;
-                
                 const dTag = document.getElementById('deficitTag');
                 if(dTag) {
                     dTag.innerText = data.deficit < 0 ? `குறைவு: ₹${Math.abs(data.deficit).toLocaleString()}` : `மீதி: ₹${data.deficit.toLocaleString()}`;
@@ -447,7 +443,7 @@
             });
         }
 
-        // --- Rendering ---
+        // --- RENDERING HELPERS ---
         function renderCalendar(data) {
             const grid = document.getElementById('calGrid'); if(!grid) return; grid.innerHTML = "";
             const names = ["ஜன", "பிப்", "மார்", "ஏப்", "மே", "ஜூன்", "ஜூலை", "ஆக", "செப்", "அக்", "நவ", "டிச"];
@@ -514,7 +510,7 @@
             });
         }
 
-        // --- Core Helpers ---
+        // --- CORE HELPERS ---
         function checkGatewayConnectivity() {
             if(!G_URL) return;
             call({ action: 'ping' }, (res) => {
@@ -527,13 +523,8 @@
 
         function updateGatewayStatusUI(isConnected) {
             const d = document.getElementById('gw-dot'), t = document.getElementById('gw-status-text');
-            if(isConnected) {
-                if(d) d.className = "gw-indicator connected";
-                if(t) { t.innerText = "இணைக்கப்பட்டது"; t.className = "text-[8px] font-bold uppercase text-emerald-500"; }
-            } else {
-                if(d) d.className = "gw-indicator disconnected";
-                if(t) { t.innerText = "இணைக்கப்படவில்லை"; t.className = "text-[8px] font-bold uppercase text-rose-500"; }
-            }
+            if(isConnected) { if(d) d.className = "gw-indicator connected"; if(t) { t.innerText = "இணைக்கப்பட்டது"; t.className = "text-[8px] font-bold uppercase text-emerald-500"; } } 
+            else { if(d) d.className = "gw-indicator disconnected"; if(t) { t.innerText = "இணைக்கப்படவில்லை"; t.className = "text-[8px] font-bold uppercase text-rose-500"; } }
         }
 
         function resetInactivityTimer() { lastActivity = Date.now(); }
@@ -548,7 +539,8 @@
 
         function handleLogoutToggle() { autoLogoutEnabled = document.getElementById('autoLogoutToggle').checked; document.getElementById('autoLogoutTimerDisplay').innerText = autoLogoutEnabled ? "10m ON" : "OFF"; if(session) { session.autoLogout = String(autoLogoutEnabled); localStorage.setItem('kk_session', JSON.stringify(session)); call({ action: 'updateConfig', key: 'AUTO_LOGOUT', value: String(autoLogoutEnabled), sheetId: session.sheetId }); } }
 
-        // --- Action Logics ---
+        // --- ACTION LOGICS ---
+        function showAddModal() { currentMasterCat = ''; document.getElementById('transModal').style.display = 'flex'; renderMasterCategories(); }
         function saveTransaction() {
             const a = document.getElementById('transAmt').value, c = document.getElementById('transCat').value, n = document.getElementById('transNote').value;
             if(!a || !c) return alert("தேவை!");
@@ -556,8 +548,9 @@
         }
         function updateEMI() { const n = document.getElementById('emiName').value, a = document.getElementById('emiAmt').value, d = document.getElementById('emiDate').value; call({ action: 'updateLoan', loanName: n, amount: a, dueDate: d, sheetId: session.sheetId }, () => { closeModals(); loadData(); }); }
         function saveProfile() { const n = document.getElementById('profNameInp').value, p = document.getElementById('profPassInp').value; call({ action: 'updateProfile', sheetId: session.sheetId, newName: n, newPass: p, photoData: session.photo }, () => { if(n) session.name = n; updateAvatarUI(); closeModals(); }); }
+        function registerAccount() { const n = document.getElementById('regName').value, e = document.getElementById('regEmail').value, p = document.getElementById('regPass').value; if(!n || !e || !p) return alert("தேவை!"); toggleBtn('btn-reg', true); call({ action: 'register', name: n, email: e, pass: p }, (res) => { toggleBtn('btn-reg', false); if(res && res.status === "Success") toggleAuth('login'); else alert(res ? res.msg : "பிழை!"); }); }
         
-        // --- Theme ---
+        // --- THEME ---
         function applyTheme(t) {
             if(!t) return; const r = document.documentElement.style;
             r.setProperty('--primary-color', t.primary || "#6366f1"); r.setProperty('--topbar-color', t.topbar || "#ffffff"); r.setProperty('--bottombar-color', t.bottombar || "#ffffff");
@@ -570,14 +563,13 @@
         }
         function applyThemePreview() { const th = { primary: document.getElementById('themePrimaryInp').value, topbar: document.getElementById('themeTopInp').value, bottombar: document.getElementById('themeBottomInp').value, text: document.getElementById('themeTextInp').value, radius: document.getElementById('themeRadiusInp').value, textSize: document.getElementById('themeSizeInp').value }; applyTheme(th); }
         function saveThemeToCloud() { const th = { primary: document.getElementById('themePrimaryInp').value, topbar: document.getElementById('themeTopInp').value, bottombar: document.getElementById('themeBottomInp').value, text: document.getElementById('themeTextInp').value, radius: document.getElementById('themeRadiusInp').value, textSize: document.getElementById('themeSizeInp').value }; call({ action: 'updateTheme', themeData: JSON.stringify(th), sheetId: session.sheetId }, () => { session.theme = th; localStorage.setItem('kk_session', JSON.stringify(session)); closeModals(); }); }
-        function saveNewCategoryLogic() { const val = document.getElementById('newCatInput').value; if(!val) return; const m = catAddMode === 'master' ? val : currentMasterCat, s = catAddMode === 'sub' ? val : ""; call({ action: 'addNewCategory', masterCat: m, subCat: s, sheetId: session.sheetId }, () => { if(catAddMode === 'master') masterSubCategories[val] = []; else masterSubCategories[currentMasterCat].push(val); document.getElementById('newCatInput').value = ""; document.getElementById('categoryModal').style.display = 'none'; renderMasterCategories(); }); }
-
-        // --- Helpers ---
+        
+        // --- HELPERS ---
         function toggleBtn(id, l) { const b = document.getElementById(id); if(!b) return; b.disabled = l; b.innerHTML = l ? '<div class="spinner w-4 h-4 border-2 border-white"></div>' : (b.dataset.label || b.innerText); if(l) b.dataset.label = b.innerText; }
         function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display='none'); }
-        function showAddModal() { currentMasterCat = ''; document.getElementById('transModal').style.display = 'flex'; renderMasterCategories(); }
-        function showAddMasterCat() { catAddMode = 'master'; document.getElementById('categoryModal').style.display = 'flex'; }
-        function showAddSubCat() { if(!currentMasterCat) return alert("வகை தேர்ந்தெடுக்கவும்"); catAddMode = 'sub'; document.getElementById('categoryModal').style.display = 'flex'; }
+        function showAddMasterCat() { catAddMode = 'master'; document.getElementById('catModalTitle').innerText = "புதிய முதன்மை வகை"; document.getElementById('categoryModal').style.display = 'flex'; }
+        function showAddSubCat() { if(!currentMasterCat) return alert("வகை தேர்ந்தெடு!"); catAddMode = 'sub'; document.getElementById('catModalTitle').innerText = "துணை வகை: " + currentMasterCat; document.getElementById('categoryModal').style.display = 'flex'; }
+        function saveNewCategoryLogic() { const val = document.getElementById('newCatInput').value; if(!val) return; const m = catAddMode === 'master' ? val : currentMasterCat, s = catAddMode === 'sub' ? val : ""; call({ action: 'addNewCategory', masterCat: m, subCat: s, sheetId: session.sheetId }, () => { if(catAddMode === 'master') masterSubCategories[val] = []; else masterSubCategories[currentMasterCat].push(val); document.getElementById('newCatInput').value = ""; document.getElementById('categoryModal').style.display = 'none'; renderMasterCategories(); }); }
         function setTransType(t) { transType = t; setT(t); }
         function setT(t) { document.getElementById('tE').className = t==='Expense'?'flex-1 py-3 rounded-xl font-bold text-[10px] bg-white text-rose-500 shadow-sm uppercase':'flex-1 py-3 rounded-xl font-bold text-[10px] text-slate-400 uppercase'; document.getElementById('tI').className = t==='Income'?'flex-1 py-3 rounded-xl font-bold text-[10px] bg-white text-emerald-500 shadow-sm uppercase':'flex-1 py-3 rounded-xl font-bold text-[10px] text-slate-400 uppercase'; document.getElementById('tS').className = t==='Savings'?'flex-1 py-3 rounded-xl font-bold text-[10px] bg-white text-indigo-500 shadow-sm uppercase':'flex-1 py-3 rounded-xl font-bold text-[10px] text-slate-400 uppercase'; }
         function updateLiveTime() { const n = new Date(); if(document.getElementById('liveClock')) document.getElementById('liveClock').innerText = n.toLocaleTimeString('ta-IN'); }
