@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>காசு-கந்து PRO v9.8.3</title>
+    <title>காசு-கந்து PRO v9.8.4</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style id="dynamic-theme">
@@ -61,6 +61,7 @@
         <p id="progress-text" class="mt-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">தயார் செய்யப்படுகிறது... 0%</p>
     </div>
 
+    <!-- Auth View -->
     <div id="init-view" class="h-screen flex flex-col bg-slate-50 overflow-y-auto">
         <div class="flex-1 flex items-center justify-center p-6">
             <div id="auth-panel" class="w-full max-w-sm bg-white p-10 rounded-[3rem] shadow-xl text-center">
@@ -98,7 +99,7 @@
                     <input type="text" id="regName" placeholder="பெயர்" class="w-full p-5 bg-slate-50 rounded-2xl mb-4 outline-none font-bold text-center shadow-inner">
                     <input type="email" id="regEmail" placeholder="மின்னஞ்சல்" class="w-full p-5 bg-slate-50 rounded-2xl mb-4 outline-none font-bold text-center shadow-inner">
                     <input type="password" id="regPass" placeholder="கடவுச்சொல்" class="w-full p-5 bg-slate-50 rounded-2xl mb-6 outline-none font-bold text-center shadow-inner">
-                    <button onclick="registerAccount()" id="btn-reg" class="w-full py-5 rounded-2xl font-black uppercase shadow-lg theme-btn">பதிவு செய்</button>
+                    <button onclick="registerAccount()" id="btn-reg" class="w-full theme-primary text-white py-5 rounded-2xl font-black uppercase shadow-lg theme-btn">பதிவு செய்</button>
                     <button onclick="toggleAuth('login')" class="mt-8 text-[10px] font-bold text-slate-400 uppercase underline block mx-auto">லாகின் செய்ய</button>
                 </div>
             </div>
@@ -155,7 +156,7 @@
 
             <div onclick="showSalaryModal()" class="theme-primary p-10 rounded-[3.5rem] text-white shadow-2xl relative cursor-pointer active:scale-[0.98] transition-all overflow-hidden text-center">
                 <p class="text-[10px] font-black uppercase opacity-70 tracking-widest leading-none">சம்பளம்</p>
-                <h2 id="dispSalary" class="text-5xl font-black my-2 tracking-tighter">₹0</h2>
+                <h2 id="dispSalary" class="text-5xl font-black my-2 tracking-tighter leading-tight">₹0</h2>
                 <div id="deficitTag" class="mt-8 inline-block px-5 py-2 text-[9px] font-black rounded-full uppercase bg-white/20">...</div>
             </div>
 
@@ -196,7 +197,7 @@
         </footer>
     </div>
 
-    <!-- TRANSACTION MODAL -->
+    <!-- Modals -->
     <div id="transModal" class="modal-overlay">
         <div class="bg-white w-full max-w-md p-10 rounded-[4.5rem] shadow-2xl max-h-[95vh] overflow-y-auto hide-scrollbar">
             <h3 class="text-2xl font-black italic text-center mb-8 tracking-tighter" style="color:var(--primary-color)">புதிய பதிவு</h3>
@@ -237,7 +238,7 @@
         </div>
     </div>
 
-    <!-- Additional Modals -->
+    <!-- Theme Modal -->
     <div id="themeModal" class="modal-overlay">
         <div class="bg-white w-full max-w-sm p-10 rounded-[4rem] shadow-2xl overflow-y-auto max-h-[90vh] hide-scrollbar">
             <h3 class="text-xl font-black mb-8 italic text-center">தீம் அமைப்புகள்</h3>
@@ -258,6 +259,7 @@
         </div>
     </div>
 
+    <!-- EMI Modal -->
     <div id="emiModal" class="modal-overlay">
         <div class="bg-white w-full max-w-sm p-10 rounded-[4rem] shadow-2xl">
             <h3 class="text-xl font-black mb-8 italic text-center">EMI திருத்த</h3>
@@ -271,6 +273,17 @@
         </div>
     </div>
 
+    <!-- Category Modal -->
+    <div id="categoryModal" class="modal-overlay">
+        <div class="bg-white w-full max-w-sm p-10 rounded-[3rem] shadow-2xl text-center">
+            <h3 id="catModalTitle" class="text-xl font-black mb-6 italic">புதிய வகை</h3>
+            <input type="text" id="newCatInput" placeholder="பெயர்..." class="w-full p-5 bg-slate-50 rounded-2xl font-bold shadow-inner mb-6 text-center outline-none">
+            <button id="btn-save-cat" onclick="saveNewCategoryLogic()" class="w-full py-5 rounded-2xl font-black uppercase shadow-lg theme-btn">சேமி</button>
+            <button onclick="closeModals()" class="w-full py-2 mt-2 text-[10px] font-bold text-slate-300 uppercase underline block mx-auto">ரத்து</button>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
     <div id="profileModal" class="modal-overlay">
         <div class="bg-white w-full max-w-sm p-10 rounded-[4rem] shadow-2xl text-center">
             <div class="relative inline-block mb-6">
@@ -284,20 +297,35 @@
         </div>
     </div>
 
-    <div id="categoryModal" class="modal-overlay">
-        <div class="bg-white w-full max-w-sm p-10 rounded-[3rem] shadow-2xl text-center">
-            <h3 id="catModalTitle" class="text-xl font-black mb-6 italic">புதிய வகை</h3>
-            <input type="text" id="newCatInput" placeholder="பெயர்..." class="w-full p-5 bg-slate-50 rounded-2xl font-bold shadow-inner mb-6 text-center outline-none">
-            <button id="btn-save-cat" onclick="saveNewCategoryLogic()" class="w-full py-5 rounded-2xl font-black uppercase shadow-lg theme-btn">சேமி</button>
-            <button onclick="closeModals()" class="w-full py-2 mt-2 text-[10px] font-bold text-slate-300 uppercase underline block mx-auto">ரத்து</button>
-        </div>
-    </div>
-
     <script>
+        // --- Core Variables ---
         let G_URL = localStorage.getItem('kk_g'), session = null, transType = 'Expense', poller = null;
         let calMonth = new Date().getMonth(), calYear = new Date().getFullYear();
         let lastActivity = Date.now(), autoLogoutEnabled = false, otpTimer = null, currentMasterCat = '', masterSubCategories = {};
-        let selectedLoanForEdit = '', catAddMode = 'master', progressInterval = null, gatewayFailCount = 0;
+        let selectedLoanForEdit = '', catAddMode = 'master', progressInterval = null;
+
+        // --- Important Functions First (Hoisting fix) ---
+        function updateAvatarUI() {
+            if(!session) return;
+            const primary = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim().replace('#','');
+            const url = session.photo || `https://ui-avatars.com/api/?name=${session.name || 'U'}&background=${primary}&color=fff`;
+            document.getElementById('userAvatar').src = url;
+            document.getElementById('profImg').src = url;
+            document.getElementById('userNameUI').innerText = session.name || "பயனர்";
+            document.getElementById('profNameInp').value = session.name || "";
+            document.getElementById('autoLogoutToggle').checked = session.autoLogout === "true";
+            autoLogoutEnabled = session.autoLogout === "true";
+            document.getElementById('autoLogoutTimerDisplay').innerText = autoLogoutEnabled ? "10m ON" : "OFF";
+        }
+
+        function enterDashboard() {
+            document.getElementById('init-view').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            if(session && session.theme) applyTheme(session.theme);
+            updateAvatarUI();
+            loadData();
+            startPoller();
+        }
 
         window.onload = () => {
             updateLiveTime(); setInterval(updateLiveTime, 1000);
@@ -310,11 +338,12 @@
                 updateGatewayStatusUI(true);
                 const saved = localStorage.getItem('kk_session');
                 if(saved && saved !== "undefined" && saved !== "null") {
-                    try { session = JSON.parse(saved); } catch(e) { console.error("Session parse error"); }
+                    try { session = JSON.parse(saved); } catch(e) { console.error("Session Error"); }
                 }
             }
         };
 
+        // --- Progress Logic ---
         function startInitialProgress() {
             let p = 0; const fill = document.getElementById('progress-fill'); const txt = document.getElementById('progress-text');
             progressInterval = setInterval(() => {
@@ -323,7 +352,6 @@
                 if(fill) fill.style.width = p + '%';
                 if(txt) txt.innerText = `தயார் செய்யப்படுகிறது... ${p}%`;
                 
-                // If session exists, try to enter dashboard at 80%
                 if(session && session.sheetId && p >= 80) {
                     clearInterval(progressInterval);
                     enterDashboard();
@@ -342,6 +370,7 @@
             setTimeout(hideSplash, 600);
         }
 
+        // --- Network & Data ---
         function toggleGlobalLoader(show) {
             const loader = document.getElementById('globalLoader');
             if(loader) loader.style.display = show ? 'flex' : 'none';
@@ -365,60 +394,14 @@
                     const res = await fetch(G_URL, { method: 'POST', body: JSON.stringify(p) }); 
                     const json = await res.json();
                     window[n](json);
-                } catch(e) { toggleGlobalLoader(false); if(cb) cb({ status: "Error", msg: "Server Error" }); }
+                } catch(e) { toggleGlobalLoader(false); if(cb) cb({ status: "Error" }); }
                 return;
             }
             
             const s = document.createElement('script'); s.id = n;
             s.src = `${G_URL}${G_URL.includes('?')?'&':'?'}callback=${n}&${new URLSearchParams(p).toString()}`;
-            s.onerror = () => { toggleGlobalLoader(false); if(cb) cb({ status: "Error", msg: "Network Error" }); };
+            s.onerror = () => { toggleGlobalLoader(false); if(cb) cb({ status: "Error" }); };
             document.body.appendChild(s);
-        }
-
-        // --- AUTH ---
-        function loginUser() {
-            const e = document.getElementById('loginEmail').value, p = document.getElementById('loginPass').value;
-            if(!e || !p) return alert("விவரங்கள் தேவை!");
-            toggleBtn('btn-login', true);
-            call({ action: 'login', email: e, pass: p }, (res) => {
-                toggleBtn('btn-login', false);
-                if(res && res.status === "Success") { 
-                    session = res; localStorage.setItem('kk_session', JSON.stringify(res)); enterDashboard(); 
-                } else alert(res ? res.msg : "பிழை!");
-            });
-        }
-
-        function verifyOTP() {
-            const inps = document.querySelectorAll('#auth-otp .otp-box');
-            let otp = ""; inps.forEach(i => otp += i.value);
-            if(otp.length < 6) return alert("6 இலக்க OTP தேவை!");
-            toggleBtn('btn-verify', true);
-            call({ action: 'login', email: document.getElementById('loginEmail').value, otp: otp, isOtp: "true" }, (res) => {
-                toggleBtn('btn-verify', false);
-                if(res && res.status === "Success") { 
-                    session = res; localStorage.setItem('kk_session', JSON.stringify(res)); enterDashboard(); 
-                } else alert(res ? res.msg : "பிழை!");
-            });
-        }
-
-        function requestOTP() {
-            const e = document.getElementById('loginEmail').value; if(!e) return alert("Email?");
-            document.getElementById('otpLoading').classList.remove('hidden');
-            call({ action: 'sendOTP', email: e }, (res) => { 
-                document.getElementById('otpLoading').classList.add('hidden');
-                if(res && res.status === "Sent") { toggleAuth('otp'); startOtpCountdown(); } 
-                else alert("பிழை!");
-            });
-        }
-
-        // --- DASHBOARD ---
-        function enterDashboard() {
-            document.getElementById('init-view').style.display = 'none';
-            document.getElementById('dashboard').style.display = 'block';
-            if(session && session.theme) applyTheme(session.theme);
-            updateAvatarUI();
-            loadData();
-            startPoller();
         }
 
         function loadData() {
@@ -426,12 +409,14 @@
             call({ action: 'getAppData', sheetId: session.sheetId, month: calMonth, year: calYear }, (data) => {
                 if(document.getElementById('calLoader')) document.getElementById('calLoader').classList.add('hidden');
                 if(!data || data.status !== "Success") return finishLoading();
+                
                 masterSubCategories = data.masterCategories || {};
                 document.getElementById('rate22k').innerText = data.metalRates.gold22k;
                 document.getElementById('rate24k').innerText = data.metalRates.gold24k;
                 document.getElementById('rateSilver').innerText = data.metalRates.silver;
                 document.getElementById('metalTs').innerText = `${data.metalRates.day}, ${data.metalRates.time}`;
                 document.getElementById('dispSalary').innerText = `₹${Number(data.salary || 0).toLocaleString()}`;
+                
                 const dTag = document.getElementById('deficitTag');
                 if(dTag) {
                     dTag.innerText = data.deficit < 0 ? `குறைவு: ₹${Math.abs(data.deficit).toLocaleString()}` : `மீதி: ₹${data.deficit.toLocaleString()}`;
@@ -442,7 +427,7 @@
             });
         }
 
-        // --- RENDERERS ---
+        // --- Rendering ---
         function renderCalendar(data) {
             const grid = document.getElementById('calGrid'); if(!grid) return; grid.innerHTML = "";
             const names = ["ஜன", "பிப்", "மார்", "ஏப்", "மே", "ஜூன்", "ஜூலை", "ஆக", "செப்", "அக்", "நவ", "டிச"];
@@ -509,66 +494,66 @@
             });
         }
 
-        // --- CORE HELPERS ---
-        function checkGatewayConnectivity() {
-            if(!G_URL) return;
-            call({ action: 'ping' }, (res) => {
-                const isC = res && res.status === "Success";
-                if(!isC) gatewayFailCount++; else gatewayFailCount = 0;
-                updateGatewayStatusUI(isC);
-                if(gatewayFailCount >= 3 && document.getElementById('dashboard').style.display === 'block') logout();
+        // --- Actions ---
+        function loginUser() {
+            const e = document.getElementById('loginEmail').value, p = document.getElementById('loginPass').value;
+            if(!e || !p) return alert("விவரங்கள் தேவை!");
+            toggleBtn('btn-login', true);
+            call({ action: 'login', email: e, pass: p }, (res) => {
+                toggleBtn('btn-login', false);
+                if(res && res.status === "Success") { session = res; localStorage.setItem('kk_session', JSON.stringify(res)); enterDashboard(); }
+                else alert(res ? res.msg : "பிழை!");
             });
         }
 
-        function updateGatewayStatusUI(isConnected) {
-            const d = document.getElementById('gw-dot'), t = document.getElementById('gw-status-text');
-            if(isConnected) { if(d) d.className = "gw-indicator connected"; if(t) { t.innerText = "இணைக்கப்பட்டது"; t.className = "text-[8px] font-bold uppercase text-emerald-500"; } } 
-            else { if(d) d.className = "gw-indicator disconnected"; if(t) { t.innerText = "இணைக்கப்படவில்லை"; t.className = "text-[8px] font-bold uppercase text-rose-500"; } }
+        function requestOTP() {
+            const e = document.getElementById('loginEmail').value; if(!e) return alert("Email?");
+            document.getElementById('otpLoading').classList.remove('hidden');
+            call({ action: 'sendOTP', email: e }, (res) => { 
+                document.getElementById('otpLoading').classList.add('hidden');
+                if(res && res.status === "Sent") { toggleAuth('otp'); startOtpCountdown(); } 
+                else alert("பிழை!");
+            });
         }
 
-        function resetInactivityTimer() { lastActivity = Date.now(); }
-        function checkInactivity() {
-            if(!autoLogoutEnabled || !session) { const el = document.getElementById('logoutCountdown'); if(el) el.innerText = "--:--"; return; }
-            const diff = (Date.now() - lastActivity);
-            const remaining = Math.max(0, (10 * 60 * 1000) - diff);
-            const mins = Math.floor(remaining / 60000), secs = Math.floor((remaining % 60000) / 1000);
-            if(document.getElementById('logoutCountdown')) document.getElementById('logoutCountdown').innerText = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
-            if(remaining <= 0) logout();
+        function verifyOTP() {
+            const inps = document.querySelectorAll('#auth-otp .otp-box');
+            let otp = ""; inps.forEach(i => otp += i.value);
+            if(otp.length < 6) return alert("6 இலக்க OTP தேவை!");
+            toggleBtn('btn-verify', true);
+            call({ action: 'login', email: document.getElementById('loginEmail').value, otp: otp, isOtp: "true" }, (res) => {
+                toggleBtn('btn-verify', false);
+                if(res && res.status === "Success") { session = res; localStorage.setItem('kk_session', JSON.stringify(res)); enterDashboard(); }
+                else alert(res ? res.msg : "பிழை!");
+            });
         }
 
-        function handleLogoutToggle() { autoLogoutEnabled = document.getElementById('autoLogoutToggle').checked; document.getElementById('autoLogoutTimerDisplay').innerText = autoLogoutEnabled ? "10m ON" : "OFF"; if(session) { session.autoLogout = String(autoLogoutEnabled); localStorage.setItem('kk_session', JSON.stringify(session)); call({ action: 'updateConfig', key: 'AUTO_LOGOUT', value: String(autoLogoutEnabled), sheetId: session.sheetId }); } }
-
-        // --- ACTIONS ---
-        function showAddModal() { currentMasterCat = ''; document.getElementById('transModal').style.display = 'flex'; renderMasterCategories(); }
         function saveTransaction() {
             const a = document.getElementById('transAmt').value, c = document.getElementById('transCat').value, n = document.getElementById('transNote').value;
             if(!a || !c) return alert("தேவை!");
             call({ action: 'addTransaction', amount: a, category: c, note: n, type: transType, sheetId: session.sheetId }, (res) => { if(res && res.status === "Success") { closeModals(); loadData(); } });
         }
+
         function updateEMI() { const n = document.getElementById('emiName').value, a = document.getElementById('emiAmt').value, d = document.getElementById('emiDate').value; call({ action: 'updateLoan', loanName: n, amount: a, dueDate: d, sheetId: session.sheetId }, () => { closeModals(); loadData(); }); }
+
         function saveProfile() { const n = document.getElementById('profNameInp').value, p = document.getElementById('profPassInp').value; call({ action: 'updateProfile', sheetId: session.sheetId, newName: n, newPass: p, photoData: session.photo }, () => { if(n) session.name = n; updateAvatarUI(); closeModals(); }); }
-        function registerAccount() { const n = document.getElementById('regName').value, e = document.getElementById('regEmail').value, p = document.getElementById('regPass').value; if(!n || !e || !p) return alert("தேவை!"); toggleBtn('btn-reg', true); call({ action: 'register', name: n, email: e, pass: p }, (res) => { toggleBtn('btn-reg', false); if(res && res.status === "Success") toggleAuth('login'); else alert(res ? res.msg : "பிழை!"); }); }
-        
-        // --- THEME ---
-        function applyTheme(t) {
-            if(!t) return; const r = document.documentElement.style;
-            r.setProperty('--primary-color', t.primary || "#6366f1"); r.setProperty('--topbar-color', t.topbar || "#ffffff"); r.setProperty('--bottombar-color', t.bottombar || "#ffffff");
-            r.setProperty('--text-color', t.text || "#1e293b"); r.setProperty('--card-radius', (t.radius || 28) + 'px'); r.setProperty('--text-base-size', (t.textSize || 14) + 'px');
-            if(document.getElementById('themePrimaryInp')) {
-                document.getElementById('themePrimaryInp').value = t.primary || "#6366f1"; document.getElementById('themeTopInp').value = t.topbar || "#ffffff"; document.getElementById('themeBottomInp').value = t.bottombar || "#ffffff";
-                document.getElementById('themeTextInp').value = t.text || "#1e293b"; document.getElementById('themeRadiusInp').value = t.radius || 28; document.getElementById('themeSizeInp').value = t.textSize || 14;
-                document.getElementById('radVal').innerText = (t.radius || 28) + 'px'; document.getElementById('sizeVal').innerText = (t.textSize || 14) + 'px';
-            }
-        }
-        function applyThemePreview() { const th = { primary: document.getElementById('themePrimaryInp').value, topbar: document.getElementById('themeTopInp').value, bottombar: document.getElementById('themeBottomInp').value, text: document.getElementById('themeTextInp').value, radius: document.getElementById('themeRadiusInp').value, textSize: document.getElementById('themeSizeInp').value }; applyTheme(th); }
-        function saveThemeToCloud() { const th = { primary: document.getElementById('themePrimaryInp').value, topbar: document.getElementById('themeTopInp').value, bottombar: document.getElementById('themeBottomInp').value, text: document.getElementById('themeTextInp').value, radius: document.getElementById('themeRadiusInp').value, textSize: document.getElementById('themeSizeInp').value }; call({ action: 'updateTheme', themeData: JSON.stringify(th), sheetId: session.sheetId }, () => { session.theme = th; localStorage.setItem('kk_session', JSON.stringify(session)); closeModals(); }); }
+
         function saveNewCategoryLogic() { const val = document.getElementById('newCatInput').value; if(!val) return; const m = catAddMode === 'master' ? val : currentMasterCat, s = catAddMode === 'sub' ? val : ""; call({ action: 'addNewCategory', masterCat: m, subCat: s, sheetId: session.sheetId }, () => { if(catAddMode === 'master') masterSubCategories[val] = []; else masterSubCategories[currentMasterCat].push(val); document.getElementById('newCatInput').value = ""; document.getElementById('categoryModal').style.display = 'none'; renderMasterCategories(); }); }
 
-        // --- HELPERS ---
+        // --- Gateway & Theme ---
+        function checkGatewayConnectivity() { if(!G_URL) return; call({ action: 'ping' }, (res) => { const s = res && res.status === "Success"; updateGatewayStatusUI(s); if(!s && document.getElementById('dashboard').style.display === 'block') logout(); }); }
+        function updateGatewayStatusUI(c) { const d = document.getElementById('gw-dot'), t = document.getElementById('gw-status-text'); if(c) { if(d) d.className = "gw-indicator connected"; if(t) { t.innerText = "இணைக்கப்பட்டது"; t.className = "text-[8px] font-bold uppercase text-emerald-500"; } } else { if(d) d.className = "gw-indicator disconnected"; if(t) { t.innerText = "இணைக்கப்படவில்லை"; t.className = "text-[8px] font-bold uppercase text-rose-500"; } } }
+        function checkInactivity() { if(!autoLogoutEnabled || !session) { const el = document.getElementById('logoutCountdown'); if(el) el.innerText = "--:--"; return; } const diff = (Date.now() - lastActivity); const r = Math.max(0, (10 * 60 * 1000) - diff); const m = Math.floor(r/60000), s = Math.floor((r%60000)/1000); if(document.getElementById('logoutCountdown')) document.getElementById('logoutCountdown').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; if(r <= 0) logout(); }
+        function handleLogoutToggle() { autoLogoutEnabled = document.getElementById('autoLogoutToggle').checked; document.getElementById('autoLogoutTimerDisplay').innerText = autoLogoutEnabled ? "10m ON" : "OFF"; if(session) { session.autoLogout = String(autoLogoutEnabled); localStorage.setItem('kk_session', JSON.stringify(session)); call({ action: 'updateConfig', key: 'AUTO_LOGOUT', value: String(autoLogoutEnabled), sheetId: session.sheetId }); } }
+        
+        function applyTheme(t) { if(!t) return; const r = document.documentElement.style; r.setProperty('--primary-color', t.primary || "#6366f1"); r.setProperty('--topbar-color', t.topbar || "#ffffff"); r.setProperty('--bottombar-color', t.bottombar || "#ffffff"); r.setProperty('--text-color', t.text || "#1e293b"); r.setProperty('--card-radius', (t.radius || 28) + 'px'); r.setProperty('--text-base-size', (t.textSize || 14) + 'px'); if(document.getElementById('themePrimaryInp')) { document.getElementById('themePrimaryInp').value = t.primary || "#6366f1"; document.getElementById('themeTopInp').value = t.topbar || "#ffffff"; document.getElementById('themeBottomInp').value = t.bottombar || "#ffffff"; document.getElementById('themeTextInp').value = t.text || "#1e293b"; document.getElementById('themeRadiusInp').value = t.radius || 28; document.getElementById('themeSizeInp').value = t.textSize || 14; document.getElementById('radVal').innerText = (t.radius || 28) + 'px'; document.getElementById('sizeVal').innerText = (t.textSize || 14) + 'px'; } }
+        function applyThemePreview() { const th = { primary: document.getElementById('themePrimaryInp').value, topbar: document.getElementById('themeTopInp').value, bottombar: document.getElementById('themeBottomInp').value, text: document.getElementById('themeTextInp').value, radius: document.getElementById('themeRadiusInp').value, textSize: document.getElementById('themeSizeInp').value }; applyTheme(th); }
+        function saveThemeToCloud() { const th = { primary: document.getElementById('themePrimaryInp').value, topbar: document.getElementById('themeTopInp').value, bottombar: document.getElementById('themeBottomInp').value, text: document.getElementById('themeTextInp').value, radius: document.getElementById('themeRadiusInp').value, textSize: document.getElementById('themeSizeInp').value }; call({ action: 'updateTheme', themeData: JSON.stringify(th), sheetId: session.sheetId }, () => { session.theme = th; localStorage.setItem('kk_session', JSON.stringify(session)); closeModals(); }); }
+
+        // --- Helpers ---
         function toggleBtn(id, l) { const b = document.getElementById(id); if(!b) return; b.disabled = l; b.innerHTML = l ? '<div class="spinner w-4 h-4 border-2 border-white"></div>' : (b.dataset.label || b.innerText); if(l) b.dataset.label = b.innerText; }
         function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display='none'); }
-        function showAddMasterCat() { catAddMode = 'master'; document.getElementById('catModalTitle').innerText = "புதிய முதன்மை வகை"; document.getElementById('categoryModal').style.display = 'flex'; }
-        function showAddSubCat() { if(!currentMasterCat) return alert("வகை தேர்ந்தெடு!"); catAddMode = 'sub'; document.getElementById('catModalTitle').innerText = "துணை வகை: " + currentMasterCat; document.getElementById('categoryModal').style.display = 'flex'; }
+        function showAddModal() { currentMasterCat = ''; document.getElementById('transModal').style.display = 'flex'; renderMasterCategories(); }
         function setTransType(t) { transType = t; setT(t); }
         function setT(t) { document.getElementById('typeExp').className = t==='Expense'?'flex-1 py-4 rounded-2xl font-black text-[11px] bg-white text-rose-500 shadow-sm uppercase tracking-widest transition-all':'flex-1 py-4 rounded-2xl font-black text-[11px] text-slate-400 uppercase tracking-widest transition-all'; document.getElementById('typeInc').className = t==='Income'?'flex-1 py-4 rounded-2xl font-black text-[11px] bg-white text-emerald-500 shadow-sm uppercase tracking-widest transition-all':'flex-1 py-4 rounded-2xl font-black text-[11px] text-slate-400 uppercase tracking-widest transition-all'; document.getElementById('typeSav').className = t==='Savings'?'flex-1 py-4 rounded-2xl font-black text-[11px] bg-white text-indigo-500 shadow-sm uppercase tracking-widest transition-all':'flex-1 py-4 rounded-2xl font-black text-[11px] text-slate-400 uppercase tracking-widest transition-all'; }
         function updateLiveTime() { const n = new Date(); if(document.getElementById('liveClock')) document.getElementById('liveClock').innerText = n.toLocaleTimeString('ta-IN'); }
