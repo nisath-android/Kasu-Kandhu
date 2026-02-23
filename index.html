@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>காசு-கந்து PRO v9.7.2</title>
+    <title>காசு-கந்து PRO v9.7.3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style id="dynamic-theme">
@@ -36,11 +36,13 @@
         input:checked + .slider { background-color: #10b981; }
         input:checked + .slider:before { transform: translateX(14px); }
         .otp-box { width: 42px; height: 52px; border-radius: 10px; background: #f8fafc; border: 2px solid #e2e8f0; text-align: center; font-size: 20px; font-weight: 800; outline: none; transition: 0.2s; }
+        .otp-box:focus { border-color: var(--primary-color); background: white; box-shadow: 0 0 10px rgba(99,102,241,0.1); }
         .sub-pill { padding: 8px 16px; border-radius: 12px; font-size: 10px; font-weight: 700; background: #f8fafc; border: 1px solid #f1f5f9; cursor: pointer; }
         .sub-pill.active { background: var(--primary-color); color: white; }
         .gw-indicator { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; }
         .connected { background: #10b981; box-shadow: 0 0 8px #10b981; }
         .disconnected { background: #f43f5e; box-shadow: 0 0 8px #f43f5e; animation: pulse-err 1s infinite; }
+        @keyframes pulse-err { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
         .theme-btn { border-radius: var(--btn-radius); font-weight: 800; transition: 0.2s; background-color: var(--primary-color); color: white; }
         .theme-btn:active { transform: scale(0.96); }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
@@ -160,7 +162,6 @@
                 </div>
             </div>
 
-            <!-- Balance -->
             <div onclick="showSalaryModal()" class="theme-primary p-10 rounded-[3.5rem] text-white shadow-2xl relative cursor-pointer active:scale-[0.98] transition-all overflow-hidden">
                 <p class="text-[10px] font-black uppercase opacity-70 tracking-widest leading-none">சம்பளம்</p>
                 <h2 id="dispSalary" class="text-5xl font-black my-2 tracking-tighter">₹0</h2>
@@ -246,7 +247,7 @@
         </div>
     </div>
 
-    <!-- Other Modals (EMI, Theme, Profile) Remain the same with updated logic -->
+    <!-- Theme Modal -->
     <div id="themeModal" class="modal-overlay">
         <div class="bg-white w-full max-w-sm p-10 rounded-[4rem] shadow-2xl overflow-y-auto max-h-[90vh] hide-scrollbar">
             <h3 class="text-xl font-black mb-8 italic text-center">தீம் அமைப்புகள்</h3>
@@ -267,7 +268,6 @@
         </div>
     </div>
 
-    <!-- Profile Modal -->
     <div id="profileModal" class="modal-overlay">
         <div class="bg-white w-full max-w-sm p-10 rounded-[4rem] shadow-2xl text-center">
             <div class="relative inline-block mb-6">
@@ -281,7 +281,6 @@
         </div>
     </div>
 
-    <!-- EMI Modal -->
     <div id="emiModal" class="modal-overlay">
         <div class="bg-white w-full max-w-sm p-10 rounded-[4rem] shadow-2xl">
             <h3 class="text-xl font-black mb-8 italic text-center">EMI விவரம்</h3>
@@ -310,12 +309,13 @@
         let calMonth = new Date().getMonth(), calYear = new Date().getFullYear();
         let lastActivity = Date.now(), autoLogoutEnabled = false, otpTimer = null, currentMasterCat = '', masterSubCategories = {};
         let selectedLoanForEdit = '', catAddMode = 'master';
+        let progressInterval = null;
 
         window.onload = () => {
             updateLiveTime(); setInterval(updateLiveTime, 1000);
             setInterval(checkInactivity, 1000); 
             setInterval(checkGatewayConnectivity, 60000);
-            simulateProgress();
+            startInitialProgress();
 
             if(G_URL) {
                 document.getElementById('gUrlInput').value = G_URL;
@@ -324,16 +324,45 @@
                 if(saved && saved !== "undefined") {
                     try {
                         session = JSON.parse(saved);
-                        if(session && session.sheetId) enterDashboard();
-                        else hideSplash();
-                    } catch(e) { hideSplash(); }
-                } else hideSplash();
-            } else hideSplash();
+                        if(session && session.sheetId) {
+                            // Session valid, will hide splash after loadData
+                        } else { finishLoading(); }
+                    } catch(e) { finishLoading(); }
+                } else finishLoading();
+            } else finishLoading();
         };
 
-        // --- Loading Helpers ---
+        function startInitialProgress() {
+            let p = 0; 
+            const fill = document.getElementById('progress-fill'); 
+            const txt = document.getElementById('progress-text');
+            progressInterval = setInterval(() => {
+                p += Math.floor(Math.random() * 10) + 2;
+                if(p >= 95) { p = 95; clearInterval(progressInterval); }
+                if(fill) fill.style.width = p + '%';
+                if(txt) txt.innerText = `தயார் செய்யப்படுகிறது... ${p}%`;
+                
+                // If already authenticated and p reached 95, stay there until enterDashboard calls hideSplash
+                if(session && session.sheetId && p >= 90) {
+                    clearInterval(progressInterval);
+                    enterDashboard();
+                }
+            }, 100);
+        }
+
+        function finishLoading() {
+            clearInterval(progressInterval);
+            const fill = document.getElementById('progress-fill');
+            const txt = document.getElementById('progress-text');
+            if(fill) fill.style.width = '100%';
+            if(txt) txt.innerText = `தயார் செய்யப்படுகிறது... 100%`;
+            setTimeout(hideSplash, 500);
+        }
+
+        // --- Global Loader ---
         function toggleGlobalLoader(show) {
-            document.getElementById('globalLoader').style.display = show ? 'flex' : 'none';
+            const loader = document.getElementById('globalLoader');
+            if(loader) loader.style.display = show ? 'flex' : 'none';
         }
 
         // --- Core UI Functions ---
@@ -364,27 +393,27 @@
             const dot = document.getElementById('gw-dot');
             const txt = document.getElementById('gw-status-text');
             if(isConnected) {
-                dot.className = "gw-indicator connected";
-                txt.innerText = "இணைக்கப்பட்டது";
-                txt.className = "text-[8px] font-bold uppercase text-emerald-500";
+                if(dot) dot.className = "gw-indicator connected";
+                if(txt) { txt.innerText = "இணைக்கப்பட்டது"; txt.className = "text-[8px] font-bold uppercase text-emerald-500"; }
             } else {
-                dot.className = "gw-indicator disconnected";
-                txt.innerText = "இணைக்கப்படவில்லை";
-                txt.className = "text-[8px] font-bold uppercase text-rose-500";
+                if(dot) dot.className = "gw-indicator disconnected";
+                if(txt) { txt.innerText = "இணைக்கப்படவில்லை"; txt.className = "text-[8px] font-bold uppercase text-rose-500"; }
             }
         }
 
         function resetInactivityTimer() { lastActivity = Date.now(); }
         function checkInactivity() {
             if(!autoLogoutEnabled || !session) {
-                document.getElementById('logoutCountdown').innerText = "--:--";
+                const el = document.getElementById('logoutCountdown');
+                if(el) el.innerText = "--:--";
                 return;
             }
             const diff = (Date.now() - lastActivity);
             const remaining = Math.max(0, (10 * 60 * 1000) - diff);
             const mins = Math.floor(remaining / 1000 / 60);
             const secs = Math.floor((remaining / 1000) % 60);
-            document.getElementById('logoutCountdown').innerText = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+            const el = document.getElementById('logoutCountdown');
+            if(el) el.innerText = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
             if(remaining <= 0) logout();
         }
 
@@ -401,8 +430,8 @@
         // --- Network Logic ---
         async function call(p, cb) {
             if(!G_URL) return;
-            const needsLoader = ['updateProfile', 'register', 'updateLoan', 'updateConfig', 'updateSalary', 'updateTheme', 'addTransaction', 'updateEMIStatus', 'addNewCategory', 'getAppData'];
-            if(needsLoader.includes(p.action)) toggleGlobalLoader(true);
+            const skipGlobal = ['ping', 'updateConfig'];
+            if(!skipGlobal.includes(p.action)) toggleGlobalLoader(true);
             
             const POST_ACTIONS = ['updateProfile', 'register', 'updateLoan', 'updateConfig', 'updateSalary', 'updateTheme', 'addTransaction', 'updateEMIStatus', 'addNewCategory'];
             if(POST_ACTIONS.includes(p.action)) {
@@ -427,7 +456,7 @@
             document.body.appendChild(s);
         }
 
-        // --- Dashboard & Data ---
+        // --- Dashboard Actions ---
         function enterDashboard() {
             document.getElementById('init-view').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
@@ -440,7 +469,10 @@
         function loadData() {
             if(!session) return;
             call({ action: 'getAppData', sheetId: session.sheetId, month: calMonth, year: calYear }, (data) => {
-                if(data.status !== "Success") return hideSplash();
+                const calL = document.getElementById('calLoader');
+                if(calL) calL.classList.add('hidden');
+                
+                if(data.status !== "Success") return finishLoading();
                 masterSubCategories = data.masterCategories || {};
                 document.getElementById('rate22k').innerText = data.metalRates.gold22k;
                 document.getElementById('rate24k').innerText = data.metalRates.gold24k;
@@ -449,14 +481,16 @@
                 document.getElementById('dispSalary').innerText = `₹${Number(data.salary || 0).toLocaleString()}`;
                 
                 const dTag = document.getElementById('deficitTag');
-                dTag.innerText = data.deficit < 0 ? `குறைவு: ₹${Math.abs(data.deficit).toLocaleString()}` : `மீதி: ₹${data.deficit.toLocaleString()}`;
-                dTag.style.background = data.deficit < 0 ? '#ef4444' : 'rgba(255,255,255,0.2)';
+                if(dTag) {
+                    dTag.innerText = data.deficit < 0 ? `குறைவு: ₹${Math.abs(data.deficit).toLocaleString()}` : `மீதி: ₹${data.deficit.toLocaleString()}`;
+                    dTag.style.background = data.deficit < 0 ? '#ef4444' : 'rgba(255,255,255,0.2)';
+                }
 
                 renderCalendar(data);
                 renderLoans(data.loans || []);
                 renderTransactions(data.transactions || []);
                 renderMasterCategories();
-                hideSplash();
+                finishLoading();
             });
         }
 
@@ -501,7 +535,8 @@
         }
 
         function renderMasterCategories() {
-            const grid = document.getElementById('masterCatGrid'); grid.innerHTML = '';
+            const grid = document.getElementById('masterCatGrid'); if(!grid) return;
+            grid.innerHTML = '';
             Object.keys(masterSubCategories).forEach(cat => {
                 const b = document.createElement('button');
                 b.className = `sub-pill ${currentMasterCat === cat ? 'active' : ''}`;
@@ -513,7 +548,8 @@
         }
 
         function renderSubCategories() {
-            const grid = document.getElementById('subCatGrid'); grid.innerHTML = '';
+            const grid = document.getElementById('subCatGrid'); if(!grid) return;
+            grid.innerHTML = '';
             if (!currentMasterCat) return;
             (masterSubCategories[currentMasterCat] || []).forEach(item => {
                 if(!item) return;
@@ -535,11 +571,9 @@
         
         function saveNewCategoryLogic() {
             const val = document.getElementById('newCatInput').value; if(!val) return;
-            toggleBtn('btn-save-cat', true);
             const master = catAddMode === 'master' ? val : currentMasterCat;
             const sub = catAddMode === 'sub' ? val : "";
             call({ action: 'addNewCategory', masterCat: master, subCat: sub, sheetId: session.sheetId }, (res) => {
-                toggleBtn('btn-save-cat', false);
                 if(res.status === "Success") {
                     if(catAddMode === 'master') masterSubCategories[val] = [];
                     else masterSubCategories[currentMasterCat].push(val);
@@ -553,9 +587,8 @@
         function saveTransaction() {
             const a = document.getElementById('transAmt').value, c = document.getElementById('transCat').value, n = document.getElementById('transNote').value;
             if(!a || !c) return alert("தொகை மற்றும் வகை தேவை!");
-            toggleBtn('btn-save-trans', true);
             call({ action: 'addTransaction', amount: a, category: c, note: n, type: transType, sheetId: session.sheetId }, () => {
-                toggleBtn('btn-save-trans', false); closeModals(); loadData();
+                closeModals(); loadData();
                 document.getElementById('transAmt').value = "";
                 document.getElementById('transNote').value = "";
             });
@@ -581,7 +614,6 @@
             });
         }
 
-        // --- Helpers ---
         function applyTheme(t) {
             const r = document.documentElement.style;
             r.setProperty('--primary-color', t.primary || "#6366f1");
@@ -590,12 +622,16 @@
             r.setProperty('--text-color', t.text || "#1e293b");
             r.setProperty('--card-radius', (t.radius || 28) + 'px');
             r.setProperty('--text-base-size', (t.textSize || 14) + 'px');
-            document.getElementById('themePrimaryInp').value = t.primary || "#6366f1";
-            document.getElementById('themeTopInp').value = t.topbar || "#ffffff";
-            document.getElementById('themeBottomInp').value = t.bottombar || "#ffffff";
-            document.getElementById('themeTextInp').value = t.text || "#1e293b";
-            document.getElementById('themeRadiusInp').value = t.radius || 28;
-            document.getElementById('themeSizeInp').value = t.textSize || 14;
+            if(document.getElementById('themePrimaryInp')) {
+                document.getElementById('themePrimaryInp').value = t.primary || "#6366f1";
+                document.getElementById('themeTopInp').value = t.topbar || "#ffffff";
+                document.getElementById('themeBottomInp').value = t.bottombar || "#ffffff";
+                document.getElementById('themeTextInp').value = t.text || "#1e293b";
+                document.getElementById('themeRadiusInp').value = t.radius || 28;
+                document.getElementById('themeSizeInp').value = t.textSize || 14;
+                document.getElementById('radVal').innerText = (t.radius || 28) + 'px';
+                document.getElementById('sizeVal').innerText = (t.textSize || 14) + 'px';
+            }
         }
 
         function applyThemePreview() {
@@ -608,39 +644,51 @@
                 textSize: document.getElementById('themeSizeInp').value
             };
             applyTheme(theme);
-            document.getElementById('radVal').innerText = theme.radius + 'px';
-            document.getElementById('sizeVal').innerText = theme.textSize + 'px';
+        }
+
+        function saveThemeToCloud() {
+            const theme = {
+                primary: document.getElementById('themePrimaryInp').value,
+                topbar: document.getElementById('themeTopInp').value,
+                bottombar: document.getElementById('themeBottomInp').value,
+                text: document.getElementById('themeTextInp').value,
+                radius: document.getElementById('themeRadiusInp').value,
+                textSize: document.getElementById('themeSizeInp').value
+            };
+            call({ action: 'updateTheme', themeData: JSON.stringify(theme), sheetId: session.sheetId }, (res) => {
+                if(res.status === "Success") { session.theme = theme; localStorage.setItem('kk_session', JSON.stringify(session)); closeModals(); }
+            });
         }
 
         function changeMonth(o) { 
-            document.getElementById('calLoader').classList.remove('hidden');
+            const loader = document.getElementById('calLoader');
+            if(loader) loader.classList.remove('hidden');
             calMonth += o; if(calMonth>11){calMonth=0;calYear++;} if(calMonth<0){calMonth=11;calYear--;} 
             loadData(); 
         }
         function changeYear(o) { 
-            document.getElementById('calLoader').classList.remove('hidden');
+            const loader = document.getElementById('calLoader');
+            if(loader) loader.classList.remove('hidden');
             calYear += o; loadData(); 
         }
 
-        // Existing helper logic kept as is...
-        function toggleBtn(id, l) { const b = document.getElementById(id); if(!b) return; b.disabled = l; b.innerHTML = l ? '<i class="fa-solid fa-spinner fa-spin"></i>' : (b.dataset.label || b.innerText); if(l) b.dataset.label = b.innerText; }
+        function toggleBtn(id, l) { const b = document.getElementById(id); if(!b) return; b.disabled = l; b.innerHTML = l ? '<div class="spinner w-4 h-4 border-2 border-white"></div>' : (b.dataset.label || b.innerText); if(l) b.dataset.label = b.innerText; }
         function closeModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display='none'); }
-        function setTransType(t) { transType = t; setT(t); } // Unified call
+        function setTransType(t) { transType = t; setT(t); } 
         function setT(t) { document.getElementById('tE').className = t==='Expense'?'flex-1 py-3 rounded-xl font-bold text-[10px] bg-white text-rose-500 shadow-sm uppercase':'flex-1 py-3 rounded-xl font-bold text-[10px] text-slate-400 uppercase'; document.getElementById('tI').className = t==='Income'?'flex-1 py-3 rounded-xl font-bold text-[10px] bg-white text-emerald-500 shadow-sm uppercase':'flex-1 py-3 rounded-xl font-bold text-[10px] text-slate-400 uppercase'; document.getElementById('tS').className = t==='Savings'?'flex-1 py-3 rounded-xl font-bold text-[10px] bg-white text-indigo-500 shadow-sm uppercase':'flex-1 py-3 rounded-xl font-bold text-[10px] text-slate-400 uppercase'; }
-        function updateLiveTime() { const n = new Date(); document.getElementById('liveClock').innerText = n.toLocaleTimeString('ta-IN'); }
+        function updateLiveTime() { const n = new Date(); const el = document.getElementById('liveClock'); if(el) el.innerText = n.toLocaleTimeString('ta-IN'); }
         function logout() { localStorage.clear(); location.reload(); }
         function saveGateway() { const u = document.getElementById('gUrlInput').value.trim(); if(u.includes('/exec')) { localStorage.setItem('kk_g', u); location.reload(); } }
         function startPoller() { if(poller) clearInterval(poller); poller = setInterval(() => { if(session) loadData(); }, 300000); }
-        function showProfileModal() { document.getElementById('profileModal').style.display='flex'; }
-        function showThemeModal() { document.getElementById('themeModal').style.display='flex'; }
-        function showSalaryModal() { const s = prompt("சம்பளம்:"); if(s) call({ action: 'updateSalary', amount: s, sheetId: session.sheetId }, () => loadData()); }
         function toggleAuth(s) { document.querySelectorAll('.screen').forEach(sc => sc.classList.remove('active')); document.getElementById('auth-' + s).classList.add('active'); }
         function hideSplash() { const s = document.getElementById('splash'); if(s) { s.style.opacity='0'; setTimeout(()=> { if(s.parentNode) s.remove(); }, 500); } }
-        function initAppDB() { if(confirm("ஆப் தயார் செய்யவா?")) call({ action: 'initSetup', sheetId: session.sheetId }, (res) => alert(res.msg)); }
-        function openEMIEdit(n, a, d) { document.getElementById('emiName').value = n; document.getElementById('emiAmt').value = a; document.getElementById('emiDate').value = d; document.getElementById('emiModal').style.display = 'flex'; }
+        function initAppDB() { if(confirm("தயார் செய்யவா?")) call({ action: 'initSetup', sheetId: session.sheetId }, (res) => alert(res.msg)); }
+        function updateEMI() { const n = document.getElementById('emiName').value, a = document.getElementById('emiAmt').value, d = document.getElementById('emiDate').value; call({ action: 'updateLoan', loanName: n, amount: a, dueDate: d, sheetId: session.sheetId }, (res) => { if(res.status === "Success") { closeModals(); loadData(); } }); }
         function toggleEMI(n, c) { call({ action: 'updateEMIStatus', loanName: n, status: c?'Paid':'Pending', month: calMonth, year: calYear, sheetId: session.sheetId }, () => loadData()); }
         function moveNext(el, e) { if(e.key === "Backspace" && !el.value) el.previousElementSibling?.focus(); else if(el.value && el.value.length === 1) el.nextElementSibling?.focus(); }
-        function startOtpCountdown() { let t = 60; const el = document.getElementById('otpTimer'); if(otpTimer) clearInterval(otpTimer); otpTimer = setInterval(() => { t--; el.innerText = `நேரம்: ${t}s`; if(t <= 0) clearInterval(otpTimer); }, 1000); }
+        function startOtpCountdown() { let t = 60; const el = document.getElementById('otpTimer'); if(otpTimer) clearInterval(otpTimer); otpTimer = setInterval(() => { t--; if(el) el.innerText = `நேரம்: ${t}s`; if(t <= 0) clearInterval(otpTimer); }, 1000); }
+        function handleOtpPaste(e) { const data = e.clipboardData.getData('text').trim().slice(0, 6); const inps = document.querySelectorAll('#auth-otp .otp-box'); data.split('').forEach((v, i) => { if(inps[i]) inps[i].value = v; }); inps[Math.min(data.length, 5)].focus(); e.preventDefault(); }
+        function saveProfile() { const n = document.getElementById('profNameInp').value, p = document.getElementById('profPassInp').value; call({ action: 'updateProfile', sheetId: session.sheetId, newName: n, newPass: p, photoData: session.photo }, () => { if(n) session.name = n; updateAvatarUI(); closeModals(); }); }
         function handlePhoto(ev) {
             const f = ev.target.files[0]; if(!f) return;
             const r = new FileReader(); r.onload = (e) => {
