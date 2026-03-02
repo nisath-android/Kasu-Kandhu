@@ -304,6 +304,13 @@
         let lastActivity = Date.now(), autoLogoutEnabled = false, otpTimer = null, currentMasterCat = '', masterSubCategories = {};
         let selectedLoanForEdit = '', catAddMode = 'master', progressInterval = null;
 
+// --- Inactivity Reset Logic ---
+// பயனர் திரையில் எங்கு அழுத்தினாலும் அல்லது தட்டச்சு செய்தாலும் 
+// கடைசியாகச் செய்த செயல்பாட்டின் நேரத்தைப் புதுப்பிக்கும்.
+function resetInactivityTimer() {
+    lastActivity = Date.now();
+}
+        
         // --- Important Functions First (Hoisting fix) ---
         function updateAvatarUI() {
             if(!session) return;
@@ -577,3 +584,4 @@
     </script>
 </body>
 </html>
+
